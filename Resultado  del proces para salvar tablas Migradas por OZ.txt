@@ -1,0 +1,46 @@
+	- dt_clientes(check-luego de mis correcciones)
+    Problemas:
+    - Gerente no está llegando a representante_legal,email_contacto está trayendo un numero
+    -Los usuarios no coinciden y algunos estan en 0
+    Solución usuarios
+    1.
+    update dt_clientes set id_usuario = 0
+    2.
+    UPDATE sio2.dt_clientes c2
+    JOIN Sio1BackupSept.dt_clientes c1 ON c2.id_cliente = c1.id_cliente
+    JOIN Sio1BackupSept.dt_vendedores v ON c1.actualizadoPor = v.vendedor
+    SET c2.id_usuario = v.id_vend;
+    3.
+    update dt_clientes c SET id_usuario = (SELECT migracion_prueba.user.id  FROM  migracion_prueba.user  WHERE c.id_usuario = migracion_prueba.user.id_empleado)
+    where c.id_usuario != 0
+    4.
+    update dt_clientes set id_usuario = 271 WHERE id_usuario = 0
+
+    Usuarios que han sido borrados previamente son reemplazados por SANDRA MARCELA ESPAÑOL MARROQUIN, usuario con mayor número de registros creados
+
+    Solución email_contacto 
+
+    UPDATE  sio2.dt_clientes dc SET email_contacto = (SELECT emailCont FROM Sio1BackupSept.dt_clientes  WHERE Sio1BackupSept.dt_clientes.id_cliente = dc.id_cliente)
+
+    Se soluciona el problema del representante legal con una query parecida a las anteriores
+    
+    - dt_inffac_cli(check, faltantes de baja importancia)
+    Problemas:
+    -Columna cupo_credito no se migro
+
+    - dt_macroproyecto(check-luego de mis correcciones)
+    Problemas:
+    -Caracteres extraños en el nombre de los macroproyectos
+    Se da formato con funcion REPLACE() de sql
+    - Los usuarios ya no coinciden
+    Se hace UPDATE por los unicos 3 usuarios que han creado en toda la tabla
+    - dt_proyecto_op (Tiene muchos menos registros y los usuarios ya no coinciden NO SE PUEDE RECUPERAR)
+    - dt_proveedores (Tiene faltantes en la columna de id_ciudad y tiene el id_forma_pago en 0 pero pasa, hay que estar pendiente de la creación
+    de los registros desde septiembre 2023)
+    - dt_inf_contable_prove(Hay una pequeña aproximación en los últimos decimales de desc_ica, pero pasa, hay que estar pendiente de la creación
+    de los registros desde septiembre 2023)
+    - dt_contacto_cliente (check - VACIAR AL LLEGAR AL DESTINO)
+    - dt_codprodfinal (check, se le dio formato a los caracteres extraños de nom_codigo y quedó)
+    - dt_inventario (check,El valor total quedo aproximado pero es posible que lo sesvincule luego de esta tabla)
+    - dt_inventarioxarea (Tiene los registros completos pero id_area y id_inventario están mal NO SE PUEDE RECUPERAR)
+    - dt_kardex(check)
