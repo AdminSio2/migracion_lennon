@@ -821,7 +821,7 @@
 
         }
 
-        public static function migraDtProyectoOp($conexion_sio1,$conexion_migracion_prueba,$array_user){
+        public static function migraDtProyectoOp($conexion_sio1,$conexion_migracion_prueba,$array_info_global){
 
             //Iniciamos timer
 
@@ -898,7 +898,7 @@
                     
                     //Traemos el id_user
 
-                    $id_user = array_key_exists($registro_proyecto_op->usuario,$array_user)?$array_user[$registro_proyecto_op->usuario]:1;
+                    $id_user = array_key_exists($registro_proyecto_op->usuario,$array_info_global['codVendedor=>id'])?$array_info_global['codVendedor=>id'][$registro_proyecto_op->usuario]:1;
 
 
                     $insert_registro = $conexion_migracion_prueba->prepare("
@@ -1164,11 +1164,11 @@
 
                     //Asignamos id_usuario 
 
-                    $id_usuario = array_key_exists($registro_dt_ordenes->elaboro,$array_info_global['id_vend =>vendedor'])?$array_info_global['id_vend =>vendedor'][$registro_dt_ordenes->elaboro]:null;
+                    $id_usuario = array_key_exists($registro_dt_ordenes->elaboro,$array_info_global['vendedor=>id'])?$array_info_global['vendedor=>id'][$registro_dt_ordenes->elaboro]:null;
                     
-                    $id_vend = array_key_exists($registro_dt_ordenes->idVend,$array_info_global['id_vend =>codVendedor'])?$array_info_global['id_vend =>codVendedor'][$registro_dt_ordenes->idVend]:null;
+                    $id_vend = array_key_exists($registro_dt_ordenes->idVend,$array_info_global['codVendedor=>id'])?$array_info_global['codVendedor=>id'][$registro_dt_ordenes->idVend]:null;
 
-                    $id_coordinador = array_key_exists($registro_dt_ordenes->id_Coordinador,$array_info_global['id_vend =>codVendedor'])?$array_info_global['id_vend =>codVendedor'][$registro_dt_ordenes->id_Coordinador]:null;
+                    $id_coordinador = array_key_exists($registro_dt_ordenes->id_Coordinador,$array_info_global['codVendedor=>id'])?$array_info_global['codVendedor=>id'][$registro_dt_ordenes->id_Coordinador]:null;
 
                     // if($registro_dt_ordenes->id_orden == 13539){
                     //     $conexion_migracion_prueba->rollBack();
@@ -1275,7 +1275,7 @@
 
             return $mensaje;
         }
-        //SIN BD SEMANA DE PRUEBA, VALIDAR LA PERTINENCIA EN LAS DEMAS
+        
         public static function migraDtPlantilla($conexion_sio1,$conexion_migracion_prueba,$array_info_global){
 
             //Inicia timer
@@ -1401,6 +1401,91 @@
 
         }
 
+        public static function migracionDtTareas($conexion_sio1,$conexion_migracion_prueba,$array_info_global){
+
+            //Inicia timer
+
+            $tiempo_inicio = microtime(true);
+        
+
+            //Consultamos dt_tareasnew en Sio 1
+
+            $consulta_dt_tareasnew = $conexion_sio1->query("
+                SELECT dt_idNewTarea,CodVendedor,FechaInicio,FechaFinal,FechaFinalCli,
+                Recibe,Descripcion,estado,observaciones
+                from dt_tareasnew   
+            ");
+
+            $conexion_migracion_prueba->exec("
+                CREATE TABLE `dt_tareas` (
+                `id_tarea` int NOT NULL AUTO_INCREMENT,
+                `id_responsable` int NOT NULL,
+                `fecha_inicio` datetime DEFAULT NULL,
+                `fecha_final` datetime DEFAULT NULL,
+                `fecha_final_cli` datetime DEFAULT NULL,
+                `id_encargado` int NOT NULL,
+                `descripcion` varchar(100) DEFAULT NULL,
+                `satisfaccion` smallint DEFAULT '0',
+                `observaciones` varchar(100) DEFAULT NULL,
+                PRIMARY KEY (`id_tarea`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+            ");
+
+            $array_dt_tareasnew = $consulta_dt_tareasnew->fetchAll(PDO::FETCH_OBJ);
+
+            $registros_insertados = 0;
+            $conexion_migracion_prueba->beginTransaction();
+
+            $array_codvendedor_user = $array_info_global['codVendedor=>id'];
+
+            foreach($array_dt_tareasnew as $registro_tareasnew){
+
+                try{
+
+                    $insert_registro = $conexion_migracion_prueba->prepare("
+                        INSERT INTO dt_tareas(id_responsable,fecha_inicio,fecha_final,fecha_final_cli,id_encargado,descripcion,satisfaccion,observaciones)
+                        VALUES(:id_responsable,:fecha_inicio,:fecha_final,:fecha_final_cli,:id_encargado,:descripcion,:satisfaccion,:observaciones)
+                    ");
+
+                    $insert_registro->execute([
+                        'id_responsable' => array_key_exists($registro_tareasnew->CodVendedor,$array_codvendedor_user)?$array_codvendedor_user[$registro_tareasnew->CodVendedor]:0,
+                        'fecha_inicio' => $registro_tareasnew->FechaInicio,
+                        'fecha_final' => $registro_tareasnew->FechaFinal,
+                        'fecha_final_cli' => $registro_tareasnew->FechaFinalCli,
+                        'id_encargado' => array_key_exists($registro_tareasnew->Recibe,$array_codvendedor_user)?$array_codvendedor_user[$registro_tareasnew->Recibe]:0,
+                        'descripcion' => $registro_tareasnew->Descripcion,
+                        'satisfaccion' => $registro_tareasnew->estado,
+                        'observaciones' => $registro_tareasnew->observaciones
+
+                    ]);
+
+                    $registros_insertados++;
+
+                }catch(PDOException $e){
+                    $conexion_migracion_prueba->rollback();
+                    echo "Error en el dt_idNewTarea: ".$registro_tareasnew->dt_idNewTarea."<br>".$e->getMessage();exit;
+                }
+
+            }//FIN foreach($array_dt_tareasnew as $registro_tareasnew)
+
+            $conexion_migracion_prueba->commit();
+            
+
+            // Finaliza timer y entregamos mensaje 
+
+            $tiempo_fin = microtime(true);
+            $tiempo_transcurrido = $tiempo_fin - $tiempo_inicio;
+
+            $mensaje = "Migración dt_tareas completada ".$registros_insertados." registros insertados en ".$tiempo_transcurrido." segundos";
+
+            return $mensaje;
+
+
+            
+        }
+
+
+        //Con faltantes dt_costos
         public static function migraDtCostos($conexion_sio1,$conexion_semana_prueba,$conexion_migracion_prueba,$array_convierte_ordenes_item,$array_convierte_vendedor,$array_convierte_codigo_prod,$array_convierte_acabado){
 
             ini_set('memory_limit', '4100M');

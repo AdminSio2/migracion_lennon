@@ -115,17 +115,17 @@
 
     echo ControladorMigracion::migraDtUsuariosUser($conexion_sio1,$conexion_migracion_prueba)."\n<br>";
 
-    //Traemos los arrays: user codVendedor => id_usuario y vendedor => id_usuariok 
+    //Traemos los arrays: user codVendedor => id_usuario y vendedor => id_usuario 
 
     $array_convierte_vendedor = ControladorInformacionGlobal::traeArrayUser($conexion_sio1,$conexion_migracion_prueba,1);
 
-    $array_info_global['id_vend =>vendedor'] = ControladorInformacionGlobal::traeArrayUser($conexion_sio1,$conexion_migracion_prueba,1);
+    $array_info_global['vendedor=>id'] = ControladorInformacionGlobal::traeArrayUser($conexion_sio1,$conexion_migracion_prueba,1);
 
     $array_convierte_codVendedor = ControladorInformacionGlobal::traeArrayUser($conexion_sio1,$conexion_migracion_prueba,2);
 
-    $array_info_global['id_vend =>codVendedor'] = ControladorInformacionGlobal::traeArrayUser($conexion_sio1,$conexion_migracion_prueba,2);
+    $array_info_global['codVendedor=>id'] = ControladorInformacionGlobal::traeArrayUser($conexion_sio1,$conexion_migracion_prueba,2);
 
-    echo ControladorMigracion::migraDtProyectoOp($conexion_sio1,$conexion_migracion_prueba,$array_convierte_codVendedor)."\n<br>";
+    echo ControladorMigracion::migraDtProyectoOp($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
 
     //Traemos el array cod => id_codprodfinal 
 
@@ -145,8 +145,11 @@
     $array_info_global['tipo_script'] = ControladorInformacionGlobal::traeArrayTipoScript();
 
     echo ControladorMigracion::migraDtPlantilla($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>"; //No migramos registros de códigos borrados
-    
-    //echo ControladorMigracion::migraDtCostos($conexion_sio1,$conexion_semana_prueba,$conexion_migracion_prueba,$array_convierte_ordenes_item,$array_convierte_vendedor,$array_convierte_codigo_prod,$array_convierte_acabado)."\n<br>";
+    echo ControladorMigracion::migracionDtTareas($conexion_sio1,$conexion_migracion_prueba,$array_info_global);
+  
+  
+  
+    echo ControladorMigracion::migraDtCostos($conexion_sio1,$conexion_semana_prueba,$conexion_migracion_prueba,$array_convierte_ordenes_item,$array_convierte_vendedor,$array_convierte_codigo_prod,$array_convierte_acabado)."\n<br>";
 
 
 
