@@ -1623,8 +1623,129 @@
 
         }
 
-        //Con faltantes dt_costos
-        public static function migraDtCostos($conexion_sio1,$conexion_semana_prueba,$conexion_migracion_prueba,$array_convierte_ordenes_item,$array_convierte_vendedor,$array_convierte_codigo_prod,$array_convierte_acabado){
+        public static function migracionDtPresupuestoInicial($conexion_sio1,$conexion_migracion_prueba,$array_info_global){
+
+            //Inicia timer 
+
+            $tiempo_inicio = microtime(true);
+
+            //Consultamos dt_ppinicial
+
+            $consulta_dt_ppinicial = $conexion_sio1->query("
+                SELECT id_ppI,nOrden,item,MP,MO,Trans,Terc,Viati,otrosD,idUser,
+                fecha,Observaciones,PMP,PMO,PTrans,PViati,PotrosD,PTerc,estandar
+                from dt_ppinicial order by id_ppI
+            ");
+
+            $array_dt_ppinicial = $consulta_dt_ppinicial->fetchAll(PDO::FETCH_OBJ);
+
+            $conexion_migracion_prueba->exec("
+                CREATE TABLE `dt_presupuesto_inicial` (
+                `id_presupuesto_inicial` int ,
+                `n_ordenes` int NOT NULL,
+                `id_ordenes` int NOT NULL,
+                `total_materia_prima` DECIMAL(10,2) DEFAULT NULL,
+                `total_mano_obra` DECIMAL(10,2) DEFAULT NULL,
+                `total_transporte` DECIMAL(10,2) DEFAULT NULL,
+                `total_terceros` DECIMAL(10,2) DEFAULT NULL,
+                `total_viaticos` DECIMAL(10,2) DEFAULT NULL,
+                `total_otros_directos` DECIMAL(10,2) DEFAULT NULL,
+                `valor_total` DECIMAL(10,2) DEFAULT NULL,
+                `id_usuario` int DEFAULT NULL,
+                `fecha_creacion` datetime DEFAULT NULL,
+                `observaciones` varchar(556) DEFAULT NULL,
+                `total_materia_prima_p` DECIMAL(10,2) DEFAULT NULL,
+                `total_mano_obra_p` DECIMAL(10,2) DEFAULT NULL,
+                `total_transporte_p` DECIMAL(10,2) DEFAULT NULL,
+                `total_viaticos_p` DECIMAL(10,2) DEFAULT NULL,
+                `total_otros_directos_p` DECIMAL(10,2) DEFAULT NULL,
+                `total_terceros_p` DECIMAL(10,2) DEFAULT NULL,
+                `id_orden` int DEFAULT NULL,
+                `estado` smallint DEFAULT '1'
+                ) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb3;
+            ");
+
+            $registros_insertados = 0;
+
+            $conexion_migracion_prueba->beginTransaction();
+
+            foreach($array_dt_ppinicial as $registro_ppinicial){
+                try{
+
+                    $array_ordenes = $array_info_global['n_ordenes|item_op=>id_ordenes'];
+
+                    $array_user_cod = $array_info_global['codVendedor=>id'];
+
+                    $item = $registro_ppinicial->item != null ? $registro_ppinicial->item:1; //Porque hay algunos en null
+
+                    $id_ordenes = array_key_exists($registro_ppinicial->nOrden,$array_ordenes)&&array_key_exists($item,$array_ordenes[$registro_ppinicial->nOrden])?$array_ordenes[$registro_ppinicial->nOrden][$item]['id_ordenes']:null;
+
+                    if($id_ordenes == null){continue;} //Si se borro el registro en ordenes nos irve de nada el registro de presupuestos
+
+                    $id_usuario = array_key_exists($registro_ppinicial->idUser,$array_user_cod)?$array_user_cod[$registro_ppinicial->idUser]:null;
+
+                    $insert_registro = $conexion_migracion_prueba->prepare("
+                        INSERT INTO dt_presupuesto_inicial(id_presupuesto_inicial,n_ordenes,id_ordenes,total_materia_prima,total_mano_obra,
+                        total_transporte,total_terceros,total_viaticos,total_otros_directos,valor_total,id_usuario,fecha_creacion,observaciones,
+                        total_materia_prima_p,total_mano_obra_p,total_transporte_p,total_viaticos_p,total_otros_directos_p,total_terceros_p,
+                        estado) VALUES(:id_presupuesto_inicial,:n_ordenes,:id_ordenes,:total_materia_prima,:total_mano_obra,
+                        :total_transporte,:total_terceros,:total_viaticos,:total_otros_directos,:valor_total,:id_usuario,:fecha_creacion,:observaciones,
+                        :total_materia_prima_p,:total_mano_obra_p,:total_transporte_p,:total_viaticos_p,:total_otros_directos_p,:total_terceros_p,
+                        :estado)
+                    ");
+
+                    $insert_registro->execute([
+                        'id_presupuesto_inicial' => $registro_ppinicial->id_ppI,
+                        'n_ordenes' => $registro_ppinicial->nOrden,
+                        'id_ordenes' => $id_ordenes,
+                        'total_materia_prima' => $registro_ppinicial->MP,
+                        'total_mano_obra' => $registro_ppinicial->MO,
+                        'total_transporte' => $registro_ppinicial->Trans,
+                        'total_terceros' => $registro_ppinicial->Terc,
+                        'total_viaticos' => $registro_ppinicial->Viati,
+                        'total_otros_directos' => $registro_ppinicial->otrosD,
+                        'valor_total' => $registro_ppinicial->MP+$registro_ppinicial->MO+$registro_ppinicial->Trans+$registro_ppinicial->Terc+$registro_ppinicial->Terc+$registro_ppinicial->Viati+$registro_ppinicial->otrosD,
+                        'id_usuario' => $id_usuario,
+                        'fecha_creacion' => $registro_ppinicial->fecha,
+                        'observaciones' => $registro_ppinicial->Observaciones,
+                        'total_materia_prima_p' => $registro_ppinicial->PMP,
+                        'total_mano_obra_p' => $registro_ppinicial->PMO,
+                        'total_transporte_p' => $registro_ppinicial->PTrans,
+                        'total_viaticos_p' => $registro_ppinicial->PViati,
+                        'total_otros_directos_p' => $registro_ppinicial->PotrosD,
+                        'total_terceros_p' => $registro_ppinicial->PTerc,
+                        'estado' => $registro_ppinicial->estandar
+                    ]);
+
+                }catch(PDOException $e){
+                    $conexion_migracion_prueba->rollBack();
+                    echo "Error en el id_ppI: ".$registro_ppinicial->id_ppI."<br>".$e->getMessage();exit;
+                }
+
+                $registros_insertados++;
+            }
+
+            $conexion_migracion_prueba->commit();
+
+            //Asignamos la llave primaria con autoincremental 
+
+            $conexion_migracion_prueba->exec("
+                ALTER TABLE dt_presupuesto_inicial
+                MODIFY id_presupuesto_inicial INT AUTO_INCREMENT PRIMARY KEY
+            ");
+
+            // Finaliza timer y entregamos mensaje 
+
+            $tiempo_fin = microtime(true);
+            $tiempo_transcurrido = $tiempo_fin - $tiempo_inicio;
+
+            $mensaje = "Migración dt_presupuesto_inicial completada ".$registros_insertados." registros insertados en ".$tiempo_transcurrido." segundos";
+
+            return $mensaje;
+
+        }
+    
+        public static function migraDtCostos($conexion_sio1,$conexion_migracion_prueba,$array_info_global){
 
             ini_set('memory_limit', '4100M');
             set_time_limit(3400);
@@ -1667,8 +1788,8 @@
                 `id_usuario` int DEFAULT NULL,
                 `material_crit` int DEFAULT NULL,
                 `fecha_ingreso` datetime DEFAULT NULL,
-                `valor_unit` DECIMAL(10, 2) DEFAULT NULL,
-                `vr_unid` DECIMAL(10, 2) DEFAULT NULL,
+                `valor_unit` DECIMAL(10,2) DEFAULT NULL,
+                `vr_unid` DECIMAL(10,2) DEFAULT NULL,
                 `cant_unit` float DEFAULT NULL,
                 `cant_sol` float DEFAULT NULL,
                 `valor_total` DECIMAL(10, 2) DEFAULT NULL,
@@ -1693,10 +1814,11 @@
                 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb3;
             ");
 
-            $array_materiales = $array_convierte_codigo_prod;
-            $array_acabados = $array_convierte_acabado;
-            $array_usuarios = $array_convierte_vendedor;
-            $array_ordenes = $array_convierte_ordenes_item;
+            $array_materiales = $array_info_global['codigo_prod=>id_inventario'];
+            $array_acabados = $array_info_global['cod=>id_acabados'] ;
+            $array_usuarios = $array_info_global['vendedor=>id'];
+            $array_ordenes = $array_info_global['n_ordenes|item_op=>id_ordenes'];
+            $array_cotizacion = $array_info_global['n_cotiza|item=>id_cotizacion'];
 
             $registros_insertados = 0;
             $conexion_migracion_prueba->beginTransaction();
@@ -1705,6 +1827,12 @@
             foreach($array_dt_costos as $registro_dt_costos){
 
                 try{ 
+
+                    $id_ordenes = array_key_exists($registro_dt_costos->nDoc,$array_ordenes) && array_key_exists($registro_dt_costos->op_item,$array_ordenes[$registro_dt_costos->nDoc])?$array_ordenes[$registro_dt_costos->nDoc][$registro_dt_costos->op_item]['id_ordenes']:null;
+
+                    if($id_ordenes == null){continue;} // Costos que tienen su orden borrada, se van 
+
+
                     $insert_registro = $conexion_migracion_prueba->prepare("
                         INSERT INTO dt_costos(id_costo,tipo_doc,n_ordenes,id_ordenes,id_cotizacion,n_cotiza,id_tipo_costo,id_clase_costo,cod_material,
                         nombre_costo,id_acabados,id_inventario,id_usuario,material_crit,fecha_ingreso,valor_unit,vr_unid,cant_unit,cant_sol,valor_total,
@@ -1718,8 +1846,8 @@
                         'id_costo' => $registro_dt_costos->id_costo,
                         'tipo_doc' => $registro_dt_costos->tipo_doc,
                         'n_ordenes' => $registro_dt_costos->nDoc,
-                        'id_ordenes' => array_key_exists($registro_dt_costos->nDoc,$array_ordenes) && array_key_exists($registro_dt_costos->op_item,$array_ordenes[$registro_dt_costos->nDoc])?$array_ordenes[$registro_dt_costos->nDoc][$registro_dt_costos->op_item]['id_ordenes']:6249,
-                        'id_cotizacion' => 1,
+                        'id_ordenes' => $id_ordenes,
+                        'id_cotizacion' => array_key_exists($registro_dt_costos->nCT,$array_cotizacion) && array_key_exists($registro_dt_costos->op_item,$array_cotizacion[$registro_dt_costos->nCT])?$array_cotizacion[$registro_dt_costos->nCT][$registro_dt_costos->op_item]['id_cotizacion']:6249,
                         'n_cotiza' => $registro_dt_costos->nCT,
                         'id_tipo_costo' => $registro_dt_costos->tipo_costo,
                         'id_clase_costo' => $registro_dt_costos->clase_costo,
@@ -1749,7 +1877,7 @@
                     ]);
 
                 }catch(PDOException $e){
-                    $conexion_migracion_prueba->rollback();
+                    $conexion_migracion_prueba->rollBack();
                     echo "Error en el id_costo: ".$registro_dt_costos->id_costo."<br>".$e->getMessage();exit;
                 }
 

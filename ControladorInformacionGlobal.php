@@ -3,7 +3,21 @@
     class ControladorInformacionGlobal{
 
 
-        //Ya tenemos que haber  migrado user
+        public static function traeArrayIdCliente($conexion_migracion_prueba){
+
+            $consulta_clientes = $conexion_migracion_prueba->query("SELECT id_cliente,nit from dt_clientes");
+
+            $array_clientes = $consulta_clientes->fetchAll(PDO::FETCH_OBJ);
+
+            $array_clientes_reasignado = [];
+
+            foreach($array_clientes as $registro_cliente){
+                $array_clientes_reasignado[$registro_cliente->nit] =['id_cliente' => $registro_cliente->id_cliente];
+            }
+
+            return $array_clientes_reasignado;
+
+        }
 
         public static function traeArrayIdCodprodfinal($conexion_sio1){
 
@@ -51,66 +65,21 @@
 
         }
 
-        public static function traeArrayIdCliente($conexion_migracion_prueba){
+        public static function traeArrayIdCotizacion($conexion_migracion_prueba){
 
-            $consulta_clientes = $conexion_migracion_prueba->query("SELECT id_cliente,nit from dt_clientes");
+            $consulta_cotizacion = $conexion_migracion_prueba->query("SELECT id_cotizacion,n_cotiza,item FROM dt_cotizacion");
 
-            $array_clientes = $consulta_clientes->fetchAll(PDO::FETCH_OBJ);
+            $array_cotizacion = $consulta_cotizacion->fetchAll(PDO::FETCH_OBJ);
 
-            $array_clientes_reasignado = [];
+            $array_cotizacion_reasignado = [];
 
-            foreach($array_clientes as $registro_cliente){
-                $array_clientes_reasignado[$registro_cliente->nit] =['id_cliente' => $registro_cliente->id_cliente];
-            }
+            foreach($array_cotizacion as $registro_cotizacion){
 
-            return $array_clientes_reasignado;
+                $array_cotizacion_reasignado[$registro_cotizacion->n_cotiza][$registro_cotizacion->item] = ['id_cotizacion' => $registro_cotizacion->id_cotizacion];
 
-        }
+            } 
 
-        public static function traeArrayUser($conexion_sio1,$conexion_migracion_prueba,$opcion_conversión){
-
-            $consulta_vendedores =  $conexion_sio1->query("SELECT id_vend,codVendedor,vendedor FROM dt_vendedores");
-
-            $array_vendedores = $consulta_vendedores->fetchAll(PDO::FETCH_OBJ);
-
-            $array_vendedores_reasignado = [];
-
-            if($opcion_conversión == 1){ //vendedor
-                foreach($array_vendedores as $registro_vendedor){
-
-                    $array_vendedores_reasignado[$registro_vendedor->id_vend] = $registro_vendedor->vendedor;
-    
-                }
-            }
-            elseif($opcion_conversión == 2){ //codVendedor
-                foreach($array_vendedores as $registro_vendedor){
-
-                    $array_vendedores_reasignado[$registro_vendedor->id_vend] = $registro_vendedor->codVendedor;
-    
-                }
-            }else{
-                echo "No existe esta opción, solo hay 1 o 2";exit;
-            }
-            
-
-
-            $consulta_user = $conexion_migracion_prueba->query("SELECT id,id_empleado FROM user");
-
-            $array_user = $consulta_user->fetchAll(PDO::FETCH_OBJ);
-
-            $array_user_reasignado = [];
-
-            foreach($array_user as $registro_user){
-
-                if($registro_user->id_empleado == 1){continue;}
-
-                $codVendedor = $array_vendedores_reasignado[$registro_user->id_empleado];
-
-                $array_user_reasignado[$codVendedor] = $registro_user->id;
-
-            }
-
-            return $array_user_reasignado;
+            return $array_cotizacion_reasignado;
 
         }
 
@@ -315,6 +284,53 @@
             ];
 
             return $array_tipo_script;
+        }
+
+        public static function traeArrayUser($conexion_sio1,$conexion_migracion_prueba,$opcion_conversión){
+
+            $consulta_vendedores =  $conexion_sio1->query("SELECT id_vend,codVendedor,vendedor FROM dt_vendedores");
+
+            $array_vendedores = $consulta_vendedores->fetchAll(PDO::FETCH_OBJ);
+
+            $array_vendedores_reasignado = [];
+
+            if($opcion_conversión == 1){ //vendedor
+                foreach($array_vendedores as $registro_vendedor){
+
+                    $array_vendedores_reasignado[$registro_vendedor->id_vend] = $registro_vendedor->vendedor;
+    
+                }
+            }
+            elseif($opcion_conversión == 2){ //codVendedor
+                foreach($array_vendedores as $registro_vendedor){
+
+                    $array_vendedores_reasignado[$registro_vendedor->id_vend] = $registro_vendedor->codVendedor;
+    
+                }
+            }else{
+                echo "No existe esta opción, solo hay 1 o 2";exit;
+            }
+            
+
+
+            $consulta_user = $conexion_migracion_prueba->query("SELECT id,id_empleado FROM user");
+
+            $array_user = $consulta_user->fetchAll(PDO::FETCH_OBJ);
+
+            $array_user_reasignado = [];
+
+            foreach($array_user as $registro_user){
+
+                if($registro_user->id_empleado == 1){continue;}
+
+                $codVendedor = $array_vendedores_reasignado[$registro_user->id_empleado];
+
+                $array_user_reasignado[$codVendedor] = $registro_user->id;
+
+            }
+
+            return $array_user_reasignado;
+
         }
 
     }
