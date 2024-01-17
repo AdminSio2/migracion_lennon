@@ -1069,15 +1069,10 @@
 
             //dt_cliente 
 
-            $dt_clientes_sio2 = $conexion_migracion_prueba->query("SELECT id_cliente,nit from dt_clientes");
+            
 
-            $array_pdo_clientes = $dt_clientes_sio2->fetchAll(PDO::FETCH_OBJ);
+            $array_clientes = $array_info_global['nit=>id_cliente'];
 
-            $array_clientes = [];
-
-            foreach($array_pdo_clientes as $registro_cliente){
-                $array_clientes[$registro_cliente->nit] = $registro_cliente->id_cliente;
-            }
 
             //id_proyecto_op que fueron borrados de la fuenta en el Sio 1
         
@@ -1153,7 +1148,7 @@
                     //Buscamos id_cliente
 
                     if($registro_dt_ordenes->nit_op && array_key_exists($registro_dt_ordenes->nit_op,$array_clientes)){
-                        $id_cliente = $array_clientes[$registro_dt_ordenes->nit_op];
+                        $id_cliente = $array_clientes[$registro_dt_ordenes->nit_op]['id_cliente'];
                     }else{
                         $id_cliente = null;
                     }
@@ -1207,7 +1202,7 @@
                         'v_unidad' => $registro_dt_ordenes->vUnidad,
                         'v_total' => $registro_dt_ordenes->vTotal,
                         'nombre_proyecto' => null,
-                        'id_coordinador' => null,
+                        'id_coordinador' => $id_coordinador,
                         'n_ordenes' => $registro_dt_ordenes->nOrden != null?$registro_dt_ordenes->nOrden:0,
                         'archivo' => $registro_dt_ordenes->ArchivoSCOD,
                         'elaboro' => null,
@@ -1484,6 +1479,149 @@
             
         }
 
+        public static function migracionDtCotizacion($conexion_sio1,$conexion_migracion_prueba,$array_info_global){
+
+            //Inicia timer
+
+            $tiempo_inicio = microtime(true);
+        
+            //Consultamos dt_tareasnew en Sio 1
+
+            $consulta_dt_cotiza = $conexion_sio1->query("
+                SELECT id_cotiza,cod_ptoTerm,producto_trm,nCotiza,estado,
+                fechaCot,fechaEntregar,items,cantidad1,vUnidad1,vTotal1,
+                descripcion,tamX,tamY,tamZ,idVend,id_cotiza,nitCliente,tamL
+                from dt_cotiza 
+            ");
+
+            $conexion_migracion_prueba->exec("
+                CREATE TABLE `dt_cotizacion` (
+                `id_cotizacion` int,
+                `id_codprodfinal` int DEFAULT NULL,
+                `cod_producto` varchar(100) DEFAULT NULL,
+                `nom_producto` varchar(556) DEFAULT NULL,
+                `n_cotiza` int DEFAULT NULL,
+                `estado` char(2) DEFAULT NULL,
+                `fecha_ingreso` varchar(10) DEFAULT NULL,
+                `fecha_compromiso` varchar(10) DEFAULT NULL,
+                `item` int DEFAULT NULL,
+                `cantidad` varchar(10) DEFAULT NULL,
+                `v_unidad` float DEFAULT NULL,
+                `v_total` float DEFAULT NULL,
+                `id_forma_pago` int DEFAULT NULL,
+                `descripcion` longtext,
+                `tam_x` varchar(10) DEFAULT NULL,
+                `tam_y` varchar(10) DEFAULT NULL,
+                `tam_z` varchar(10) DEFAULT NULL,
+                `usuario_creador` int DEFAULT NULL,
+                `id_cliente` int DEFAULT NULL,
+                `id_solicitud_cotizacion` int DEFAULT NULL,
+                `id_plantilla` int DEFAULT NULL,
+                `id_categoria_tabla` int DEFAULT NULL,
+                `cedula` varchar(100) DEFAULT NULL,
+                `nitcliente` varchar(100) DEFAULT NULL,
+                `elaboro` varchar(200) DEFAULT NULL,
+                `tam_l` varchar(10) DEFAULT NULL
+                ) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb3;
+            ");
+
+            $array_dt_cotiza = $consulta_dt_cotiza->fetchAll(PDO::FETCH_OBJ);
+
+            $registros_insertados = 0;
+
+            $array_codprodfinal = $array_info_global['cod=>id_codpdrodfinal'];
+            $array_ordenes = $array_info_global['n_ordenes|item_op=>id_ordenes']; 
+            $array_clientes = $array_info_global['nit=>id_cliente'];        
+            $array_codvendedor_user =  $array_info_global['codVendedor=>id'];    
+
+            $conexion_migracion_prueba->beginTransaction();
+
+            foreach($array_dt_cotiza as $registro_cotiza){
+
+                try{
+
+
+                    if(array_key_exists($registro_cotiza->cod_ptoTerm,$array_codprodfinal)){
+
+                        $id_codprodfinal = $array_codprodfinal[$registro_cotiza->cod_ptoTerm]['id_cod'];
+                       
+
+                    }else{
+
+                        $id_codprodfinal = null;
+                       
+
+                    }  
+                    
+                        
+
+                    if($registro_cotiza->estado == 3 && $id_codprodfinal == null){
+                        $estado = 3;
+                    }elseif($registro_cotiza->estado == 1){
+                        $estado = 2;
+                    }else{
+                        $estado = 1;
+                    }
+
+                    $insert_registro = $conexion_migracion_prueba->prepare("
+                        INSERT INTO dt_cotizacion(id_cotizacion,id_codprodfinal,cod_producto,nom_producto,n_cotiza,estado,fecha_ingreso,fecha_compromiso,
+                        item,cantidad,v_unidad,v_total,descripcion,tam_x,tam_y,tam_z,usuario_creador,id_cliente,id_plantilla,id_categoria_tabla,
+                        nitcliente,tam_l) 
+                        VALUES(:id_cotizacion,:id_codprodfinal,:cod_producto,:nom_producto,:n_cotiza,:estado,:fecha_ingreso,:fecha_compromiso,
+                        :item,:cantidad,:v_unidad,:v_total,:descripcion,:tam_x,:tam_y,:tam_z,:usuario_creador,:id_cliente,:id_plantilla,:id_categoria_tabla,
+                        :nitcliente,:tam_l)
+                    ");
+
+                    $insert_registro->execute([
+                        'id_cotizacion' => $registro_cotiza->id_cotiza,
+                        'id_codprodfinal' => $id_codprodfinal,
+                        'cod_producto' => $registro_cotiza->cod_ptoTerm,
+                        'nom_producto' => $registro_cotiza->producto_trm,
+                        'n_cotiza' => $registro_cotiza->nCotiza,
+                        'estado' => $estado,
+                        'fecha_ingreso' => $registro_cotiza->fechaCot,
+                        'fecha_compromiso' => $registro_cotiza->fechaEntregar,
+                        'item' => $registro_cotiza->items,
+                        'cantidad' => $registro_cotiza->cantidad1,
+                        'v_unidad' => $registro_cotiza->vUnidad1,
+                        'v_total' => $registro_cotiza->vTotal1,
+                        'descripcion' => $registro_cotiza->descripcion,
+                        'tam_x' => $registro_cotiza->tamX,
+                        'tam_y' => $registro_cotiza->tamY,
+                        'tam_z' => $registro_cotiza->tamZ,
+                        'usuario_creador' => array_key_exists($registro_cotiza->idVend,$array_codvendedor_user)?$array_codvendedor_user[$registro_cotiza->idVend]:null,
+                        'id_cliente' =>array_key_exists($registro_cotiza->nitCliente,$array_clientes)?$array_clientes[$registro_cotiza->nitCliente]['id_cliente']:null,
+                        'id_plantilla' =>0,
+                        'id_categoria_tabla' => null,
+                        'nitcliente' => $registro_cotiza->nitCliente,
+                        'tam_l' => $registro_cotiza->tamL
+                    ]);
+
+                }catch(PDOException $e){
+                    $conexion_migracion_prueba->rollback();
+                    echo "Error en el id_cotiza: ".$registro_tareasnew->id_cotiza."<br>".$e->getMessage();exit;
+                }
+
+                $registros_insertados++;
+
+            }// foreach($array_dt_cotiza as $registro_cotiza)
+
+            $conexion_migracion_prueba->commit();
+            $conexion_migracion_prueba->exec("
+                ALTER TABLE dt_cotizacion
+                MODIFY id_cotizacion INT AUTO_INCREMENT PRIMARY KEY
+            ");
+
+            // Finaliza timer y entregamos mensaje 
+
+            $tiempo_fin = microtime(true);
+            $tiempo_transcurrido = $tiempo_fin - $tiempo_inicio;
+
+            $mensaje = "Migración dt_cotizacion completada ".$registros_insertados." registros insertados en ".$tiempo_transcurrido." segundos";
+
+            return $mensaje;
+
+        }
 
         //Con faltantes dt_costos
         public static function migraDtCostos($conexion_sio1,$conexion_semana_prueba,$conexion_migracion_prueba,$array_convierte_ordenes_item,$array_convierte_vendedor,$array_convierte_codigo_prod,$array_convierte_acabado){
@@ -1580,7 +1718,7 @@
                         'id_costo' => $registro_dt_costos->id_costo,
                         'tipo_doc' => $registro_dt_costos->tipo_doc,
                         'n_ordenes' => $registro_dt_costos->nDoc,
-                        'id_ordenes' => array_key_exists($registro_dt_costos->nDoc,$array_ordenes) && array_key_exists($registro_dt_costos->op_item,$array_ordenes[$registro_dt_costos->nDoc])?$array_ordenes[$registro_dt_costos->nDoc][$registro_dt_costos->op_item]:6249,
+                        'id_ordenes' => array_key_exists($registro_dt_costos->nDoc,$array_ordenes) && array_key_exists($registro_dt_costos->op_item,$array_ordenes[$registro_dt_costos->nDoc])?$array_ordenes[$registro_dt_costos->nDoc][$registro_dt_costos->op_item]['id_ordenes']:6249,
                         'id_cotizacion' => 1,
                         'n_cotiza' => $registro_dt_costos->nCT,
                         'id_tipo_costo' => $registro_dt_costos->tipo_costo,

@@ -19,7 +19,14 @@
 
                 $cod = rtrim($registro_codprodfinal->cod);
 
-                $array_codprodfinal_reasignado[$cod] = ['id_cod'=>$registro_codprodfinal->id_cod,'nom_grupo'=>$registro_codprodfinal->nom_grupo];
+                $array_codprodfinal_reasignado[$cod] = [
+                    'id_cod'=>$registro_codprodfinal->id_cod,
+                    'nom_grupo'=>$registro_codprodfinal->nom_grupo,
+                    'x' => $registro_codprodfinal->tamX,
+                    'y' => $registro_codprodfinal->tamY,
+                    'z' => $registro_codprodfinal->tamZ,
+                    'l' => $registro_codprodfinal->tamL
+                ];
 
                 //Hacemos un array con minuscula en la última letra porque el bebé de costos le gusta poner mayusculas y minusculas en los códigos
                 
@@ -41,6 +48,22 @@
             }
 
             return $array_codprodfinal_reasignado;
+
+        }
+
+        public static function traeArrayIdCliente($conexion_migracion_prueba){
+
+            $consulta_clientes = $conexion_migracion_prueba->query("SELECT id_cliente,nit from dt_clientes");
+
+            $array_clientes = $consulta_clientes->fetchAll(PDO::FETCH_OBJ);
+
+            $array_clientes_reasignado = [];
+
+            foreach($array_clientes as $registro_cliente){
+                $array_clientes_reasignado[$registro_cliente->nit] =['id_cliente' => $registro_cliente->id_cliente];
+            }
+
+            return $array_clientes_reasignado;
 
         }
 
@@ -248,7 +271,7 @@
 
         public static function traeArrayIdOrdenes($conexion_migracion_prueba){
 
-            $consulta_ordenes = $conexion_migracion_prueba->query("SELECT id_ordenes,n_ordenes,item_op  FROM dt_ordenes WHERE n_ordenes is NOT NULL");
+            $consulta_ordenes = $conexion_migracion_prueba->query("SELECT id_ordenes,n_ordenes,item_op,id_coordinador,id_usuario,id_categoria  FROM dt_ordenes WHERE n_ordenes is NOT NULL");
 
             $array_ordenes = $consulta_ordenes->fetchAll(PDO::FETCH_OBJ);
 
@@ -256,7 +279,12 @@
             
             foreach($array_ordenes as $registro_ordenes){
 
-                $array_ordenes_reasignado[$registro_ordenes->n_ordenes][$registro_ordenes->item_op] = $registro_ordenes->id_ordenes;
+                $array_ordenes_reasignado[$registro_ordenes->n_ordenes][$registro_ordenes->item_op] =[
+                    'id_ordenes' => $registro_ordenes->id_ordenes,
+                    'id_coordinador' => $registro_ordenes->id_coordinador,
+                    'id_usuario' => $registro_ordenes->id_usuario,
+                    'id_categoria' => $registro_ordenes->id_categoria
+                ];
 
             } 
 
