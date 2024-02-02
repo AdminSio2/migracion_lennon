@@ -1,6 +1,7 @@
 <?php
 
     include 'ControladorInformacionGlobal.php';
+    require 'ControladorFuncionesAuxiliares.php';
 
 
     class ControladorMigracion{
@@ -1030,6 +1031,7 @@
 
             "); 
             
+            
             $conexion_migracion_prueba->exec("
 
                 CREATE TABLE `dt_fechas_op` (
@@ -1053,7 +1055,8 @@
                 `id_orden` int DEFAULT NULL,
                 PRIMARY KEY (`id_fechas_op`),
                 KEY `dt_ordenes1` (`id_ordenes`),
-                KEY `fk_dt_fechas_OP_dt_usuarios1` (`id_usuario`)
+                KEY `fk_dt_fechas_OP_dt_usuarios1` (`id_usuario`),
+                CONSTRAINT `dt_fechas_op_dt_ordenes_fk` FOREIGN KEY (`id_ordenes`) REFERENCES `dt_ordenes` (`id_ordenes`)
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
             ");
@@ -1323,6 +1326,7 @@
             ");
 
             $registros_insertados = 0;
+            $registros_no_incluidos = 0;
             $conexion_migracion_prueba->beginTransaction();
 
             $array_codprodfinal = $array_info_global['cod=>id_codpdrodfinal'];
@@ -1333,7 +1337,10 @@
 
 
             foreach($array_dt_plantillas as $registro_dt_plantillas){
-                if(!array_key_exists($registro_dt_plantillas->cod_guia,$array_codprodfinal)){continue;}
+                if(!array_key_exists($registro_dt_plantillas->cod_guia,$array_codprodfinal)){
+                    $registros_no_incluidos++;
+                    continue;
+                } //Las plantillas con codigo borrado se van
                 try{
                     $insert_registro = $conexion_migracion_prueba->prepare("
                         INSERT INTO dt_plantilla(id_plantilla,nom_guia,cod_guia,cant_xun_g,vr_unid_g,vr_unit_g,estado,id_codprodfinal,
@@ -1390,7 +1397,7 @@
             $tiempo_fin = microtime(true);
             $tiempo_transcurrido = $tiempo_fin - $tiempo_inicio;
 
-            $mensaje = "Migración dt_plantilla completada ".$registros_insertados." registros insertados en ".$tiempo_transcurrido." segundos";
+            $mensaje = "Migración dt_plantilla completada ".$registros_insertados." registros insertados en ".$tiempo_transcurrido." segundos"."\n<br>".$registros_no_incluidos." registros no incluidos por no tener id_codprodfinal relacionado";
 
             return $mensaje;
 
@@ -1666,7 +1673,7 @@
             ");
 
             $registros_insertados = 0;
-
+            $registros_no_incluidos = 0;
             $conexion_migracion_prueba->beginTransaction();
 
             foreach($array_dt_ppinicial as $registro_ppinicial){
@@ -1680,7 +1687,10 @@
 
                     $id_ordenes = array_key_exists($registro_ppinicial->nOrden,$array_ordenes)&&array_key_exists($item,$array_ordenes[$registro_ppinicial->nOrden])?$array_ordenes[$registro_ppinicial->nOrden][$item]['id_ordenes']:null;
 
-                    if($id_ordenes == null){continue;} //Si se borro el registro en ordenes nos irve de nada el registro de presupuestos
+                    if($id_ordenes == null){
+                        $registros_no_incluidos++;
+                        continue;
+                    } //Si se borro el registro en ordenes nos irve de nada el registro de presupuestos
 
                     $id_usuario = array_key_exists($registro_ppinicial->idUser,$array_user_cod)?$array_user_cod[$registro_ppinicial->idUser]:null;
 
@@ -1739,7 +1749,7 @@
             $tiempo_fin = microtime(true);
             $tiempo_transcurrido = $tiempo_fin - $tiempo_inicio;
 
-            $mensaje = "Migración dt_presupuesto_inicial completada ".$registros_insertados." registros insertados en ".$tiempo_transcurrido." segundos";
+            $mensaje = "Migración dt_presupuesto_inicial completada ".$registros_insertados." registros insertados en ".$tiempo_transcurrido." segundos"."\n<br>".$registros_no_incluidos." registros no incluidos por no tener id_ordenes relacionado";
 
             return $mensaje;
 
@@ -1747,7 +1757,7 @@
     
         public static function migraDtCostos($conexion_sio1,$conexion_migracion_prueba,$array_info_global){
 
-            ini_set('memory_limit', '4100M');
+            ini_set('memory_limit', '4200M');
             set_time_limit(3400);
             //phpinfo();exit;
 
@@ -1764,7 +1774,7 @@
                 cod_material,nom_costo,responsable,MTcritico,fecha_costo,vr_unid,
                 valor_unit,cant_x_unid,cant_sol,valor_total,estado_costo,saldoXcompra,
                 nGuia,posicion,id_pgantt,OrdenGantt,letra,gDescripcion,comentarios,cierre,
-                fechaCierre  FROM dt_costos WHERE YEAR(fecha_costo) = 2018 ORDER BY id_costo 
+                fechaCierre FROM dt_costos  WHERE nDoc != 0 ORDER BY id_costo 
             ");
 
             $array_dt_costos = $consulta_dt_costos->fetchAll(PDO::FETCH_OBJ);
@@ -1821,6 +1831,7 @@
             $array_cotizacion = $array_info_global['n_cotiza|item=>id_cotizacion'];
 
             $registros_insertados = 0;
+            $registros_no_incluidos = 0;
             $conexion_migracion_prueba->beginTransaction();
 
 
@@ -1830,7 +1841,10 @@
 
                     $id_ordenes = array_key_exists($registro_dt_costos->nDoc,$array_ordenes) && array_key_exists($registro_dt_costos->op_item,$array_ordenes[$registro_dt_costos->nDoc])?$array_ordenes[$registro_dt_costos->nDoc][$registro_dt_costos->op_item]['id_ordenes']:null;
 
-                    if($id_ordenes == null){continue;} // Costos que tienen su orden borrada, se van 
+                    if($id_ordenes == null){
+                        $registros_no_incluidos++;
+                        continue;
+                    } // Costos que tienen su orden borrada, se van 
 
 
                     $insert_registro = $conexion_migracion_prueba->prepare("
@@ -1899,11 +1913,612 @@
             $tiempo_fin = microtime(true);
             $tiempo_transcurrido = $tiempo_fin - $tiempo_inicio;
 
-            $mensaje = "Migración dt_costos completada ".$registros_insertados." registros insertados en ".$tiempo_transcurrido." segundos";
+            $mensaje = "Migración dt_costos completada ".$registros_insertados." registros insertados en ".$tiempo_transcurrido." segundos"."<br>".$registros_no_incluidos." registros no incluidos por no tener id_ordenes relacionado";
 
             return $mensaje;
 
 
+
+        }
+
+        public static function migraDtDiseno($conexion_sio1,$conexion_migracion_prueba,$array_info_global){
+
+
+            //Inicia timer
+
+            $tiempo_inicio = microtime(true);
+
+            //Consultamos dt_disenolista item
+
+            $consulta_dt_disenolista = $conexion_sio1->query("
+                SELECT id_diseno,grupo,uniones,explosivo_procesosAnt,fotomontajes,
+                modulacion,modulacion_lam_perf,archivos_impr,detalles_cons,sistemas_ins,
+                archivos_corte,cortes_dobleses,explosivo_mat,detalles_ilum,plantilla_insta,
+                plano_coordenadas,plano_electrico,plano_cargue,plano_especial,archivo,
+                fechaInicio,codVendedor,nOrden,item,fechaFinal,otros,otrosObser,
+                fechaIncioR,fechaFinalR,foto,ruta,fechaFinalCli,OK,CreacionCod,
+                PresupuestoMO,DefinirMP,CreacionGantt
+                from dt_disenolista dd WHERE 
+                not( 
+                FechaPrograma like '%2018-09-24%' or FechaPrograma 
+                    like '%2018-10-31%' AND nOrden  in (36179,36178,36183,36181,36180,
+                37142,36240,36139,37369,37552,36261,37093,36156,37350,36314,36149,
+                36150,36153,36141,36143,36144,37546,36970,36776,36777,36152,36151,
+                37771,37067,37443,36602,37065,36765,37273,36936,36278,36272,36315,
+                36363,36396,36145,36583,37201,37508,37064,36597,36227,36288,36289,
+                36378,36376,36148,36732,36287,36308,36395,36451,36277,36230,36998,
+                37353,36999,37660,37086,37599,37600,37656,36913,37150,37151,37152,
+                37155,37239,37240,37241,37242,37252,37149,37165,37254,37266,37356,
+                37357,37358,37359,37276,37253,37216,37267,36142,36229,36874,36876,
+                37200,36877,37009,36686,36688,36689,36690,36805,36810,37062,36228,
+                36231,36232,36235,36236,36245,36252,36340,36464,36700,36749,36234,
+                36239,36579,36606,36146,36243,36247,36212,36238,36725,36205,36581,
+                36273,36154,36101,36102,36801,36804,37222,36961,37169,37344,37567,
+                37046,37268,36140,36276,36242,37059,36164,36131,36132,36127,36135,
+                36136,36134)) ORDER BY id_diseno 
+            ");
+
+            //$consulta_dt_disenolista->execute();
+
+            $conexion_migracion_prueba->exec("
+                CREATE TABLE `dt_diseno` (
+                `id_disenolista` int,
+                `grupo` int DEFAULT NULL,
+                `uniones` smallint DEFAULT NULL,
+                `explosivo_procesos_ant` smallint DEFAULT NULL,
+                `fotomontajes` smallint DEFAULT NULL,
+                `modulacion` smallint DEFAULT NULL,
+                `modulacion_lam_perf` smallint DEFAULT NULL,
+                `archivos_impr` smallint DEFAULT NULL,
+                `detalles_cons` smallint DEFAULT NULL,
+                `sistemas_ins` smallint DEFAULT NULL,
+                `archivos_corte` smallint DEFAULT NULL,
+                `corte_dobleces` smallint DEFAULT NULL,
+                `explosivo_mat` smallint DEFAULT NULL,
+                `detalles_ilum` smallint DEFAULT NULL,
+                `plantilla_insta` smallint DEFAULT NULL,
+                `plano_coordenadas` smallint DEFAULT NULL,
+                `plano_electrico` smallint DEFAULT NULL,
+                `plano_cargue` smallint DEFAULT NULL,
+                `plano_especial` smallint DEFAULT NULL,
+                `archivo` longtext,
+                `fecha_inicio` datetime DEFAULT NULL,
+                `id_usuario` int DEFAULT NULL,
+                `n_ordenes` int DEFAULT NULL,
+                `id_ordenes` int DEFAULT NULL,
+                `fecha_final` datetime DEFAULT NULL,
+                `otros` smallint DEFAULT NULL,
+                `otros_observaciones` longtext,
+                `fecha_inicio_real` datetime DEFAULT NULL,
+                `fecha_final_real` datetime DEFAULT NULL,
+                `foto` longtext,
+                `ruta` longtext,
+                `fecha_final_cli` datetime DEFAULT NULL,
+                `estado` smallint DEFAULT NULL,
+                `ok` smallint DEFAULT '0',
+                `creacion_codigos` smallint DEFAULT NULL,
+                `presupuesto_mo` smallint DEFAULT NULL,
+                `definir_mp` smallint DEFAULT NULL,
+                `creacion_gantt` smallint DEFAULT NULL,
+                `id_orden` int DEFAULT NULL,
+                KEY `indx_n_ordenes` (`n_ordenes`),
+                KEY `indx_estado` (`estado`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+            ");
+
+            $registros_insertados = 0;
+            $registros_no_incluidos = 0;
+            $conexion_migracion_prueba->beginTransaction();
+
+            $array_grupos_diseno = $array_info_global['grupos_diseno'];
+            $array_codvendedor_user = $array_info_global['codVendedor=>id'];
+            $array_ordenes = $array_info_global['n_ordenes|item_op=>id_ordenes'];
+
+            $ids_vacios = [12952848,2952854,12953028,12953416,12953541];
+            $registros_vacios = 0;
+
+            do{
+                $registro_disenolista = $consulta_dt_disenolista->fetch(PDO::FETCH_OBJ);
+
+                try{
+                    if($registro_disenolista === false){
+                        $conexion_migracion_prueba->commit();
+                        echo $registros_insertados." hasta ahora ";
+                        var_dump($registro_disenolista);exit;
+                    }
+
+                    if(in_array($registro_disenolista->id_diseno,$ids_vacios)){
+                        $registros_vacios++;
+                        continue;
+                    }
+
+                    $id_ordenes = array_key_exists($registro_disenolista->nOrden,$array_ordenes)&&array_key_exists($registro_disenolista->item,$array_ordenes[$registro_disenolista->nOrden])?$array_ordenes[$registro_disenolista->nOrden][$registro_disenolista->item]['id_ordenes']:null;
+
+                    $grupo = array_key_exists($registro_disenolista->grupo,$array_grupos_diseno)?$array_grupos_diseno[$registro_disenolista->grupo]:0;
+
+                    $id_usuario = array_key_exists($registro_disenolista->codVendedor,$array_codvendedor_user)?$array_codvendedor_user[$registro_disenolista->codVendedor]:0;
+
+
+                    if($id_ordenes == null){
+                        $registros_no_incluidos++;
+                        continue;
+                    }
+
+                    $insert_registro = $conexion_migracion_prueba->prepare("
+                        INSERT INTO dt_diseno(id_disenolista,grupo,uniones,explosivo_procesos_ant,fotomontajes,modulacion,
+                        modulacion_lam_perf,archivos_impr,detalles_cons,sistemas_ins,archivos_corte,corte_dobleces,
+                        explosivo_mat,detalles_ilum,plantilla_insta,plano_coordenadas,plano_electrico,plano_cargue,
+                        plano_especial,archivo,fecha_inicio,id_usuario,n_ordenes,id_ordenes,fecha_final,otros,
+                        otros_observaciones,fecha_inicio_real,fecha_final_real,foto,ruta,fecha_final_cli,estado,ok,
+                        creacion_codigos,presupuesto_mo,definir_mp,creacion_gantt)
+                        VALUES(:id_disenolista,:grupo,:uniones,:explosivo_procesos_ant,:fotomontajes,:modulacion,
+                        :modulacion_lam_perf,:archivos_impr,:detalles_cons,:sistemas_ins,:archivos_corte,:corte_dobleces,
+                        :explosivo_mat,:detalles_ilum,:plantilla_insta,:plano_coordenadas,:plano_electrico,:plano_cargue,
+                        :plano_especial,:archivo,:fecha_inicio,:id_usuario,:n_ordenes,:id_ordenes,:fecha_final,:otros,
+                        :otros_observaciones,:fecha_inicio_real,:fecha_final_real,:foto,:ruta,:fecha_final_cli,:estado,:ok,
+                        :creacion_codigos,:presupuesto_mo,:definir_mp,:creacion_gantt) 
+                    ");
+
+                    
+
+                    $insert_registro->execute([
+                        'id_disenolista' => $registro_disenolista->id_diseno,
+                        'grupo' => $grupo,
+                        'uniones' => $registro_disenolista->uniones != null ? 1 : null,
+                        'explosivo_procesos_ant' => $registro_disenolista->explosivo_procesosAnt != null ? 1 : null,
+                        'fotomontajes' => $registro_disenolista->fotomontajes != null ? 1 : null,
+                        'modulacion' => $registro_disenolista->modulacion != null ? 1 : null,
+                        'modulacion_lam_perf' => $registro_disenolista->modulacion_lam_perf != null ? 1 : null,
+                        'archivos_impr' => $registro_disenolista->archivos_impr != null ? 1 : null,
+                        'detalles_cons' => $registro_disenolista->detalles_cons != null ? 1 : null,
+                        'sistemas_ins' => $registro_disenolista->sistemas_ins != null ? 1 : null,
+                        'archivos_corte' => $registro_disenolista->archivos_corte != null ? 1 : null,
+                        'corte_dobleces' => $registro_disenolista->cortes_dobleses != null ? 1 : null,
+                        'explosivo_mat' => $registro_disenolista->explosivo_mat != null ? 1 : null,
+                        'detalles_ilum' => $registro_disenolista->detalles_ilum != null ? 1 : null,
+                        'plantilla_insta' => $registro_disenolista->plantilla_insta != null ? 1 : null,
+                        'plano_coordenadas' => $registro_disenolista->plano_coordenadas != null ? 1 : null,
+                        'plano_electrico' => $registro_disenolista->plano_electrico != null ? 1 : null,
+                        'plano_cargue' => $registro_disenolista->plano_cargue != null ? 1 : null,
+                        'plano_especial' => $registro_disenolista->plano_especial != null ? 1 : null,
+                        'archivo' => $registro_disenolista->archivo,
+                        'fecha_inicio' => $registro_disenolista->fechaInicio,
+                        'id_usuario' => $id_usuario,
+                        'n_ordenes' => $registro_disenolista->nOrden,
+                        'id_ordenes' => $id_ordenes,
+                        'fecha_final' => $registro_disenolista->fechaFinal,
+                        'otros' => $registro_disenolista->otros,
+                        'otros_observaciones' => $registro_disenolista->otrosObser,
+                        'fecha_inicio_real' => $registro_disenolista->fechaIncioR,
+                        'fecha_final_real' => $registro_disenolista->fechaFinalR,
+                        'foto' => $registro_disenolista->foto,
+                        'ruta' => $registro_disenolista->ruta,
+                        'fecha_final_cli' => $registro_disenolista->fechaFinalCli,
+                        'estado' =>1,
+                        'ok' => $registro_disenolista->OK,
+                        'creacion_codigos' => $registro_disenolista->CreacionCod,
+                        'presupuesto_mo' => $registro_disenolista->PresupuestoMO,
+                        'definir_mp' => $registro_disenolista->DefinirMP,
+                        'creacion_gantt' => $registro_disenolista->CreacionGantt
+                    ]);
+
+                }catch(PDOException $e){
+                    $conexion_migracion_prueba->rollBack();
+                    echo "Error en el id_diseno: ".$registro_dt_costos->id_costo."<br>".$e->getMessage();exit;
+                }
+
+                $registros_insertados++;
+
+            }while($registro_disenolista); //FIN foreach($array_dt_disenolista as $registro_disenolista)
+
+            $conexion_migracion_prueba->commit();
+
+            //Asignamos la llave primaria con autoincremental 
+
+            $conexion_migracion_prueba->exec("
+                ALTER TABLE dt_diseno
+                MODIFY id_disenolista INT AUTO_INCREMENT PRIMARY KEY
+            ");
+
+            // Finaliza timer y entregamos mensaje 
+
+            $tiempo_fin = microtime(true);
+            $tiempo_transcurrido = $tiempo_fin - $tiempo_inicio;
+
+            $mensaje = "Migración dt_diseno completada ".$registros_insertados." registros insertados en ".$tiempo_transcurrido." segundos"."\n<br>".$registros_no_incluidos." registros no incluidos por no tener id_ordenes relacionado"."\n<br>"."adicionalmente no se incluyeron ".$registros_vacios." por esrar completamente vacios";
+
+            return $mensaje;
+
+
+        }
+
+        public static function migraDtProgramacionDiseno($conexion_sio1,$conexion_migracion_prueba,$array_info_global){
+
+            //Iniciamos timer
+
+            $tiempo_inicio = microtime(true);
+            
+
+            //Hacemos el array con la información del dt_programacion_diseno del Sio 1
+
+            $consulta_dt_programacion_diseno = $conexion_sio1->query("
+                SELECT id_programacion_diseno,cod,estado,n_programacion  from dt_programacion_diseno
+                group by n_programacion
+            ");
+
+            $array_dt_programacion_diseno = $consulta_dt_programacion_diseno->fetchAll(PDO::FETCH_OBJ);
+
+            $conexion_migracion_prueba->exec("
+
+                CREATE TABLE `dt_programacion_diseno` (
+                `id_programacion_diseno` int,
+                `id_codprodfinal` int NOT NULL,
+                `cod` varchar(108) NOT NULL,
+                `estado` int NOT NULL DEFAULT '1',
+                `n_programacion` int NOT NULL,
+                KEY `fk_dt_programacion_diseno_dt_codprodfinal1` (`id_codprodfinal`),
+                CONSTRAINT `fk_dt_programacion_diseno_dt_codprodfinal1` FOREIGN KEY (`id_codprodfinal`) REFERENCES `dt_codprodfinal` (`id_codprodfinal`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+            ");
+
+            
+
+            $array_codprodfinal = $array_info_global['cod=>id_codpdrodfinal'];
+
+            $registros_insertados = 0;
+
+            $conexion_migracion_prueba->beginTransaction();
+
+            foreach($array_dt_programacion_diseno as $registro_dt_programacion_diseno){
+
+                try{
+                    $cod = trim($registro_dt_programacion_diseno->cod);
+
+                    $insert_registro = $conexion_migracion_prueba->prepare("
+                        INSERT INTO dt_programacion_diseno(id_programacion_diseno,id_codprodfinal,cod,estado,n_programacion)
+                        VALUES(:id_programacion_diseno,:id_codprodfinal,:cod,:estado,:n_programacion)
+                    ");
+
+                    $insert_registro->execute([
+                        'id_programacion_diseno' => $registro_dt_programacion_diseno->id_programacion_diseno,
+                        'id_codprodfinal' => array_key_exists($cod,$array_codprodfinal)?$array_codprodfinal[$cod]['id_cod']:null,
+                        'cod' => $cod,
+                        'estado' => $registro_dt_programacion_diseno->estado,
+                        'n_programacion' =>  $registro_dt_programacion_diseno->n_programacion
+                    ]);
+
+                }catch(PDOException $e){
+                    $conexion_migracion_prueba->rollBack();
+                    echo "<pre>";
+                    echo "Hay un problema con el id_programacion_diseno ".$registro_dt_programacion_diseno->id_programacion_diseno." ".$registro_dt_programacion_diseno->cod."<br>".$e->getMessage();exit;
+                }
+                $registros_insertados++;
+            }
+
+            $conexion_migracion_prueba->commit();
+
+            //Asignamos la llave primaria con autoincremental 
+
+            $conexion_migracion_prueba->exec("
+                ALTER TABLE dt_programacion_diseno
+                MODIFY id_programacion_diseno INT AUTO_INCREMENT PRIMARY KEY
+            ");
+            
+            $tiempo_fin = microtime(true);
+            $tiempo_transcurrido = $tiempo_fin - $tiempo_inicio;
+
+            $mensaje = "Migración dt_programacion_diseno completada, ".$registros_insertados." registros insertados en ".$tiempo_transcurrido." segundos";
+
+            return $mensaje;
+
+
+        }
+
+        public static function migraDtEstructuraPDiseno($conexion_sio1,$conexion_migracion_prueba,$array_info_global){
+
+            //Iniciamos timer
+
+            $tiempo_inicio = microtime(true);
+            
+
+            //Hacemos el array con la información del dt_programacion_diseno del Sio 1
+
+            $consulta_dt_programacion_diseno = $conexion_sio1->query("
+                SELECT grupo,fecha_inicio,fecha_final,archivo,gantt,ruta,
+                foto,id_programacion_diseno,responsable,n_programacion
+                from dt_programacion_diseno
+            ");
+
+            $array_dt_programacion_diseno = $consulta_dt_programacion_diseno->fetchAll(PDO::FETCH_OBJ);
+
+            $conexion_migracion_prueba->exec("
+                CREATE TABLE `dt_estructura_p_diseno` (
+                `id_estructura_p_diseno` int NOT NULL AUTO_INCREMENT,
+                `grupo` varchar(80) NOT NULL,
+                `fecha_inicio` datetime(6) NOT NULL,
+                `fecha_fin` datetime(6) NOT NULL,
+                `archivo` varchar(256) DEFAULT NULL,
+                `gantt` int DEFAULT '0',
+                `ruta` varchar(256) DEFAULT NULL,
+                `foto` varchar(256) DEFAULT NULL,
+                `id_programacion_diseno` int NOT NULL,
+                `responsable` int NOT NULL,
+                PRIMARY KEY (`id_estructura_p_diseno`),
+                KEY `fk_dt_estructura_p_diseno_dt_programacion_diseno1` (`id_programacion_diseno`),
+                KEY `fk_dt_estructura_p_diseno_user1` (`responsable`),
+                CONSTRAINT `fk_dt_estructura_p_diseno_dt_programacion_diseno1` FOREIGN KEY (`id_programacion_diseno`) REFERENCES `dt_programacion_diseno` (`id_programacion_diseno`),
+                CONSTRAINT `fk_dt_estructura_p_diseno_user1` FOREIGN KEY (`responsable`) REFERENCES `user` (`id`)
+                ) ENGINE=InnoDB AUTO_INCREMENT=448 DEFAULT CHARSET=latin1;
+            ");
+
+            $array_grupos = [
+                'Metal' => 'metalmecanica',
+                'CNC' => 'cnc',
+                'Plast' => 'plasticos',
+                'Pin' => 'pintura',
+                'ImpDec' => 'impresion_decoracion',
+                'Ensam' => 'ensamble',
+                'Costos' => 'costos',
+                'Terc1' => 'terceros_1',
+                'Ins' => 'instalacion',
+                'Terc2' => 'Terc2',
+                'Terc3' => 'Terc3',
+                'Made' => 'maderas'
+            ];
+
+            $array_id_programacion_diseno = $array_info_global['n_programacion=>id_programacion_diseno'];
+
+            $array_codprodfinal = $array_info_global['cod=>id_codpdrodfinal'];
+
+            $array_usuarios = $array_info_global['codVendedor=>id'];
+
+            $registros_insertados = 0;
+
+            $conexion_migracion_prueba->beginTransaction();
+
+            foreach($array_dt_programacion_diseno as $registro_dt_programacion_diseno){
+
+                try{
+
+                    $archivo = $registro_dt_programacion_diseno->archivo;
+
+                    $archivo = ControladorFuncionesAuxiliares::formateaString($archivo);
+
+                    $insert_registro = $conexion_migracion_prueba->prepare("
+                        INSERT INTO dt_estructura_p_diseno(grupo,fecha_inicio,fecha_fin,archivo,gantt,ruta,foto,id_programacion_diseno,responsable)
+                        VALUES(:grupo,:fecha_inicio,:fecha_fin,:archivo,:gantt,:ruta,:foto,:id_programacion_diseno,:responsable);
+                    ");
+
+                    $insert_registro->execute([
+                        'grupo' => array_key_exists($registro_dt_programacion_diseno->grupo,$array_grupos)?$array_grupos[$registro_dt_programacion_diseno->grupo]:null,
+                        'fecha_inicio' => $registro_dt_programacion_diseno->fecha_inicio,
+                        'fecha_fin' => $registro_dt_programacion_diseno->fecha_final,
+                        'archivo' => $archivo,
+                        'gantt' => $registro_dt_programacion_diseno->gantt,
+                        'ruta' => $registro_dt_programacion_diseno->ruta,
+                        'foto' => $registro_dt_programacion_diseno->foto,
+                        'id_programacion_diseno' => array_key_exists($registro_dt_programacion_diseno->n_programacion,$array_id_programacion_diseno)?$array_id_programacion_diseno[$registro_dt_programacion_diseno->n_programacion]:null,
+                        'responsable' => array_key_exists($registro_dt_programacion_diseno->responsable,$array_usuarios)?$array_usuarios[$registro_dt_programacion_diseno->responsable]:null
+                    ]);
+
+
+                }catch(PDOException $e){
+                    $conexion_migracion_prueba->rollBack();
+                    echo "<pre>";
+                    echo "Hay un problema con el id_estructura_p_diseno ".$registro_dt_programacion_diseno->id_programacion_diseno."<br> ".$e->getMessage();exit;
+                }
+
+                $registros_insertados++;
+
+            }
+
+            $conexion_migracion_prueba->commit();
+
+            
+            $tiempo_fin = microtime(true);
+            $tiempo_transcurrido = $tiempo_fin - $tiempo_inicio;
+
+            $mensaje = "Migración dt_estructura_p_diseno completada, ".$registros_insertados." registros insertados en ".$tiempo_transcurrido." segundos";
+
+            return $mensaje;
+
+        }
+
+        public static function migraDtHistoricoDiseno($conexion_sio1,$conexion_migracion_prueba,$array_info_global){
+
+            //Iniciamos timer
+
+            $tiempo_inicio = microtime(true);
+            
+
+            //Hacemos el array con la información del dt_historico_diseno del Sio 1
+
+            $consulta_dt_historico_diseno = $conexion_sio1->query("
+                SELECT id_historico_p_diseno,n_programacion,fecha_regristro,tipo,
+                observacion,idUser  from dt_historico_diseno 
+            ");
+
+            $array_dt_historico_diseno = $consulta_dt_historico_diseno->fetchAll(PDO::FETCH_OBJ);
+
+            $conexion_migracion_prueba->exec("
+                CREATE TABLE `dt_historico_diseno` (
+                `id_historico_diseno` int NOT NULL AUTO_INCREMENT,
+                `id_programacion_diseno` int NOT NULL,
+                `fecha_registro` datetime(6) NOT NULL,
+                `tipo` int NOT NULL COMMENT '1 = Nueva Programación , 2 = Desactiva Programacion, 3 = Actualizar Programacion , 4 = Subir archivos',
+                `observacion` varchar(256) NOT NULL,
+                `id_user` int NOT NULL,
+                `n_programacion` int DEFAULT NULL,
+                PRIMARY KEY (`id_historico_diseno`),
+                KEY `fk_dt_historico_diseno_dt_programacion_diseno1` (`id_programacion_diseno`),
+                KEY `fk_dt_historico_diseno_user1` (`id_user`),
+                CONSTRAINT `fk_dt_historico_diseno_dt_programacion_diseno1` FOREIGN KEY (`id_programacion_diseno`) REFERENCES `dt_programacion_diseno` (`id_programacion_diseno`),
+                CONSTRAINT `fk_dt_historico_diseno_user1` FOREIGN KEY (`id_user`) REFERENCES `user` (`id`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+            ");
+
+            $array_programacion_diseno = $array_info_global['n_programacion=>id_programacion_diseno'];
+
+            $array_usuarios = $array_info_global['codVendedor=>id'];
+
+            $registros_insertados = 0;
+
+            $conexion_migracion_prueba->beginTransaction();
+
+            foreach($array_dt_historico_diseno as $registro_dt_historico_diseno){
+
+                try{
+
+                    $insert_registro = $conexion_migracion_prueba->prepare("
+                        INSERT INTO dt_historico_diseno(id_programacion_diseno,fecha_registro,tipo,observacion,id_user,n_programacion)
+                        VALUES(:id_programacion_diseno,:fecha_registro,:tipo,:observacion,:id_user,:n_programacion)
+                    ");
+
+                    $insert_registro->execute([
+                        'id_programacion_diseno' => array_key_exists($registro_dt_historico_diseno->n_programacion,$array_programacion_diseno)?$array_programacion_diseno[$registro_dt_historico_diseno->n_programacion]:null,
+                        'fecha_registro' =>$registro_dt_historico_diseno->fecha_regristro,
+                        'tipo' => $registro_dt_historico_diseno->tipo,
+                        'observacion' => $registro_dt_historico_diseno->observacion,
+                        'id_user' => array_key_exists($registro_dt_historico_diseno->idUser,$array_usuarios)?$array_usuarios[$registro_dt_historico_diseno->idUser]:null,
+                        'n_programacion' => $registro_dt_historico_diseno->n_programacion
+                    ]);
+
+                }catch(PDOException $e){
+                    $conexion_migracion_prueba->rollback();
+                    echo "Error en el id_acabado: ".$registro_dt_acabados->id_acabado."<br>".$e->getMessage();exit;
+                }
+
+                $registros_insertados++;
+
+            } 
+
+            $conexion_migracion_prueba->commit();
+
+            
+            $tiempo_fin = microtime(true);
+            $tiempo_transcurrido = $tiempo_fin - $tiempo_inicio;
+
+            $mensaje = "Migración dt_historico_diseno completada, ".$registros_insertados." registros insertados en ".$tiempo_transcurrido." segundos";
+
+            return $mensaje;
+
+            
+        }
+
+        public static function migraDtHistoricoFt($conexion_sio1,$conexion_migracion_prueba,$array_info_global){
+
+            //Iniciamos timer
+
+            $tiempo_inicio = microtime(true);
+            
+
+            //Hacemos el array con la información del dt_historico_ft del Sio 1
+
+            $consulta_dt_estructura_p_diseno  = $conexion_migracion_prueba->query("
+                SELECT * from dt_estructura_p_diseno
+            ");
+
+            $array_dt_estructura_p_diseno = $consulta_dt_estructura_p_diseno->fetchAll(PDO::FETCH_OBJ);
+
+            $conexion_migracion_prueba->exec("
+                CREATE TABLE `dt_historico_ft` (
+                `id_historico_ft` int NOT NULL AUTO_INCREMENT,
+                `fecha_registro` datetime(6) NOT NULL,
+                `recurso` varchar(256) NOT NULL,
+                `ruta` varchar(256) DEFAULT NULL,
+                `tipo` int NOT NULL,
+                `observaciones` varchar(800) DEFAULT NULL,
+                `id_estructura_p_diseno` int NOT NULL,
+                `id_user` int NOT NULL,
+                `id_historico_diseno` int NOT NULL,
+                PRIMARY KEY (`id_historico_ft`),
+                KEY `fk_dt_historico_ft_dt_estructura_p_diseno1` (`id_estructura_p_diseno`),
+                KEY `fk_dt_historico_ft_user1` (`id_user`),
+                KEY `fk_dt_historico_ft_dt_historico_diseno1` (`id_historico_diseno`),
+                CONSTRAINT `fk_dt_historico_ft_dt_estructura_p_diseno1` FOREIGN KEY (`id_estructura_p_diseno`) REFERENCES `dt_estructura_p_diseno` (`id_estructura_p_diseno`),
+                CONSTRAINT `fk_dt_historico_ft_dt_historico_diseno1` FOREIGN KEY (`id_historico_diseno`) REFERENCES `dt_historico_diseno` (`id_historico_diseno`),
+                CONSTRAINT `fk_dt_historico_ft_user1` FOREIGN KEY (`id_user`) REFERENCES `user` (`id`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+            ");
+
+            $array_usuarios = $array_info_global['codVendedor=>id'];
+
+            $array_fecha_ingreso = $array_info_global['id_programacion_diseno=>fecha_ingreso'];
+
+            // echo "<pre>";
+            // var_dump($array_estructura);echo "...............................";
+
+            $registros_insertados = 0;
+            $registros_no_incluidos = 0;
+
+            $conexion_migracion_prueba->beginTransaction();
+
+            foreach($array_dt_estructura_p_diseno as $registro_dt_estructura_p_diseno){
+
+
+                try{                                                                                                                                                                                                                                                                                                                                    
+                    
+                    $fecha_registro = array_key_exists($registro_dt_estructura_p_diseno->id_programacion_diseno,$array_fecha_ingreso)?$array_fecha_ingreso[$registro_dt_estructura_p_diseno->id_programacion_diseno]['fecha_registro']:null;
+                    $id_historico_diseno = array_key_exists($registro_dt_estructura_p_diseno->id_programacion_diseno,$array_fecha_ingreso)?$array_fecha_ingreso[$registro_dt_estructura_p_diseno->id_programacion_diseno]['id_historico_diseno']:null;
+                    //$id_user = array_key_exists($registro_dt_estructura_p_diseno->responsable,$array_usuarios)?$array_usuarios[$registro_dt_estructura_p_diseno->responsable]:null;
+
+                    $insert_registro = $conexion_migracion_prueba->prepare("
+                        INSERT INTO dt_historico_ft(fecha_registro,recurso,ruta,tipo,observaciones,id_estructura_p_diseno,
+                        id_user,id_historico_diseno)
+                        VALUES(:fecha_registro,:recurso,:ruta,:tipo,:observaciones,:id_estructura_p_diseno,
+                        :id_user,:id_historico_diseno)
+                    ");
+                    
+                    if($registro_dt_estructura_p_diseno->archivo != null && $registro_dt_estructura_p_diseno->archivo != ''){
+                        $recurso = ControladorFuncionesAuxiliares::formateaString($registro_dt_estructura_p_diseno->archivo);
+                        $insert_registro->execute([
+                            'fecha_registro' => $fecha_registro,
+                            'recurso' => $recurso,
+                            'ruta' => $registro_dt_estructura_p_diseno->ruta,
+                            'tipo' => 1,
+                            'observaciones' => null,
+                            'id_estructura_p_diseno' => $registro_dt_estructura_p_diseno->id_estructura_p_diseno,
+                            'id_user' => $registro_dt_estructura_p_diseno->responsable,
+                            'id_historico_diseno' => $id_historico_diseno
+                        ]);
+                    }
+                    elseif($registro_dt_estructura_p_diseno->foto != null && $registro_dt_estructura_p_diseno->foto != ''){
+                        $recurso = ControladorFuncionesAuxiliares::formateaString($registro_dt_estructura_p_diseno->foto);
+                        $insert_registro->execute([
+                            'fecha_registro' => $fecha_registro,
+                            'recurso' => $recurso,
+                            'ruta' => $registro_dt_estructura_p_diseno->ruta,
+                            'tipo' => 2,
+                            'observaciones' => null,
+                            'id_estructura_p_diseno' => $registro_dt_estructura_p_diseno->id_estructura_p_diseno,
+                            'id_user' => $registro_dt_estructura_p_diseno->responsable,
+                            'id_historico_diseno' => $id_historico_diseno
+                        ]);
+                    }else{
+                        $registros_no_incluidos++;
+                        continue;
+                    }
+                    
+
+                }catch(PDOException $e){
+                    $conexion_migracion_prueba->rollBack();
+                    echo "Error en el id_estructura_p_diseno: ".$registro_dt_estructura_p_diseno->id_estructura_p_diseno."<br>".$e->getMessage();exit;
+                    
+                }
+
+                $registros_insertados++;
+            }
+
+            $conexion_migracion_prueba->commit();
+
+            
+            $tiempo_fin = microtime(true);
+            $tiempo_transcurrido = $tiempo_fin - $tiempo_inicio;
+
+            $mensaje = "Migración dt_historico_ft completada, ".$registros_insertados." registros insertados en ".$tiempo_transcurrido." segundos"."\n<br>".$registros_no_incluidos." registros no incluidos por no tener foto ni archivo, que son los registros que le dan sentido a la tabla";;
+
+            return $mensaje;
 
         }
 

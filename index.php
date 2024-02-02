@@ -74,9 +74,14 @@
     - dt_acabados
 
     */ 
-   
-    echo "Arranca ejecución \n";
-    echo "<br>";
+
+    date_default_timezone_set('America/Bogota');
+    $fechaHoraActual = date('Y-m-d H:i:s');
+
+    echo "*****************";
+    echo "Arranca ejecución ".$fechaHoraActual;
+    echo "*****************";
+    echo "\n<br>";
 
     $array_info_global = [];
 
@@ -102,8 +107,9 @@
 
     $array_info_global['nit=>id_cliente'] = ControladorInformacionGlobal::traeArrayIdCliente($conexion_migracion_prueba);
 
+    //Traemos array grupos diseño
 
-    //MIGRAMOS trayendo las funciones correspondientes
+    $array_info_global['grupos_diseno'] = ControladorInformacionGlobal::traeArrayGruposDiseno();
 
     //echo ControladorMigracion::migraDtAcabados($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
     //echo ControladorMigracion::migraDtInventarioxarea($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
@@ -113,27 +119,19 @@
 
     //Traemos array cod => id_acabados
 
-    $array_convierte_acabado = ControladorInformacionGlobal::traeArrayIdAcabados($conexion_sio1);
-
     $array_info_global['cod=>id_acabados'] = ControladorInformacionGlobal::traeArrayIdAcabados($conexion_sio1);
 
     //echo ControladorMigracion::migraDtUsuariosUser($conexion_sio1,$conexion_migracion_prueba)."\n<br>";
 
     //Traemos los arrays: user codVendedor => id_usuario y vendedor => id_usuario 
 
-    $array_convierte_vendedor = ControladorInformacionGlobal::traeArrayUser($conexion_sio1,$conexion_migracion_prueba,1);
-
     $array_info_global['vendedor=>id'] = ControladorInformacionGlobal::traeArrayUser($conexion_sio1,$conexion_migracion_prueba,1);
-
-    $array_convierte_codVendedor = ControladorInformacionGlobal::traeArrayUser($conexion_sio1,$conexion_migracion_prueba,2);
 
     $array_info_global['codVendedor=>id'] = ControladorInformacionGlobal::traeArrayUser($conexion_sio1,$conexion_migracion_prueba,2);
 
     //echo ControladorMigracion::migraDtProyectoOp($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
 
     //Traemos el array cod => id_codprodfinal 
-
-    $array_convierte_cod = ControladorInformacionGlobal::traeArrayIdCodprodfinal($conexion_sio1);
 
     $array_info_global['cod=>id_codpdrodfinal'] = ControladorInformacionGlobal::traeArrayIdCodprodfinal($conexion_sio1);
 
@@ -144,8 +142,6 @@
     
     //Traemos el array: n_ordenes|item_op => id_ordenes
 
-    $array_convierte_ordenes_item = ControladorInformacionGlobal::traeArrayIdOrdenes($conexion_migracion_prueba);
-
     $array_info_global['n_ordenes|item_op=>id_ordenes'] = ControladorInformacionGlobal::traeArrayIdOrdenes($conexion_migracion_prueba);
 
     //Traemos array de tipos de script
@@ -154,22 +150,40 @@
 
     //echo ControladorMigracion::migraDtPlantilla($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>"; //No migramos registros de códigos borrados
     //echo ControladorMigracion::migracionDtTareas($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
-    //echo ControladorMigracion::migracionDtCotizacion($conexion_sio1,$conexion_migracion_prueba,$array_info_global);// Con catagoria y plantilla faltantes
-    //echo ControladorMigracion::migracionDtPresupuestoInicial($conexion_sio1,$conexion_migracion_prueba,$array_info_global);
+    //echo ControladorMigracion::migracionDtCotizacion($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";// Con catagoria y plantilla faltantes
+    //echo ControladorMigracion::migracionDtPresupuestoInicial($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
 
     //Traemos array: n_cotiza => id_cotizacion
 
     $array_info_global['n_cotiza|item=>id_cotizacion'] = ControladorInformacionGlobal::traeArrayIdCotizacion($conexion_migracion_prueba);
 
-    echo ControladorMigracion::migraDtCostos($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
+    //echo ControladorMigracion::migraDtCostos($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
+    //echo ControladorMigracion::migraDtDiseno($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
+    //echo ControladorMigracion::migraDtProgramacionDiseno($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
+
+    //Traemos array: n_programacion => id_programacion_diseno
+
+    $array_info_global['n_programacion=>id_programacion_diseno'] = ControladorInformacionGlobal::traeArrayIdProgramacionDiseno($conexion_sio1);
 
 
+    //echo ControladorMigracion::migraDtEstructuraPDiseno($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
+
+    //Traemos array: id_programacion_diseno|archivo => id_estructura_p_diseno
+
+    $array_info_global['id_programacion_diseno=>fecha_ingreso'] = ControladorInformacionGlobal::traeArrayFechaEstructuraPDiseno($conexion_migracion_prueba);
+
+    //echo ControladorMigracion::migraDtHistoricoDiseno($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
+
+    echo ControladorMigracion::migraDtHistoricoFt($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
 
     $tiempo_fin = microtime(true);
     $tiempo_transcurrido = $tiempo_fin - $tiempo_inicio;
 
     echo "\n<br>";
-    echo "\n Ejecución completa! Alcanzada en ".$tiempo_transcurrido." segundos";
+    echo "\n<br>";
+    echo "*****************";
+    echo "Ejecución completa! Alcanzada en ".$tiempo_transcurrido." segundos";
+    echo "*****************";
 
 
 ?>

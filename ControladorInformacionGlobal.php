@@ -2,6 +2,24 @@
 
     class ControladorInformacionGlobal{
 
+        public static function traeArrayFechaEstructuraPDiseno($conexion_migracion_prueba){
+
+            $consulta_historico_diseno = $conexion_migracion_prueba->query("SELECT fecha_registro,id_historico_diseno,id_programacion_diseno FROM dt_historico_diseno WHERE observacion = 'Nueva Planeacion'");
+
+            $array_historico_diseno = $consulta_historico_diseno->fetchAll(PDO::FETCH_OBJ);
+
+            $array_historico_diseno_reasignado = [];
+
+            foreach($array_historico_diseno as $registro_historial){
+                $array_historico_diseno_reasignado[$registro_historial->id_programacion_diseno]=[
+                   'fecha_registro' => $registro_historial->fecha_registro,
+                   'id_historico_diseno' => $registro_historial->id_historico_diseno
+                ];
+            }
+
+            return $array_historico_diseno_reasignado;
+
+        }
 
         public static function traeArrayIdCliente($conexion_migracion_prueba){
 
@@ -258,6 +276,49 @@
             } 
 
             return $array_ordenes_reasignado;
+
+        }
+
+        public static function traeArrayIdProgramacionDiseno($conexion_sio1){
+
+            $consulta_programacion_diseno = $conexion_sio1->query("
+            SELECT id_programacion_diseno,n_programacion  from dt_programacion_diseno
+            group by n_programacion");
+
+            $array_programacion_diseno = $consulta_programacion_diseno->fetchAll(PDO::FETCH_OBJ);
+
+            $array_programacion_diseno_reasignado = [];
+
+
+            foreach($array_programacion_diseno as $registro_programacion_diseno){
+
+                $array_programacion_diseno_reasignado[$registro_programacion_diseno->n_programacion] = $registro_programacion_diseno->id_programacion_diseno;
+
+            }
+
+            return $array_programacion_diseno_reasignado;
+
+        }
+
+        public static function traeArrayGruposDiseno(){
+
+            $array_grupos_diseno = [
+                'Costos' => 1,
+                'ComiteTec' => 2,
+                'Terc1' => 3,
+                'Terc2' => 4,
+                'Terc3' => 5,
+                'Metal' => 6,
+                'cnc' => 7,
+                'maderas' => 8,
+                'plasticos' => 9,
+                'pintura' => 10,
+                'imprdec' => 11,
+                'ensamble' => 12,
+                'instalacion' => 13
+            ];
+
+            return $array_grupos_diseno;
 
         }
 
