@@ -1053,10 +1053,7 @@
                 `id_usuario` varchar(30) DEFAULT NULL,
                 `fecha_conciliacion` datetime DEFAULT NULL,
                 `id_orden` int DEFAULT NULL,
-                PRIMARY KEY (`id_fechas_op`),
-                KEY `dt_ordenes1` (`id_ordenes`),
-                KEY `fk_dt_fechas_OP_dt_usuarios1` (`id_usuario`),
-                CONSTRAINT `dt_fechas_op_dt_ordenes_fk` FOREIGN KEY (`id_ordenes`) REFERENCES `dt_ordenes` (`id_ordenes`)
+                PRIMARY KEY (`id_fechas_op`)
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
             ");
@@ -1162,7 +1159,9 @@
 
                     //Asignamos id_usuario 
 
-                    $id_usuario = array_key_exists($registro_dt_ordenes->elaboro,$array_info_global['vendedor=>id'])?$array_info_global['vendedor=>id'][$registro_dt_ordenes->elaboro]:null;
+                    $elaboro = rtrim($registro_dt_ordenes->elaboro);
+
+                    $id_usuario = array_key_exists($elaboro ,$array_info_global['vendedor=>id'])?$array_info_global['vendedor=>id'][$elaboro]:null;
                     
                     $id_vend = array_key_exists($registro_dt_ordenes->idVend,$array_info_global['codVendedor=>id'])?$array_info_global['codVendedor=>id'][$registro_dt_ordenes->idVend]:null;
 
@@ -1265,6 +1264,10 @@
             $conexion_migracion_prueba->exec("
                 ALTER TABLE dt_ordenes
                 MODIFY id_ordenes INT AUTO_INCREMENT PRIMARY KEY
+            ");
+            $conexion_migracion_prueba->exec("
+                ALTER TABLE dt_fechas_op
+                ADD CONSTRAINT dt_fechas_op_dt_ordenes_fk FOREIGN KEY (id_ordenes) REFERENCES dt_ordenes (id_ordenes)
             ");
             $tiempo_fin = microtime(true);
             $tiempo_transcurrido = $tiempo_fin - $tiempo_inicio;
@@ -1757,8 +1760,7 @@
     
         public static function migraDtCostos($conexion_sio1,$conexion_migracion_prueba,$array_info_global){
 
-            ini_set('memory_limit', '4200M');
-            set_time_limit(3400);
+            
             //phpinfo();exit;
 
             //Inicia timer
@@ -1777,7 +1779,7 @@
                 fechaCierre FROM dt_costos  WHERE nDoc != 0 ORDER BY id_costo 
             ");
 
-            $array_dt_costos = $consulta_dt_costos->fetchAll(PDO::FETCH_OBJ);
+            
 
             //Creamos la tabla sin llave primaria autoincremental
 
@@ -1835,7 +1837,7 @@
             $conexion_migracion_prueba->beginTransaction();
 
 
-            foreach($array_dt_costos as $registro_dt_costos){
+            while($registro_dt_costos = $consulta_dt_costos->fetch(PDO::FETCH_OBJ)){
 
                 try{ 
 
@@ -1869,7 +1871,7 @@
                         'nombre_costo' => $registro_dt_costos->nom_costo,
                         'id_acabados' => array_key_exists($registro_dt_costos->cod_material,$array_acabados)?$array_acabados[$registro_dt_costos->cod_material]:null,
                         'id_inventario' => array_key_exists($registro_dt_costos->cod_material,$array_materiales)?$array_materiales[$registro_dt_costos->cod_material]['id_inventario']:null,
-                        'id_usuario' => array_key_exists($registro_dt_costos->responsable,$array_usuarios)?$array_usuarios[$registro_dt_costos->responsable]:null,
+                        'id_usuario' => array_key_exists(rtrim($registro_dt_costos->responsable),$array_usuarios)?$array_usuarios[rtrim($registro_dt_costos->responsable)]:null,
                         'material_crit' => $registro_dt_costos->MTcritico,
                         'fecha_ingreso' => $registro_dt_costos->fecha_costo,
                         'valor_unit' => $registro_dt_costos->vr_unid,
@@ -1897,7 +1899,7 @@
 
                 $registros_insertados++;
 
-            }//FIN foreach($array_dt_costos as $registro_dt_costos)
+            }//FIN while($registro_dt_costos = $consulta_dt_costos->fetch(PDO::FETCH_OBJ))
 
             $conexion_migracion_prueba->commit();
 
@@ -1913,7 +1915,7 @@
             $tiempo_fin = microtime(true);
             $tiempo_transcurrido = $tiempo_fin - $tiempo_inicio;
 
-            $mensaje = "Migración dt_costos completada ".$registros_insertados." registros insertados en ".$tiempo_transcurrido." segundos"."<br>".$registros_no_incluidos." registros no incluidos por no tener id_ordenes relacionado";
+            $mensaje = "Migración dt_costos completada ".$registros_insertados." registros insertados en ".$tiempo_transcurrido." segundos"."\n<br>".$registros_no_incluidos." registros no incluidos por no tener id_ordenes relacionado";
 
             return $mensaje;
 
@@ -2017,15 +2019,14 @@
             $ids_vacios = [12952848,2952854,12953028,12953416,12953541];
             $registros_vacios = 0;
 
-            do{
-                $registro_disenolista = $consulta_dt_disenolista->fetch(PDO::FETCH_OBJ);
+            while($registro_disenolista = $consulta_dt_disenolista->fetch(PDO::FETCH_OBJ)){
 
                 try{
-                    if($registro_disenolista === false){
-                        $conexion_migracion_prueba->commit();
-                        echo $registros_insertados." hasta ahora ";
-                        var_dump($registro_disenolista);exit;
-                    }
+                    // if($registro_disenolista === false){
+                    //     $conexion_migracion_prueba->commit();
+                    //     echo $registros_insertados." hasta ahora ";
+                    //     var_dump($registro_disenolista);exit;
+                    // }
 
                     if(in_array($registro_disenolista->id_diseno,$ids_vacios)){
                         $registros_vacios++;
@@ -2104,12 +2105,12 @@
 
                 }catch(PDOException $e){
                     $conexion_migracion_prueba->rollBack();
-                    echo "Error en el id_diseno: ".$registro_dt_costos->id_costo."<br>".$e->getMessage();exit;
+                    echo "Error en el id_diseno: ".$registro_disenolista->id_diseno."<br>".$e->getMessage();exit;
                 }
 
                 $registros_insertados++;
 
-            }while($registro_disenolista); //FIN foreach($array_dt_disenolista as $registro_disenolista)
+            } //FIN while($registro_disenolista = $consulta_dt_disenolista->fetch(PDO::FETCH_OBJ))
 
             $conexion_migracion_prueba->commit();
 
@@ -2516,7 +2517,338 @@
             $tiempo_fin = microtime(true);
             $tiempo_transcurrido = $tiempo_fin - $tiempo_inicio;
 
-            $mensaje = "Migración dt_historico_ft completada, ".$registros_insertados." registros insertados en ".$tiempo_transcurrido." segundos"."\n<br>".$registros_no_incluidos." registros no incluidos por no tener foto ni archivo, que son los registros que le dan sentido a la tabla";;
+            $mensaje = "Migración dt_historico_ft completada, ".$registros_insertados." registros insertados en ".$tiempo_transcurrido." segundos"."\n<br>".$registros_no_incluidos." registros no incluidos por no tener foto ni archivo, que son los registros que le dan sentido a la tabla";
+
+            return $mensaje;
+
+        }
+
+        public static function migraDtTareasCosto($conexion_sio1,$conexion_migracion_prueba,$array_info_global){
+
+            //Iniciamos timer
+
+            $tiempo_inicio = microtime(true);
+            
+
+            //Hacemos el array con la información del dt_tareas del Sio 1
+
+            $consulta_dt_tareas = $conexion_sio1->query("
+                SELECT id_tareas,codVendedor,id_costo,nOrden,item,can_horas,FechaInicio,cod,nom_costo,area,recurso,
+                FechaInicioR,FechaFinal,Observaciones,FechaPro,FechaRetro  from dt_tareas  
+            ");
+
+            $array_dt_tareas = $consulta_dt_tareas->fetchAll(PDO::FETCH_OBJ);
+
+            $conexion_migracion_prueba->exec("
+                CREATE TABLE `dt_tareas_costo` (
+                `id_tarea_costo` int NOT NULL AUTO_INCREMENT,
+                `id_vendedor` int NOT NULL,
+                `id_usuario` int NOT NULL,
+                `id_costo` int DEFAULT NULL,
+                `n_ordenes` int DEFAULT NULL,
+                `id_ordenes` int DEFAULT NULL,
+                `can_horas` float DEFAULT NULL,
+                `fecha_inicio` datetime DEFAULT NULL,
+                `cod_material` varchar(50) DEFAULT NULL,
+                `nombre_costo` varchar(100) DEFAULT NULL,
+                `id_area` int DEFAULT NULL,
+                `recurso` smallint DEFAULT NULL,
+                `fecha_inicio_real` datetime DEFAULT NULL,
+                `fecha_final` datetime DEFAULT NULL,
+                `observaciones` varchar(100) DEFAULT NULL,
+                `fecha_pro` datetime DEFAULT NULL,
+                `fecha_retro` datetime DEFAULT NULL,
+                `id_costos` int DEFAULT NULL,
+                `id_tareas` int DEFAULT NULL,
+                `id_orden` int DEFAULT NULL,
+                `id_maquina` int DEFAULT NULL,
+                PRIMARY KEY (`id_tarea_costo`),
+                KEY `id_maquina` (`id_maquina`),
+                CONSTRAINT `id_maquina` FOREIGN KEY (`id_maquina`) REFERENCES `dt_maquinas` (`id_maquina`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+            ");
+
+            $registros_insertados = 0;
+            $registros_no_incluidos = 0;
+
+            $conexion_migracion_prueba->beginTransaction();
+
+            $array_usuarios = $array_info_global['codVendedor=>id'];
+
+            $array_ordenes = $array_info_global['n_ordenes|item_op=>id_ordenes'];
+
+            $array_areas = $array_info_global['id_area'];
+
+            foreach($array_dt_tareas as $registro_tareas){
+
+                try{
+
+                    $id_vendedor = array_key_exists($registro_tareas->codVendedor,$array_usuarios)?$array_usuarios[$registro_tareas->codVendedor]:null;
+                    $id_ordenes = array_key_exists($registro_tareas->nOrden,$array_ordenes)&&array_key_exists($registro_tareas->item,$array_ordenes[$registro_tareas->nOrden])?$array_ordenes[$registro_tareas->nOrden][$registro_tareas->item]['id_ordenes']:null;
+                    $id_area = array_key_exists($registro_tareas->area,$array_areas)?$array_areas[$registro_tareas->area]:null;
+
+                    if(!$id_vendedor){
+                        $registros_no_incluidos++;
+                        continue;
+                    }
+
+                    $insert_registro = $conexion_migracion_prueba->prepare("
+                        INSERT INTO dt_tareas_costo(id_vendedor,id_usuario,id_costo,n_ordenes,id_ordenes,can_horas,fecha_inicio,cod_material,
+                        nombre_costo,id_area,recurso,fecha_inicio_real,fecha_final,observaciones,fecha_pro,fecha_retro)
+                        VALUES(:id_vendedor,:id_usuario,:id_costo,:n_ordenes,:id_ordenes,:can_horas,:fecha_inicio,:cod_material,
+                        :nombre_costo,:id_area,:recurso,:fecha_inicio_real,:fecha_final,:observaciones,:fecha_pro,:fecha_retro)
+                    ");
+
+                    $insert_registro->execute([
+                        'id_vendedor' => $id_vendedor,
+                        'id_usuario' => 1,
+                        'id_costo' => $registro_tareas->id_costo,
+                        'n_ordenes' => $registro_tareas->nOrden,
+                        'id_ordenes' => $id_ordenes,
+                        'can_horas' => $registro_tareas->can_horas,
+                        'fecha_inicio' => $registro_tareas->FechaInicio,
+                        'cod_material' => $registro_tareas->cod,
+                        'nombre_costo' => $registro_tareas->nom_costo,
+                        'id_area' => $id_area,
+                        'recurso' => $registro_tareas->recurso,
+                        'fecha_inicio_real' => $registro_tareas->FechaInicioR,
+                        'fecha_final' => $registro_tareas->FechaFinal,
+                        'observaciones' => $registro_tareas->Observaciones,
+                        'fecha_pro' => $registro_tareas->FechaPro,
+                        'fecha_retro' => $registro_tareas->FechaRetro
+                    ]);
+
+                }catch(PDOException $e){
+                    $conexion_migracion_prueba->rollBack();
+                    echo "<pre>";
+                    echo "Hay un problema con el id_tareas ".$registro_tareas->id_tareas."<br> ".$e->getMessage();exit;
+                }
+
+                $registros_insertados++;
+
+            }
+
+            $conexion_migracion_prueba->commit();
+
+            
+            $tiempo_fin = microtime(true);
+            $tiempo_transcurrido = $tiempo_fin - $tiempo_inicio;
+
+            $mensaje = "Migración dt_tareas_costo completada, ".$registros_insertados." registros insertados en ".$tiempo_transcurrido." segundos"."\n<br>".$registros_no_incluidos." registros no incluidos por ser programaciones a usuarios que fueron borrados o con códigos de usuario erroneos";
+
+            return $mensaje;
+
+
+
+        }
+
+        public static function migraDtCompras($conexion_sio1,$conexion_migracion_prueba,$array_info_global){
+
+
+            //Iniciamos timer
+
+            $tiempo_inicio = microtime(true);
+            
+
+            //Hacemos el array con la información del dt_compras del Sio 1
+
+            $consulta_dt_compras = $conexion_sio1->query("
+                SELECT id_compra,item_oc,proveedor,ordenCompra,fecha_oc,fecha_compromiso,
+                fechaAprobo,ops_afecta,ops_afecta,ids_despiece,cantidad_sol,saldo_salida,
+                cod_producto,detalle_oc,vUnidad_prod,vTotal_prod,puc_id,puc_prod,puc_contra,
+                iva_oc,puc_iva,rtfte_oc,puc_rtfte,rtiva_oc,puc_rtiva,rtica_oc,puc_rtica,
+                dto_fin,observa_oc,aprobo_oc,estado_oc,elaboro_oc,formaPago,tipo_inv,
+                FechaInicio,Compromiso,cantidadT,descripcionT,contratosP,ops_afecta,
+                nit_provee,version
+                from dt_compras dc 
+            ");
+
+
+            $conexion_migracion_prueba->exec("
+                CREATE TABLE `dt_compras` (
+                `id_compras` int,
+                `item_oc` int NOT NULL,
+                `id_proveedores` int DEFAULT NULL,
+                `n_compra` int DEFAULT NULL,
+                `fecha_oc` datetime DEFAULT NULL,
+                `fecha_compromiso` date DEFAULT NULL,
+                `fecha_aprobacion` date DEFAULT NULL,
+                `n_ordenes` int DEFAULT NULL,
+                `id_ordenes` int DEFAULT NULL,
+                `id_costos` int DEFAULT NULL,
+                `cant_sol` double DEFAULT NULL,
+                `saldo_salida` double DEFAULT NULL,
+                `cod_producto` varchar(24) DEFAULT NULL,
+                `detalle_oc` longtext,
+                `vr_unidad` DECIMAL(10, 2) DEFAULT NULL,
+                `vr_total` DECIMAL(10, 2) DEFAULT NULL,
+                `puc_id` int DEFAULT NULL,
+                `puc_prod` int DEFAULT NULL,
+                `puc_contra` varchar(12) DEFAULT NULL,
+                `iva_oc` double DEFAULT NULL,
+                `puc_iva` varchar(12) DEFAULT NULL,
+                `rtfte_oc` double DEFAULT NULL,
+                `puc_rtfte` varchar(12) DEFAULT NULL,
+                `rtiva_oc` double DEFAULT NULL,
+                `puc_rtiva` varchar(12) DEFAULT NULL,
+                `rtica_oc` double DEFAULT NULL,
+                `puc_rtica` varchar(12) DEFAULT NULL,
+                `dto_fin` double DEFAULT NULL,
+                `observa_oc` longtext,
+                `aprobo_oc` int DEFAULT NULL,
+                `estado` smallint DEFAULT NULL,
+                `id_usuario` int NOT NULL,
+                `id_tipo_pago` int DEFAULT NULL,
+                `tipo_inv` char(1) DEFAULT NULL,
+                `fecha_inicio` date DEFAULT NULL,
+                `area_realiza` int DEFAULT NULL,
+                `area_entrega` int DEFAULT NULL,
+                `cantidad` double DEFAULT NULL,
+                `observaciones_os` longtext,
+                `consecutivo` int DEFAULT NULL,
+                `id_orden` int DEFAULT NULL,
+                `id_costo` int DEFAULT NULL,
+                `id_compra` int DEFAULT NULL,
+                `nit` varchar(15) DEFAULT NULL,
+                `n_actualizaciones` int DEFAULT NULL,
+                KEY `indx_n_ordenes` (`n_ordenes`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+            ");
+
+            $array_proveedores = $array_info_global['empresa=>id_proveedores'];
+
+            $array_costos = $array_info_global['id_costo=>data_costos'];
+
+            $array_usuarios = $array_info_global['vendedor=>id'];//var_dump($array_usuarios);exit;
+
+            $array_u_complemento = [
+                'WILLIAM LOPEZ SORA' => 73,
+                'JULIAN RAMIREZ' => 41,
+                'FORERO ARTUNDUAGA LAURA NATALIA' => 517,
+                'GUZMAN FABIO NELSON' => 100,
+                'SANCHEZ MARTINEZ JAZMIN MAGDALENA' => 152,
+                'JESSICA PAOLA VARGAS VASQUEZ' => 1008,
+                'ING. HERRERA LEON H. YESID' => 23,
+                'JAIR ORLANDO MORENO AVENDAÑO' => 149,
+                'PABLO VASQUEZ' => 25
+            ];
+
+            $array_tipo_pago = $array_info_global['id_tipo_pago'];
+
+            $array_areas = $array_info_global['id_area'];
+
+            $registros_insertados = 0;
+
+            $registros_no_incluidos = 0;
+
+            $conexion_migracion_prueba->beginTransaction();
+
+            while($registro_compras = $consulta_dt_compras->fetch(PDO::FETCH_OBJ)){
+                try{
+
+                    $elaboro_oc = rtrim($registro_compras->elaboro_oc);
+
+                    $id_proveedores = array_key_exists($registro_compras->proveedor,$array_proveedores)?$array_proveedores[$registro_compras->proveedor]:null;
+
+                    $n_ordenes = array_key_exists($registro_compras->ids_despiece,$array_costos)?$array_costos[$registro_compras->ids_despiece]['n_ordenes']:null;
+                    $id_ordenes = array_key_exists($registro_compras->ids_despiece,$array_costos)?$array_costos[$registro_compras->ids_despiece]['id_ordenes']:null;
+                    $id_usuario = array_key_exists($elaboro_oc,$array_usuarios)?$array_usuarios[$elaboro_oc]:null;
+                    $id_tipo_pago = array_key_exists($registro_compras->formaPago,$array_tipo_pago)?$array_tipo_pago[$registro_compras->formaPago]:null;
+                    $area_entrega = array_key_exists($registro_compras->Compromiso,$array_areas)?$array_areas[$registro_compras->Compromiso]:null;
+                 
+
+                    //Algun genio dejo este nombre al contrario en 327160 registros 
+                    if(!$id_usuario){
+                        $id_usuario = array_key_exists($elaboro_oc,$array_u_complemento)?$array_u_complemento[$elaboro_oc]:null;
+                    }
+
+
+                    if(!$id_usuario){
+                        $registros_no_incluidos++;
+                        continue;
+                    }
+
+                    $insert_registro = $conexion_migracion_prueba->prepare("
+                        INSERT INTO dt_compras(id_compras,item_oc,id_proveedores,n_compra,fecha_oc,fecha_compromiso,fecha_aprobacion,n_ordenes,
+                        id_ordenes,id_costos,cant_sol,saldo_salida,cod_producto,detalle_oc,vr_unidad,vr_total,puc_id,puc_prod,puc_contra,
+                        iva_oc,puc_iva,rtfte_oc,puc_rtfte,rtiva_oc,puc_rtiva,rtica_oc,puc_rtica,dto_fin,observa_oc,aprobo_oc,estado,id_usuario,
+                        id_tipo_pago,tipo_inv,fecha_inicio,area_realiza,area_entrega,cantidad,observaciones_os,consecutivo,nit,n_actualizaciones) VALUES(:id_compras,:item_oc,:id_proveedores,:n_compra,:fecha_oc,:fecha_compromiso,
+                        :fecha_aprobacion,:n_ordenes,:id_ordenes,:id_costos,:cant_sol,:saldo_salida,:cod_producto,:detalle_oc,:vr_unidad,
+                        :vr_total,:puc_id,:puc_prod,:puc_contra,:iva_oc,:puc_iva,:rtfte_oc,:puc_rtfte,:rtiva_oc,:puc_rtiva,:rtica_oc,:puc_rtica,
+                        :dto_fin,:observa_oc,:aprobo_oc,:estado,:id_usuario,:id_tipo_pago,:tipo_inv,:fecha_inicio,:area_realiza,:area_entrega,
+                        :cantidad,:observaciones_os,:consecutivo,:nit,:n_actualizaciones)
+                    ");
+
+                    $insert_registro->execute([
+                        'id_compras' => $registro_compras->id_compra,
+                        'item_oc' => $registro_compras->item_oc,
+                        'id_proveedores' => $id_proveedores,
+                        'n_compra' => $registro_compras->ordenCompra,
+                        'fecha_oc' => $registro_compras->fecha_oc,
+                        'fecha_compromiso' => $registro_compras->fecha_compromiso,
+                        'fecha_aprobacion' => $registro_compras->fechaAprobo,
+                        'n_ordenes' => $n_ordenes,
+                        'id_ordenes' => $id_ordenes,
+                        'id_costos' => $registro_compras->ids_despiece,
+                        'cant_sol' => $registro_compras->cantidad_sol,
+                        'saldo_salida' => $registro_compras->saldo_salida,
+                        'cod_producto' => $registro_compras->cod_producto,
+                        'detalle_oc' => $registro_compras->detalle_oc,
+                        'vr_unidad' => $registro_compras->vUnidad_prod,
+                        'vr_total' => $registro_compras->vTotal_prod,
+                        'puc_id' => $registro_compras->puc_id,
+                        'puc_prod' => $registro_compras->puc_prod,
+                        'puc_contra' => $registro_compras->puc_contra,
+                        'iva_oc' => $registro_compras->iva_oc,
+                        'puc_iva' => $registro_compras->puc_iva,
+                        'rtfte_oc' => $registro_compras->rtfte_oc,
+                        'puc_rtfte' => $registro_compras->puc_rtfte,
+                        'rtiva_oc' => $registro_compras->rtiva_oc,
+                        'puc_rtiva' => $registro_compras->puc_rtiva,
+                        'rtica_oc' => $registro_compras->rtica_oc,
+                        'puc_rtica' => $registro_compras->puc_rtica,
+                        'dto_fin' => $registro_compras->dto_fin,
+                        'observa_oc' => $registro_compras->observa_oc,
+                        'aprobo_oc' => $registro_compras->aprobo_oc,
+                        'estado' => $registro_compras->estado_oc,
+                        'id_usuario' => $id_usuario,
+                        'id_tipo_pago' => $id_tipo_pago,
+                        'tipo_inv' => $registro_compras->tipo_inv,
+                        'fecha_inicio' => $registro_compras->FechaInicio,
+                        'area_realiza' => null,
+                        'area_entrega' => $area_entrega,
+                        'cantidad' => $registro_compras->cantidadT,
+                        'observaciones_os' => $registro_compras->descripcionT,
+                        'consecutivo' => $registro_compras->contratosP,
+                        'nit' => $registro_compras->nit_provee,
+                        'n_actualizaciones' => $registro_compras->version
+                    ]);
+
+                }catch(PDOException $e){
+                    $conexion_migracion_prueba->rollBack();
+                    echo "<pre>";
+                    echo "Hay un problema con el id_tareas ".$registro_compras->id_compra."<br> ".$e->getMessage();exit;
+                }
+
+                $registros_insertados++;
+
+            }
+
+            $conexion_migracion_prueba->commit();
+
+            //Asignamos la llave primaria con autoincremental 
+
+            $conexion_migracion_prueba->exec("
+                ALTER TABLE dt_compras
+                MODIFY id_compras INT AUTO_INCREMENT PRIMARY KEY
+            ");
+
+            // Finaliza timer y entregamos mensaje 
+
+            $tiempo_fin = microtime(true);
+            $tiempo_transcurrido = $tiempo_fin - $tiempo_inicio;
+
+            $mensaje = "Migración dt_compras completada ".$registros_insertados." registros insertados en ".$tiempo_transcurrido." segundos"."\n<br>".$registros_no_incluidos." registros no incluidos por no tener usuario que elabora la oc o ser un usuario borrado de la bd";
 
             return $mensaje;
 

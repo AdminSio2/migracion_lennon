@@ -2,6 +2,25 @@
 
     class ControladorInformacionGlobal{
 
+        public static function traeArrayDataCostos($conexion_migracion_prueba){
+            
+            $consulta_costos = $conexion_migracion_prueba->query("SELECT id_costo,n_ordenes,id_ordenes FROM dt_costos");
+
+            $array_costos_reasignado = [];
+
+            while($registro_costos = $consulta_costos->fetch(PDO::FETCH_OBJ)){
+
+                $array_costos_reasignado[$registro_costos->id_costo] = [
+                    'n_ordenes' => $registro_costos->n_ordenes,
+                    'id_ordenes' => $registro_costos->id_ordenes
+                ];
+
+            };
+
+            return $array_costos_reasignado;
+
+        }
+
         public static function traeArrayFechaEstructuraPDiseno($conexion_migracion_prueba){
 
             $consulta_historico_diseno = $conexion_migracion_prueba->query("SELECT fecha_registro,id_historico_diseno,id_programacion_diseno FROM dt_historico_diseno WHERE observacion = 'Nueva Planeacion'");
@@ -18,6 +37,24 @@
             }
 
             return $array_historico_diseno_reasignado;
+
+        }
+
+        public static function traeArrayTipoPago(){
+
+            $array_tipo_pago = [
+                '120 dias' => null,
+                '15 dias' => 3,
+                '30' => 1,
+                '30 dias' => 1,
+                '45 dias' => 4,
+                '60 dias' => 5,
+                '90 dias' => 7,
+                'Canje' => 6,
+                'Contado' => 2
+            ];
+            
+            return $array_tipo_pago;
 
         }
 
@@ -300,6 +337,22 @@
 
         }
 
+        public static function traeArrayIdProveedores($conexion_migracion_prueba){
+
+            $consulta_proveedores = $conexion_migracion_prueba->query("SELECT id_proveedores,empresa  FROM dt_proveedores");
+
+            $array_proveedores = $consulta_proveedores->fetchAll(PDO::FETCH_OBJ);
+
+            $array_proveedores_reasignado = [];
+
+            foreach($array_proveedores as $registro_proveedores){
+                $array_proveedores_reasignado[$registro_proveedores->empresa] = $registro_proveedores->id_proveedores;
+            }
+
+            return $array_proveedores_reasignado;
+
+        }
+
         public static function traeArrayGruposDiseno(){
 
             $array_grupos_diseno = [
@@ -358,7 +411,7 @@
             if($opcion_conversión == 1){ //vendedor
                 foreach($array_vendedores as $registro_vendedor){
 
-                    $array_vendedores_reasignado[$registro_vendedor->id_vend] = $registro_vendedor->vendedor;
+                    $array_vendedores_reasignado[$registro_vendedor->id_vend] = rtrim($registro_vendedor->vendedor);
     
                 }
             }
