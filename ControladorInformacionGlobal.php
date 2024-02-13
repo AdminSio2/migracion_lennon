@@ -2,6 +2,32 @@
 
     class ControladorInformacionGlobal{
 
+        public static function traeArrayDataCompras($conexion_migracion_prueba){
+
+            $consulta_compras = $conexion_migracion_prueba->query("SELECT cod_producto,n_compra,id_compras,id_ordenes,id_costos,n_ordenes,puc_id from dt_compras GROUP BY n_compra,cod_producto");
+
+            $array_compras = $consulta_compras->fetchAll(PDO::FETCH_OBJ);
+
+            $array_compras_reasignado = [];
+
+            foreach($array_compras as $registro_compras){
+
+                $array_compras_reasignado[$registro_compras->n_compra][$registro_compras->cod_producto] = [
+                    'id_compras' => $registro_compras->id_compras,
+                    'id_costos' => $registro_compras->id_costos,
+                    'id_ordenes' => $registro_compras->id_ordenes,
+                    'n_ordenes' => $registro_compras->n_ordenes,
+                    'puc_id' => $registro_compras->puc_id
+                    
+                ];
+
+            }
+
+            return $array_compras_reasignado;
+
+
+        }
+
         public static function traeArrayDataCostos($conexion_migracion_prueba){
             
             $consulta_costos = $conexion_migracion_prueba->query("SELECT id_costo,n_ordenes,id_ordenes FROM dt_costos");
@@ -117,6 +143,23 @@
             }
 
             return $array_codprodfinal_reasignado;
+
+        }
+
+        public static function traeArrayIdCompras($conexion_migracion_prueba){
+
+            $consulta_compras = $conexion_migracion_prueba->query("SELECT id_compras,id_costos FROM dt_compras");
+
+            $array_compras_reasignado = [];
+
+            while($registro_compras = $consulta_compras->fetch(PDO::FETCH_OBJ)){
+
+                $array_compras_reasignado[$registro_compras->id_costos] = $registro_compras->id_compras;
+
+            }
+
+            return $array_compras_reasignado;
+
 
         }
 
@@ -247,6 +290,7 @@
                 'GESTION DE HSE' => 6,
                 'GESTION DE TALENTO HUMANO' => 6,
                 'IMPRESION DIGITAL' => 17,
+                'PRODUCCION DE IMPRESION' => 17,
                 'INSTALACION' => 7,
                 'LASER' => 15,
                 'LOGISTICA' => 9,

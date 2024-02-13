@@ -2854,6 +2854,245 @@
 
         }
 
+        public static function migraDtRotacion($conexion_sio1,$conexion_migracion_prueba,$array_info_global){
+
+            //Iniciamos timer
+
+            $tiempo_inicio = microtime(true);
+            
+
+            //Hacemos el array con la información del dt_rotacion del Sio 1
+            
+            $consulta_dt_rotacion = $conexion_sio1->query("
+                SELECT id_rotacion,orden_compra,cod_prod,doc,item_rt,fecha,cantidad,vUnidad_rot,
+                vTotal_rot,id_puc,estado_doc,tipo,id_costo,recibido,elaboro,enviado_a,orden,observaciones_rot,
+                Facturas,puc_prodrt,puc_ivart,puc_contra,iva_rt,puc_rtftert,rtfte_rt,puc_rtivart,
+                rtiva_rt,puc_rticart,rtica_rt,FA_provee,legalizado,fecha_FA,fecha_vence,letra,letra_cta,
+                cons_contable from dt_rotacion dr  order by id_rotacion 
+            ");
+
+            $conexion_migracion_prueba->exec("
+                CREATE TABLE `dt_rotacion` (
+                `id_rotacion` int,
+                `n_compra` int DEFAULT NULL,
+                `id_compra` int DEFAULT NULL,
+                `cod_prod` varchar(24) DEFAULT NULL,
+                `n_rotacion` int DEFAULT NULL,
+                `item_rotacion` int DEFAULT NULL,
+                `fecha` datetime DEFAULT NULL,
+                `cantidad` DECIMAL(10, 2) DEFAULT NULL,
+                `vr_unidad` DECIMAL(10, 2) DEFAULT NULL,
+                `vr_total` DECIMAL(10, 2) DEFAULT NULL,
+                `id_puc` int DEFAULT NULL,
+                `estado` smallint DEFAULT NULL,
+                `id_tipo_rotacion` int DEFAULT NULL,
+                `id_costo` int DEFAULT NULL,
+                `id_area` int DEFAULT NULL,
+                `id_usuario` int DEFAULT NULL,
+                `id_encargado` int DEFAULT NULL,
+                `n_ordenes` int DEFAULT NULL,
+                `id_ordenes` int DEFAULT NULL,
+                `observaciones` varchar(556) DEFAULT NULL,
+                `factura` varchar(50) DEFAULT NULL,
+                `n_remision_prov` varchar(8) DEFAULT NULL,
+                `puc_prodrt` varchar(20) DEFAULT NULL,
+                `puc_ivart` varchar(20) DEFAULT NULL,
+                `puc_contra` varchar(20) DEFAULT NULL,
+                `iva_rt` double DEFAULT NULL,
+                `puc_rtftert` varchar(20) DEFAULT NULL,
+                `rtfte_rt` double DEFAULT NULL,
+                `puc_rtivart` varchar(20) DEFAULT NULL,
+                `rtiva_rt` double DEFAULT NULL,
+                `puc_rticart` varchar(20) DEFAULT NULL,
+                `rtica_rt` double DEFAULT NULL,
+                `factura_proveedor` int DEFAULT NULL,
+                `fecha_legalizacion` datetime DEFAULT NULL,
+                `fecha_factura` date DEFAULT NULL,
+                `fecha_vencimiento` date DEFAULT NULL,
+                `letra` varchar(2) DEFAULT NULL,
+                `letra_cta` varchar(10) DEFAULT NULL,
+                `cons_contable` int DEFAULT NULL,
+                `id_costos` int DEFAULT NULL,
+                `id_compras` int DEFAULT NULL,
+                `id_orden` int DEFAULT NULL,
+                `id_rotaciones` int DEFAULT NULL,
+                `id_inventario` int DEFAULT NULL,
+                KEY `fk_inventario` (`id_inventario`),
+                KEY `indx_n_rotacion` (`n_rotacion`),
+                KEY `indx_cod_prod` (`cod_prod`),
+                CONSTRAINT `dt_rotacion_ibfk_1` FOREIGN KEY (`id_inventario`) REFERENCES `dt_inventario` (`id_inventario`)
+                ) ENGINE=InnoDB AUTO_INCREMENT=21450 DEFAULT CHARSET=utf8mb3;
+            ");
+
+            $array_areas = $array_info_global['id_area'];
+
+            $array_usuarios = $array_info_global['vendedor=>id'];
+
+            $array_codigos = $array_info_global['codigo_prod=>id_inventario'];
+
+            $array_data_compras = $array_info_global['n_compra|cod_producto=>data_compras'];
+
+            $array_id_compras = $array_info_global['id_costos=>id_compras'];
+
+            $array_data_costos = $array_info_global['id_costo=>data_costos'];
+
+            $array_materiales = $array_info_global['codigo_prod=>id_inventario'];
+
+            $registros_insertados = 0;
+
+            $registros_no_incluidos = 0;
+
+            $conexion_migracion_prueba->beginTransaction();
+
+            while($registro_rotaciones = $consulta_dt_rotacion->fetch(PDO::FETCH_OBJ)){
+
+                try{ 
+
+                    //No vamos a incluir las rotaciones tipo 7 por ser duplicados de las 25 que son rotaciones
+
+                    if($registro_rotaciones->tipo == 7){
+                        $registros_no_incluidos++;
+                        continue;
+                    }
+
+                    if($registro_rotaciones->id_costo != null){
+                        $id_ordenes = array_key_exists($registro_rotaciones->id_costo,$array_data_costos)?$array_data_costos[$registro_rotaciones->id_costo]['id_ordenes']:null;
+                        $id_costo = $registro_rotaciones->id_costo;
+                        $id_compra = array_key_exists($registro_rotaciones->id_costo,$array_id_compras)?$array_id_compras[$registro_rotaciones->id_costo]:null; 
+                        $n_ordenes  = array_key_exists($registro_rotaciones->id_costo,$array_data_costos)?$array_data_costos[$registro_rotaciones->id_costo]['n_ordenes']:null;
+                        $observaciones = $registro_rotaciones->observaciones_rot;
+                    }else{
+                        $array_sin_id_costo = array_key_exists($registro_rotaciones->orden_compra,$array_data_compras)&&array_key_exists($registro_rotaciones->cod_prod,$array_data_compras[$registro_rotaciones->orden_compra])?$array_data_compras[$registro_rotaciones->orden_compra][$registro_rotaciones->cod_prod]:null;
+                        $observaciones = $registro_rotaciones->observaciones_rot." n_ordenes completas: ".$registro_rotaciones->orden;
+
+                        if($array_sin_id_costo != null){
+
+                            $id_ordenes = $array_sin_id_costo['id_ordenes'];
+                            $id_costo = $array_sin_id_costo['id_costos'];
+                            $id_compra = $array_sin_id_costo['id_compras'];
+                            $n_ordenes = $array_sin_id_costo['n_ordenes'];
+                            if($registro_rotaciones->tipo == 9){
+                                $puc_id = $array_sin_id_costo['puc_id'];
+                            }else{
+                                $puc_id = null;
+                            }
+                            
+                            
+                        }else{
+
+                            $id_ordenes = null;
+                            $id_costo = null;
+                            $id_compra = null;
+                            $n_ordenes = null;
+                            $puc_id = null;
+
+                        }
+
+                    }
+
+                    $id_inventario = array_key_exists($registro_rotaciones->cod_prod,$array_materiales)?$array_materiales[$registro_rotaciones->cod_prod]['id_inventario']:null;
+
+                    if($registro_rotaciones->tipo == 13){
+                        $id_area = 1;
+                    }else{
+                        $id_area = array_key_exists($registro_rotaciones->enviado_a,$array_areas)?$array_areas[$registro_rotaciones->enviado_a]:null;
+                    }
+
+                    if($registro_rotaciones->tipo == 26){
+                        $id_encargado = null;
+                    }else{
+                        $id_encargado = array_key_exists($registro_rotaciones->enviado_a,$array_usuarios)?$array_usuarios[$registro_rotaciones->enviado_a]:null;
+                    }
+
+                    $id_usuario = array_key_exists($registro_rotaciones->elaboro,$array_usuarios)?$array_usuarios[$registro_rotaciones->elaboro]:null;
+
+                    $insert_registro = $conexion_migracion_prueba->prepare("
+                        INSERT INTO dt_rotacion(id_rotacion,cantidad,cod_prod,cons_contable,estado,factura,factura_proveedor,fecha,fecha_factura,fecha_legalizacion,
+                        fecha_vencimiento,id_area,id_compra,id_costo,id_encargado,id_ordenes,id_puc,id_tipo_rotacion,id_usuario,item_rotacion,letra,letra_cta,n_compra,
+                        n_ordenes,n_remision_prov,n_rotacion,observaciones,puc_contra,puc_ivart,puc_prodrt,puc_rticart,puc_rtftert,puc_rtivart,rtfte_rt,rtica_rt,rtiva_rt,
+                        vr_total,vr_unidad,id_inventario)
+                        VALUES(:id_rotacion,:cantidad,:cod_prod,:cons_contable,:estado,:factura,:factura_proveedor,:fecha,:fecha_factura,:fecha_legalizacion,
+                        :fecha_vencimiento,:id_area,:id_compra,:id_costo,:id_encargado,:id_ordenes,:id_puc,:id_tipo_rotacion,:id_usuario,:item_rotacion,:letra,:letra_cta,
+                        :n_compra,:n_ordenes,:n_remision_prov,:n_rotacion,:observaciones,:puc_contra,:puc_ivart,:puc_prodrt,:puc_rticart,:puc_rtftert,:puc_rtivart,:rtfte_rt,
+                        :rtica_rt,:rtiva_rt,:vr_total,:vr_unidad,:id_inventario)
+                    ");
+
+                    $insert_registro->execute([
+                        'id_rotacion' => $registro_rotaciones->id_rotacion,
+                        'cantidad' => $registro_rotaciones->cantidad,
+                        'cod_prod' => $registro_rotaciones->cod_prod,
+                        'cons_contable' => $registro_rotaciones->cons_contable,
+                        'estado' => $registro_rotaciones->estado_doc,
+                        'factura' => $registro_rotaciones->Facturas,
+                        'factura_proveedor' => $registro_rotaciones->FA_provee,
+                        'fecha' => $registro_rotaciones->fecha,
+                        'fecha_factura' => $registro_rotaciones->fecha_FA,
+                        'fecha_legalizacion' => $registro_rotaciones->legalizado,
+                        'fecha_vencimiento' => $registro_rotaciones->fecha_vence,
+                        'id_area' => $id_area,
+                        'id_compra' => $id_compra,
+                        'id_costo' => $id_costo,
+                        'id_encargado' => $id_encargado,
+                        'id_ordenes' => $id_ordenes,
+                        'id_puc' => $puc_id,
+                        'id_tipo_rotacion' => $registro_rotaciones->tipo,
+                        'id_usuario' => $id_usuario,
+                        'item_rotacion' => $registro_rotaciones->item_rt,
+                        'letra' => $registro_rotaciones->letra,
+                        'letra_cta' => $registro_rotaciones->letra_cta,
+                        'n_compra' => $registro_rotaciones->orden_compra,
+                        'n_ordenes' => $n_ordenes,
+                        'n_remision_prov' => null,
+                        'n_rotacion' => $registro_rotaciones->doc,
+                        'observaciones' => $observaciones,
+                        'puc_contra' => $registro_rotaciones->puc_contra,
+                        'puc_ivart' => $registro_rotaciones->puc_ivart,
+                        'puc_prodrt' => $registro_rotaciones->puc_prodrt,
+                        'puc_rticart' => $registro_rotaciones->puc_rticart,
+                        'puc_rtftert' => $registro_rotaciones->puc_rtftert,
+                        'puc_rtivart' => $registro_rotaciones->puc_rtivart,
+                        'rtfte_rt' => $registro_rotaciones->rtfte_rt,
+                        'rtica_rt' => $registro_rotaciones->rtica_rt,
+                        'rtiva_rt' => $registro_rotaciones->rtiva_rt,
+                        'vr_total' => $registro_rotaciones->vTotal_rot,
+                        'vr_unidad' => $registro_rotaciones->vUnidad_rot,
+                        'id_inventario' => $id_inventario
+                    ]);
+
+
+                }catch(PDOException $e){
+                    $conexion_migracion_prueba->rollBack();
+                    echo "<pre>";
+                    echo "Hay un problema con el id_rotacion ".$registro_rotaciones->id_rotacion."<br> ".$e->getMessage();exit;
+                }
+
+                $registros_insertados++;
+
+            }//while($registro_rotaciones = $consulta_dt_rotacion->fetch(PDO::FETCH_OBJ))
+        
+
+            $conexion_migracion_prueba->commit();
+
+            //Asignamos la llave primaria con autoincremental 
+
+            $conexion_migracion_prueba->exec("
+                ALTER TABLE dt_rotacion
+                MODIFY id_rotacion INT AUTO_INCREMENT PRIMARY KEY
+            ");
+
+            // Finaliza timer y entregamos mensaje 
+
+            $tiempo_fin = microtime(true);
+            $tiempo_transcurrido = $tiempo_fin - $tiempo_inicio;
+
+            $mensaje = "Migración dt_rotacion completada ".$registros_insertados." registros insertados en ".$tiempo_transcurrido." segundos"."\n<br>".$registros_no_incluidos." registros no incluidos por ser tipo 7 (Duplicados de los traslados tipo 25)";
+
+            return $mensaje;
+
+
+ 
+        }
+
     }
 
 ?>
