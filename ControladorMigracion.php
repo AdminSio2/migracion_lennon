@@ -2921,7 +2921,7 @@
                 KEY `indx_n_rotacion` (`n_rotacion`),
                 KEY `indx_cod_prod` (`cod_prod`),
                 CONSTRAINT `dt_rotacion_ibfk_1` FOREIGN KEY (`id_inventario`) REFERENCES `dt_inventario` (`id_inventario`)
-                ) ENGINE=InnoDB AUTO_INCREMENT=21450 DEFAULT CHARSET=utf8mb3;
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
             ");
 
             $array_areas = $array_info_global['id_area'];
@@ -3091,6 +3091,553 @@
 
 
  
+        }
+
+        public static function migraDtSolicitudGR($conexion_sio1,$conexion_migracion_prueba,$array_info_global){
+
+            //Iniciamos timer
+
+            $tiempo_inicio = microtime(true);
+            
+
+            //Hacemos el array con la información del dt_solicitud_g_r del Sio 1
+
+            $consulta_dt_solicitud_g_r = $conexion_sio1->query("
+                SELECT id_solicitudgr,fecha_registro,garantia,descripcion,n_solicitud,estado,nombre_g_r,
+                archivo,archivo_2,archivo_3,valor_g_r,sub_causa,reporta,id_orden  from dt_solicitud_g_r dsgr 
+            ");
+
+            $array_dt_solicitud_g_r = $consulta_dt_solicitud_g_r->fetchAll(PDO::FETCH_OBJ);
+
+            $conexion_migracion_prueba->exec("
+                CREATE TABLE `dt_solicitud_g_r` (
+                `id_solicitud_g_r` int NOT NULL AUTO_INCREMENT,
+                `fecha_registro` datetime(6) NOT NULL,
+                `tipo_g_r` int NOT NULL COMMENT 'Garantía  =  1 , Reproceso = 0',
+                `descripcion` varchar(608) NOT NULL,
+                `n_solicitud` int NOT NULL,
+                `estado` int NOT NULL,
+                `nombre_g_r` varchar(256) NOT NULL,
+                `archivo_1` varchar(256) NOT NULL,
+                `archivo_2` varchar(256) DEFAULT NULL,
+                `archivo_3` varchar(256) DEFAULT NULL,
+                `valor_g_r` double DEFAULT NULL,
+                `id_causas` int NOT NULL,
+                `user_id` int NOT NULL,
+                `id_ordenes` int NOT NULL,
+                `id_orden` int DEFAULT NULL,
+                `id_solicitudgr` int DEFAULT NULL,
+                PRIMARY KEY (`id_solicitud_g_r`),
+                KEY `fk_dt_solicitud_g_r_dt_causas1` (`id_causas`),
+                KEY `fk_dt_solicitud_g_r_user1` (`user_id`),
+                KEY `fk_dt_solicitud_g_r_dt_ordenes1` (`id_ordenes`),
+                CONSTRAINT `fk_dt_solicitud_g_r_dt_causas1` FOREIGN KEY (`id_causas`) REFERENCES `dt_causas` (`id_causas`),
+                CONSTRAINT `fk_dt_solicitud_g_r_dt_ordenes1` FOREIGN KEY (`id_ordenes`) REFERENCES `dt_ordenes` (`id_ordenes`),
+                CONSTRAINT `fk_dt_solicitud_g_r_user1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+            ");
+
+            $array_usuarios = $array_info_global['codVendedor=>id'];
+
+            $registros_insertados = 0;
+
+            $conexion_migracion_prueba->beginTransaction();
+
+            foreach($array_dt_solicitud_g_r as $registro_solicitud_g_r){
+
+                try{
+
+                    $user_id = array_key_exists($registro_solicitud_g_r->reporta,$array_usuarios)?$array_usuarios[$registro_solicitud_g_r->reporta]:null;
+
+                    $insert_registro = $conexion_migracion_prueba->prepare("
+                        INSERT INTO dt_solicitud_g_r(fecha_registro,tipo_g_r,descripcion,n_solicitud,estado,nombre_g_r,archivo_1,archivo_2,archivo_3,
+                        valor_g_r,id_causas,user_id,id_ordenes) VALUES(:fecha_registro,:tipo_g_r,:descripcion,:n_solicitud,:estado,
+                        :nombre_g_r,:archivo_1,:archivo_2,:archivo_3,:valor_g_r,:id_causas,:user_id,:id_ordenes)
+                    ");
+
+                    $insert_registro->execute([
+                        'fecha_registro' => $registro_solicitud_g_r->fecha_registro,
+                        'tipo_g_r' => $registro_solicitud_g_r->garantia,
+                        'descripcion' => $registro_solicitud_g_r->descripcion,
+                        'n_solicitud' => $registro_solicitud_g_r->n_solicitud,
+                        'estado' => $registro_solicitud_g_r->estado,
+                        'nombre_g_r' => $registro_solicitud_g_r->nombre_g_r,
+                        'archivo_1' => $registro_solicitud_g_r->archivo,
+                        'archivo_2' => $registro_solicitud_g_r->archivo_2,
+                        'archivo_3' => $registro_solicitud_g_r->archivo_3,
+                        'valor_g_r' => $registro_solicitud_g_r->valor_g_r,
+                        'id_causas' => $registro_solicitud_g_r->sub_causa,
+                        'user_id' => $user_id,
+                        'id_ordenes' => $registro_solicitud_g_r->id_orden
+                    ]);
+
+                }catch(PDOException $e){
+                    $conexion_migracion_prueba->rollBack();
+                    echo "<pre>";
+                    echo "Hay un problema con el id_solicitudgr ".$registro_solicitud_g_r->id_solicitudgr."<br> ".$e->getMessage();exit;
+                }
+
+                $registros_insertados++;
+
+            }
+
+            $conexion_migracion_prueba->commit();
+
+            
+            $tiempo_fin = microtime(true);
+            $tiempo_transcurrido = $tiempo_fin - $tiempo_inicio;
+
+            $mensaje = "Migración dt_solicitud_g_r completada, ".$registros_insertados." registros insertados en ".$tiempo_transcurrido." segundos"."\n<br>";
+
+            return $mensaje;
+
+        }
+
+        public static function migraDtHistoricoGR($conexion_sio1,$conexion_migracion_prueba,$array_info_global){
+
+            //Iniciamos timer
+
+            $tiempo_inicio = microtime(true);
+            
+
+            //Hacemos el array con la información del dt_historico_g_r del Sio 1
+
+            $consulta_dt_historico_g_r = $conexion_sio1->query("
+                SELECT * FROM dt_historico_g_r
+            ");
+
+            $conexion_migracion_prueba->exec("
+                CREATE TABLE `dt_historico_g_r` (
+                `id_historico_g_r` int NOT NULL AUTO_INCREMENT,
+                `fecha_registro` date NOT NULL,
+                `observacion` varchar(256) NOT NULL,
+                `observacion_apro` varchar(256) NOT NULL,
+                `id_solicitud_g_r` int NOT NULL,
+                `id_user` int NOT NULL,
+                PRIMARY KEY (`id_historico_g_r`),
+                KEY `fk_dt_historico_g_r_dt_solicitud_g_r1` (`id_solicitud_g_r`),
+                KEY `fk_dt_historico_g_r_user1` (`id_user`),
+                CONSTRAINT `fk_dt_historico_g_r_dt_solicitud_g_r1` FOREIGN KEY (`id_solicitud_g_r`) REFERENCES `dt_solicitud_g_r` (`id_solicitud_g_r`),
+                CONSTRAINT `fk_dt_historico_g_r_user1` FOREIGN KEY (`id_user`) REFERENCES `user` (`id`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+            ");
+
+            $array_dt_historico_g_r = $consulta_dt_historico_g_r->fetchAll(PDO::FETCH_OBJ);
+
+            $array_usuarios = $array_info_global['codVendedor=>id'];
+
+            $array_solicitud = $array_info_global['n_solicitud=>id_solicitud_g_r'];
+
+            $registros_insertados = 0;
+
+            $conexion_migracion_prueba->beginTransaction();
+
+            foreach($array_dt_historico_g_r as $registro_historico_g_r){
+
+                try{
+
+                    $id_user = array_key_exists($registro_historico_g_r->idUser,$array_usuarios)?$array_usuarios[$registro_historico_g_r->idUser]:989;
+
+                    $id_solicitud_g_r = array_key_exists($registro_historico_g_r->n_solicitud,$array_solicitud)?$array_solicitud[$registro_historico_g_r->n_solicitud]:null;
+
+                    $observacion_apro = $registro_historico_g_r->observacion_apro != null ? $registro_historico_g_r->observacion_apro:'Sin comentarios desde el Sio1';
+
+                    $insert_registro = $conexion_migracion_prueba->prepare("
+                        INSERT INTO dt_historico_g_r(fecha_registro,observacion,observacion_apro,id_solicitud_g_r,id_user)
+                        VALUES(:fecha_registro,:observacion,:observacion_apro,:id_solicitud_g_r,:id_user)
+                    ");
+
+                    $insert_registro->execute([
+                        'fecha_registro' => $registro_historico_g_r->fecha,
+                        'observacion' => $registro_historico_g_r->observacion, 
+                        'observacion_apro' => $observacion_apro,
+                        'id_solicitud_g_r' => $id_solicitud_g_r,
+                        'id_user' => $id_user
+                    ]);
+
+                }catch(PDOException $e){
+                    $conexion_migracion_prueba->rollBack();
+                    echo "<pre>";
+                    echo "Hay un problema con el id_historico_g_r ".$registro_historico_g_r->id_historico_g_r."<br> ".$e->getMessage();exit;
+                }
+
+                $registros_insertados++;
+
+            }
+
+            $conexion_migracion_prueba->commit();
+
+            
+            $tiempo_fin = microtime(true);
+            $tiempo_transcurrido = $tiempo_fin - $tiempo_inicio;
+
+            $mensaje = "Migración dt_historico_g_r completada, ".$registros_insertados." registros insertados en ".$tiempo_transcurrido." segundos"."\n<br>";
+
+            return $mensaje;
+
+        }
+
+        public static function migraDtFacturaProveedor($conexion_sio1,$conexion_migracion_prueba,$array_info_global){
+
+            //Iniciamos timer
+
+            $tiempo_inicio = microtime(true);
+            
+
+            //Hacemos el array con la información del dt_fa_provee del Sio 1
+
+            $consulta_dt_fa_provee = $conexion_sio1->query("
+                SELECT id_fa,cons_contab,factura,fecha_ref,fecha_FA,fecha_vence,nit_fa,autoriza,
+                valor,factura,rc,oc,op,puc_valor,ivaVr,rtFteVr,rtIvaVr,rtIcaVr,puc_ivaVr,puc_rtFteVr,
+                puc_rtIvaVr,puc_rtIcaVr from dt_fa_provee order by id_fa
+            ");
+
+            $array_dt_fa_provee = $consulta_dt_fa_provee->fetchAll(PDO::FETCH_OBJ);
+
+            $conexion_migracion_prueba->exec("
+                CREATE TABLE `dt_factura_proveedor` (
+                `id_factura_proveedor` int NOT NULL AUTO_INCREMENT,
+                `n_factura` int DEFAULT NULL,
+                `factura` varchar(100) DEFAULT NULL,
+                `fecha_creacion` datetime DEFAULT NULL,
+                `fecha_factura` date DEFAULT NULL,
+                `fecha_vencimiento` date DEFAULT NULL,
+                `id_proveedor` int NOT NULL,
+                `id_usuario` int NOT NULL,
+                `valor` double DEFAULT NULL,
+                `estado` smallint DEFAULT NULL,
+                `n_rotaciones` varchar(50) DEFAULT NULL,
+                `id_compras` varchar(50) DEFAULT NULL,
+                `n_ordenes` varchar(50) DEFAULT NULL,
+                `id_tipo_factura` smallint NOT NULL,
+                `puc_prodrt` varchar(30) DEFAULT NULL,
+                `iva_rt` double DEFAULT NULL,
+                `rtfte_rt` double DEFAULT NULL,
+                `rtiva_rt` double DEFAULT NULL,
+                `rtica_rt` double DEFAULT NULL,
+                `puc_ivart` varchar(30) DEFAULT NULL,
+                `puc_rtftert` varchar(30) DEFAULT NULL,
+                `puc_rtivart` varchar(30) DEFAULT NULL,
+                `puc_rticart` varchar(30) DEFAULT NULL,
+                PRIMARY KEY (`id_factura_proveedor`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+            ");
+
+            $array_proveedores;
+
+            $array_usuarios = $array_info_global['vendedor=>id'];
+
+            $array_proveedores = $array_info_global['nit=>id_proveedores'];
+
+            $registros_insertados = 0;
+            $registros_no_incluidos = 0;
+
+            $conexion_migracion_prueba->beginTransaction();
+
+            foreach($array_dt_fa_provee as $registro_fa_prove){
+
+                try{
+                    if($registro_fa_prove->nit_fa == 444444625){
+                        $id_proveedor = 1945;
+                    }
+                    elseif(array_key_exists($registro_fa_prove->nit_fa,$array_proveedores)){
+                        $id_proveedor = $array_proveedores[$registro_fa_prove->nit_fa];
+                    }else{
+                        $registros_no_incluidos++;
+                        continue;
+                    }
+
+                    if($registro_fa_prove->autoriza == 'NELSON FORERO'){
+                        $id_usuarios = 55;
+                    }else{
+                        $id_usuarios = array_key_exists($registro_fa_prove->autoriza,$array_usuarios)?$array_usuarios[$registro_fa_prove->autoriza]:1;
+                    }
+                    
+
+                    $insert_registro = $conexion_migracion_prueba->prepare("
+                        INSERT INTO dt_factura_proveedor(n_factura,factura,fecha_creacion,fecha_factura,fecha_vencimiento,id_proveedor,id_usuario,
+                        valor,estado,n_rotaciones,id_compras,n_ordenes,id_tipo_factura,puc_prodrt,iva_rt,rtfte_rt,rtiva_rt,rtica_rt,puc_ivart,puc_rtftert,
+                        puc_rtivart,puc_rticart) VALUES (:n_factura,:factura,:fecha_creacion,:fecha_factura,:fecha_vencimiento,:id_proveedor,:id_usuario,
+                        :valor,:estado,:n_rotaciones,:id_compras,:n_ordenes,:id_tipo_factura,:puc_prodrt,:iva_rt,:rtfte_rt,:rtiva_rt,:rtica_rt,:puc_ivart,
+                        :puc_rtftert,:puc_rtivart,:puc_rticart)
+                    ");
+
+                    $insert_registro->execute([
+                        'n_factura' => $registro_fa_prove->cons_contab,
+                        'factura' => $registro_fa_prove->factura,
+                        'fecha_creacion' => $registro_fa_prove->fecha_ref,
+                        'fecha_factura' => $registro_fa_prove->fecha_FA,
+                        'fecha_vencimiento' => $registro_fa_prove->fecha_vence,
+                        'id_proveedor' => $id_proveedor,
+                        'id_usuario' => $id_usuarios,
+                        'valor' => $registro_fa_prove->valor,
+                        'estado' => $registro_fa_prove->factura,
+                        'n_rotaciones' => $registro_fa_prove->rc,
+                        'id_compras' => $registro_fa_prove->oc,
+                        'n_ordenes' => $registro_fa_prove->op,
+                        'id_tipo_factura' => 1,
+                        'puc_prodrt' => $registro_fa_prove->puc_valor,
+                        'iva_rt' => $registro_fa_prove->ivaVr,
+                        'rtfte_rt' => $registro_fa_prove->rtFteVr,
+                        'rtiva_rt' => $registro_fa_prove->rtIvaVr,
+                        'rtica_rt' => $registro_fa_prove->rtIcaVr,
+                        'puc_ivart' => $registro_fa_prove->puc_ivaVr,
+                        'puc_rtftert' => $registro_fa_prove->puc_rtFteVr,
+                        'puc_rtivart' => $registro_fa_prove->puc_rtIvaVr,
+                        'puc_rticart' => $registro_fa_prove->puc_rtIcaVr
+                    ]);
+
+                }catch(PDOException $e){
+                    $conexion_migracion_prueba->rollBack();
+                    echo "<pre>";
+                    echo "Hay un problema con el id_fa ".$registro_fa_prove->id_fa."<br> ".$e->getMessage();exit;
+                }
+
+                $registros_insertados++;
+
+            }
+
+            $conexion_migracion_prueba->commit();
+
+            
+            $tiempo_fin = microtime(true);
+            $tiempo_transcurrido = $tiempo_fin - $tiempo_inicio;
+
+            $mensaje = "Migración dt_factura_proveedor completada, ".$registros_insertados." registros insertados en ".$tiempo_transcurrido." segundos"."\n<br>".$registros_no_incluidos." registros no incluidos por pertenecer a proveedores borrados de la bd, no puede haber registro sin id_proveedor creado";
+
+            return $mensaje;
+
+
+        }
+
+        public static function migraDtFactura($conexion_sio1,$conexion_migracion_prueba,$array_info_global){
+
+            //Iniciamos timer
+
+            $tiempo_inicio = microtime(true);
+            
+
+            //Hacemos el array con la información del dt_remisiones(Solo remisiones relacionadas con facturas) del Sio 1
+
+            $consulta_dt_remisiones_fac = $conexion_sio1->query("
+                SELECT r.id_remision,c.nFactura,r.nOrden,c.elaboro,c.actualiza,c.idVend,c.idCliente,c.valorVenta,c.valor,c.fechaElaboro,c.fechactualiza,c.fechaFactura,c.fechaVence,c.fechaRecaudo,c.cotizacion,
+                c.forma_pago,c.concepto,c.estado,c.plazo,r.iva,r.rFuente,r.rIva,r.rIca,c.notaCredito,r.puc_cuenta,r.cta_iva,r.cta_rfte,r.cta_rtiva,r.cta_rtica,c.comision,c.anticipo,c.cta_anticipo,c.RC_anticipo,
+                c.contactoFA,c.aplicaVT,c.estadoTraza,c.anoIndicador,c.estadoAn,c.observaFA,r.item_rm,c.ordenCompra,r.cantidad,r.cod_prod,r.cod_itemop,r.ref,r.vrUnidad,r.descuento,r.vrTotal,r.puc_id,c.saldo,
+                r.letra,r.letra_cta,r.puc_contra,c.anuladas,r.idCliente FROM dt_cartera c INNER JOIN dt_remisiones r ON c.nFactura = r.factura
+                and r.factura != 0 order by c.nFactura
+            ");
+
+            $array_dt_remisiones = $consulta_dt_remisiones_fac->fetchAll(PDO::FETCH_OBJ);
+
+            $conexion_migracion_prueba->exec("
+                CREATE TABLE `dt_factura` (
+                `id_factura` int NOT NULL AUTO_INCREMENT,
+                `n_factura` int NOT NULL,
+                `n_ordenes` int DEFAULT NULL,
+                `id_usuario` int NOT NULL,
+                `id_usuario_act` int DEFAULT NULL,
+                `id_vendedor` int DEFAULT NULL,
+                `id_cliente` int NOT NULL,
+                `valor_venta` double DEFAULT NULL,
+                `valor` double DEFAULT NULL,
+                `fecha_creacion` datetime DEFAULT NULL,
+                `fecha_actualizacion` datetime DEFAULT NULL,
+                `fecha_factura` date DEFAULT NULL,
+                `fecha_vencimiento` date DEFAULT NULL,
+                `fecha_recaudo` datetime DEFAULT NULL,
+                `cotizacion` varchar(30) DEFAULT NULL,
+                `id_forma_pago` int DEFAULT NULL,
+                `concepto` varchar(50) DEFAULT NULL,
+                `estado` smallint DEFAULT NULL,
+                `plazo` int DEFAULT NULL,
+                `iva` double DEFAULT NULL,
+                `r_fuente` double DEFAULT NULL,
+                `r_iva` double DEFAULT NULL,
+                `r_ica` double DEFAULT NULL,
+                `nota_credito` varchar(50) DEFAULT NULL,
+                `puc_cuenta` varchar(20) DEFAULT NULL,
+                `cta_iva` varchar(20) DEFAULT NULL,
+                `cta_rfte` varchar(20) DEFAULT NULL,
+                `cta_rtiva` varchar(20) DEFAULT NULL,
+                `cta_rtica` varchar(20) DEFAULT NULL,
+                `comision` double DEFAULT NULL,
+                `anticipo` double DEFAULT NULL,
+                `cta_anticipo` varchar(20) DEFAULT NULL,
+                `rc_anticipo` varchar(30) DEFAULT NULL,
+                `contacto_factura` varchar(100) DEFAULT NULL,
+                `aplica_vt` smallint DEFAULT NULL,
+                `estado_traza` smallint DEFAULT NULL,
+                `ano_indicador` int DEFAULT NULL,
+                `estado_an` smallint DEFAULT NULL,
+                `observaciones` varchar(556) DEFAULT NULL,
+                `items` int DEFAULT NULL,
+                `valor_bruto` double DEFAULT NULL,
+                `orden_compra` varchar(110) DEFAULT NULL,
+                `cantidad` float DEFAULT NULL,
+                `codigo` varchar(50) DEFAULT NULL,
+                `referencia` varchar(556) DEFAULT NULL,
+                `id_codigo_categoria` int DEFAULT NULL,
+                `vr_unidad` double DEFAULT NULL,
+                `descuento` double DEFAULT NULL,
+                `vr_total` double DEFAULT NULL,
+                `id_puc_oc` int DEFAULT NULL,
+                `abonos` double DEFAULT NULL,
+                `saldo` double DEFAULT NULL,
+                `letra` varchar(2) DEFAULT 'F',
+                `letra_cta` varchar(10) DEFAULT '001',
+                `puc_contra` varchar(16) DEFAULT NULL,
+                `anuladas` tinyint DEFAULT '0',
+                `id_remision` int DEFAULT NULL,
+                `nit` varchar(100) DEFAULT NULL,
+                PRIMARY KEY (`id_factura`)
+                ) ENGINE=InnoDB AUTO_INCREMENT=8276 DEFAULT CHARSET=utf8mb3;
+            ");
+
+            $array_vendedor = $array_info_global['vendedor=>id'];
+
+            $array_vendedor_secundario = [
+                'HERRERA AMAYA MARTHA LUCIA' => 1135,
+                'SANDRA MARCELA ESPA├æOL MARROQUIN' => 474,
+                'Ret. MILENA OLARTE' => 37,
+                'ING. HERRERA LEON H. YESID' => 134,
+                'VASQUEZ LOPEZ BRIAN ALEXIS' => 533,
+                'FORERO ARTUNDUAGA LAURA NATALIA' => 517,
+                'MARTINEZ PRADA JEFFERSON ALEXANDER' => 1084,
+                'MARIBEL MOLINA COLLAZOS' => 265
+            ];
+
+            $array_cod_vendedor = $array_info_global['codVendedor=>id'];
+
+            $array_cliente = $array_info_global['nit=>id_cliente'];
+
+            $array_forma_pago = $array_info_global['id_forma_pago'];
+
+            $registros_insertados = 0;
+
+            $registros_no_incluidos = 0;
+
+            $conexion_migracion_prueba->beginTransaction();
+
+
+            foreach($array_dt_remisiones as $registro_dt_remisiones){
+
+                try{
+
+                    if(!array_key_exists($registro_dt_remisiones->idCliente,$array_cliente)){$registros_no_incluidos++; continue;}
+
+                    if(array_key_exists(trim($registro_dt_remisiones->elaboro),$array_vendedor)){
+                        $id_usuario = array_key_exists(trim($registro_dt_remisiones->elaboro),$array_vendedor);
+                    }
+                    elseif(array_key_exists(trim($registro_dt_remisiones->elaboro),$array_vendedor_secundario)){
+                        $id_usuario = $array_vendedor_secundario[trim($registro_dt_remisiones->elaboro)];
+                    }else{
+                        $registros_no_incluidos++;
+                        continue;
+                    }
+
+                    
+                    $id_usuario_act = array_key_exists(trim($registro_dt_remisiones->actualiza),$array_vendedor)?$array_vendedor[trim($registro_dt_remisiones->actualiza)]:null;
+                    $id_vendedor = array_key_exists($registro_dt_remisiones->idVend,$array_cod_vendedor)?$array_cod_vendedor[$registro_dt_remisiones->idVend]:null;
+                    $id_cliente = array_key_exists($registro_dt_remisiones->idCliente,$array_cliente)?$array_cliente[$registro_dt_remisiones->idCliente]['id_cliente']:null;
+                    $id_forma_pago = array_key_exists($registro_dt_remisiones->forma_pago,$array_forma_pago)?$array_forma_pago[$registro_dt_remisiones->forma_pago]:null;
+                
+
+                    $insert_registro = $conexion_migracion_prueba->prepare("
+                        INSERT INTO dt_factura(n_factura,n_ordenes,id_usuario,id_usuario_act,id_vendedor,id_cliente,valor_venta,valor,
+                        fecha_creacion,fecha_actualizacion,fecha_factura,fecha_vencimiento,fecha_recaudo,cotizacion,id_forma_pago,concepto,estado,
+                        plazo,iva,r_fuente,r_iva,r_ica,nota_credito,puc_cuenta,cta_iva,cta_rfte,cta_rtiva,cta_rtica,comision,anticipo,cta_anticipo,
+                        rc_anticipo,contacto_factura,aplica_vt,estado_traza,ano_indicador,estado_an,observaciones,items,valor_bruto,orden_compra,
+                        cantidad,codigo,referencia,id_codigo_categoria,vr_unidad,descuento,vr_total,id_puc_oc,abonos,saldo,letra,letra_cta,
+                        puc_contra,anuladas,id_remision,nit) VALUES(:n_factura,:n_ordenes,:id_usuario,:id_usuario_act,:id_vendedor,:id_cliente,
+                        :valor_venta,:valor,:fecha_creacion,:fecha_actualizacion,:fecha_factura,:fecha_vencimiento,:fecha_recaudo,:cotizacion,:id_forma_pago,
+                        :concepto,:estado,:plazo,:iva,:r_fuente,:r_iva,:r_ica,:nota_credito,:puc_cuenta,:cta_iva,:cta_rfte,:cta_rtiva,:cta_rtica,:comision,:anticipo,
+                        :cta_anticipo,:rc_anticipo,:contacto_factura,:aplica_vt,:estado_traza,:ano_indicador,:estado_an,:observaciones,:items,:valor_bruto,
+                        :orden_compra,:cantidad,:codigo,:referencia,:id_codigo_categoria,:vr_unidad,:descuento,:vr_total,:id_puc_oc,:abonos,:saldo,:letra,:letra_cta,
+                        :puc_contra,:anuladas,:id_remision,:nit)
+                    ");
+
+                    $insert_registro->execute([
+                        'n_factura' => $registro_dt_remisiones->nFactura,
+                        'n_ordenes' => $registro_dt_remisiones->nOrden,
+                        'id_usuario' => $id_usuario,
+                        'id_usuario_act' => $id_usuario_act,
+                        'id_vendedor' => $id_vendedor,
+                        'id_cliente' => $id_cliente,
+                        'valor_venta' => $registro_dt_remisiones->valorVenta,
+                        'valor' => $registro_dt_remisiones->valor,
+                        'fecha_creacion' => $registro_dt_remisiones->fechaElaboro, 
+                        'fecha_actualizacion' => $registro_dt_remisiones->fechactualiza,
+                        'fecha_factura' => $registro_dt_remisiones->fechaFactura,
+                        'fecha_vencimiento' => $registro_dt_remisiones->fechaVence,
+                        'fecha_recaudo' => $registro_dt_remisiones->fechaRecaudo,
+                        'cotizacion' => $registro_dt_remisiones->cotizacion,
+                        'id_forma_pago' => $id_forma_pago,
+                        'concepto' => $registro_dt_remisiones->concepto,
+                        'estado' => $registro_dt_remisiones->estado,
+                        'plazo' => $registro_dt_remisiones->plazo,
+                        'iva' => $registro_dt_remisiones->iva,
+                        'r_fuente' => $registro_dt_remisiones->rFuente,
+                        'r_iva' => $registro_dt_remisiones->rIva,
+                        'r_ica' => $registro_dt_remisiones->rIca,
+                        'nota_credito' => $registro_dt_remisiones->notaCredito,
+                        'puc_cuenta' => $registro_dt_remisiones->puc_cuenta,
+                        'cta_iva' => $registro_dt_remisiones->cta_iva,
+                        'cta_rfte' => $registro_dt_remisiones->cta_rfte,
+                        'cta_rtiva' => $registro_dt_remisiones->cta_rtiva,
+                        'cta_rtica' => $registro_dt_remisiones->cta_rtica,
+                        'comision' => $registro_dt_remisiones->comision,
+                        'anticipo' => $registro_dt_remisiones->anticipo,
+                        'cta_anticipo' => $registro_dt_remisiones->cta_anticipo,
+                        'rc_anticipo' => $registro_dt_remisiones->RC_anticipo,
+                        'contacto_factura' => $registro_dt_remisiones->contactoFA,
+                        'aplica_vt' => 1,
+                        'estado_traza' => $registro_dt_remisiones->estadoTraza,
+                        'ano_indicador' => $registro_dt_remisiones->anoIndicador,
+                        'estado_an' => $registro_dt_remisiones->estadoAn,
+                        'observaciones' => $registro_dt_remisiones->observaFA,
+                        'items' => $registro_dt_remisiones->item_rm,
+                        'valor_bruto' => $registro_dt_remisiones->valor,
+                        'orden_compra' => $registro_dt_remisiones->ordenCompra,
+                        'cantidad' => $registro_dt_remisiones->cantidad,
+                        'codigo' => $registro_dt_remisiones->cod_prod,
+                        'referencia' => $registro_dt_remisiones->ref,
+                        'id_codigo_categoria' => null,
+                        'vr_unidad' => $registro_dt_remisiones->vrUnidad,
+                        'descuento' => $registro_dt_remisiones->descuento,
+                        'vr_total' => $registro_dt_remisiones->vrTotal,
+                        'id_puc_oc' => $registro_dt_remisiones->puc_id,
+                        'abonos' => null,
+                        'saldo' => $registro_dt_remisiones->saldo,
+                        'letra' => $registro_dt_remisiones->letra,
+                        'letra_cta' => $registro_dt_remisiones->letra_cta,
+                        'puc_contra' => $registro_dt_remisiones->puc_contra,
+                        'anuladas' => $registro_dt_remisiones->anuladas,
+                        'id_remision' => $registro_dt_remisiones->id_remision,
+                        'nit' => $registro_dt_remisiones->idCliente
+                    ]);
+
+
+
+                }catch(PDOException $e){
+                    $conexion_migracion_prueba->rollBack();
+                    echo "<pre>";
+                    echo "Hay un problema con el id_remision ".$registro_dt_remisiones->id_remision."<br> ".$e->getMessage();exit;
+                }
+
+                $registros_insertados++;
+
+            }//foreach($array_dt_remisiones as $registro_dt_remisiones)
+
+            $conexion_migracion_prueba->commit();
+
+            
+            $tiempo_fin = microtime(true);
+            $tiempo_transcurrido = $tiempo_fin - $tiempo_inicio;
+
+            $mensaje = "Migración dt_factura completada, ".$registros_insertados." registros insertados en ".$tiempo_transcurrido." segundos"."\n<br>".$registros_no_incluidos." registros no incluidos por no tener usuario que elabora o un cliente borrado de la bd(registros anteriores al 2013)";
+
+            return $mensaje;
+
         }
 
     }

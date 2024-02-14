@@ -200,7 +200,30 @@
 
     $array_info_global['id_costos=>id_compras'] = ControladorInformacionGlobal::traeArrayIdCompras($conexion_migracion_prueba);
 
-    echo ControladorMigracion::migraDtRotacion($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
+    //echo ControladorMigracion::migraDtRotacion($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
+    //echo ControladorMigracion::migraDtSolicitudGR($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
+
+    //Traemos array: n_solicitud => id_solicitud_g_r
+
+    $array_info_global['n_solicitud=>id_solicitud_g_r'] = ControladorInformacionGlobal::traeArrayIdSolicitudGR($conexion_migracion_prueba);
+
+    //echo ControladorMigracion::migraDtHistoricoGR($conexion_sio1,$conexion_migracion_prueba,$array_info_global);
+
+
+    //Traemos array nit => id_proveedores
+
+    $array_info_global['nit=>id_proveedores'] = ControladorInformacionGlobal::traeArrayIdProveeNit($conexion_migracion_prueba);
+
+
+    //echo ControladorMigracion::migraDtFacturaProveedor($conexion_sio1,$conexion_migracion_prueba,$array_info_global);
+
+    //Traemos array id_forma_pago
+
+    $array_info_global['id_forma_pago'] = ControladorInformacionGlobal::traeArrayFormaPago();
+
+    echo ControladorMigracion::migraDtFactura($conexion_sio1,$conexion_migracion_prueba,$array_info_global);
+
+    
 
     $tiempo_fin = microtime(true);
     $tiempo_transcurrido = $tiempo_fin - $tiempo_inicio;

@@ -66,6 +66,26 @@
 
         }
 
+        public static function traeArrayFormaPago(){
+
+            $array_forma_pago = [
+                '30 d├¡as' => 29,
+                'Contado' => 41,
+                '60 d├¡as' => 31,
+                '45 d├¡as' => 30,
+                '15 d├¡as' => 40,
+                '75 d├¡as' => null,
+                '120 d├¡as' => null,
+                '90 d├¡as' => 32,
+                '30 DIAS' => 29,
+                '60 DIAS' => 31,
+                '90 dias' => 32
+            ];
+
+            return $array_forma_pago;
+
+        }
+
         public static function traeArrayTipoPago(){
 
             $array_tipo_pago = [
@@ -178,6 +198,24 @@
             } 
 
             return $array_cotizacion_reasignado;
+
+        }
+
+        public static function traeArrayIdSolicitudGR($conexion_migracion_prueba){
+
+            $consulta_solicitud_g_r = $conexion_migracion_prueba->query("SELECT id_solicitud_g_r,n_solicitud FROM dt_solicitud_g_r GROUP BY n_solicitud");
+
+            $array_solicitud_g_r = $consulta_solicitud_g_r->fetchAll(PDO::FETCH_OBJ);
+
+            $array_solicitud_g_r_reasignado = [];
+
+            foreach($array_solicitud_g_r as $registro_solicitud_g_r){
+
+                $array_solicitud_g_r_reasignado[$registro_solicitud_g_r->n_solicitud] = $registro_solicitud_g_r->id_solicitud_g_r;
+
+            }
+
+            return $array_solicitud_g_r_reasignado;
 
         }
 
@@ -391,6 +429,22 @@
 
             foreach($array_proveedores as $registro_proveedores){
                 $array_proveedores_reasignado[$registro_proveedores->empresa] = $registro_proveedores->id_proveedores;
+            }
+
+            return $array_proveedores_reasignado;
+
+        }
+
+        public static function traeArrayIdProveeNit($conexion_migracion_prueba){
+
+            $consulta_proveedores = $conexion_migracion_prueba->query("SELECT id_proveedores,nit  FROM dt_proveedores");
+
+            $array_proveedores = $consulta_proveedores->fetchAll(PDO::FETCH_OBJ);
+
+            $array_proveedores_reasignado = [];
+
+            foreach($array_proveedores as $registro_proveedores){
+                $array_proveedores_reasignado[$registro_proveedores->nit] = $registro_proveedores->id_proveedores;
             }
 
             return $array_proveedores_reasignado;
