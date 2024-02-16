@@ -2,6 +2,23 @@
 
     class ControladorInformacionGlobal{
 
+        public static function traeArrayCodProdTerm($conexion_migracion_prueba){
+
+            $consulta_ordenes = $conexion_migracion_prueba->query("SELECT n_ordenes,referencia,id_ordenes,cod FROM dt_ordenes");
+
+            $array_ordenes_reasignado = [];
+
+            while($registro_ordenes = $consulta_ordenes->fetch(PDO::FETCH_OBJ)){
+                $array_ordenes_reasignado[$registro_ordenes->n_ordenes][$registro_ordenes->referencia] = $registro_ordenes->id_ordenes;
+                if($registro_ordenes->cod != 0){
+                    $array_ordenes_reasignado[$registro_ordenes->n_ordenes][trim($registro_ordenes->cod)] = $registro_ordenes->id_ordenes;
+                }
+            }
+
+            return $array_ordenes_reasignado;
+
+        }
+
         public static function traeArrayDataCompras($conexion_migracion_prueba){
 
             $consulta_compras = $conexion_migracion_prueba->query("SELECT cod_producto,n_compra,id_compras,id_ordenes,id_costos,n_ordenes,puc_id from dt_compras GROUP BY n_compra,cod_producto");
@@ -101,6 +118,110 @@
             ];
             
             return $array_tipo_pago;
+
+        }
+
+        public static function traeArrayIdCheckList(){
+
+            $array_checklist = [
+                '13ZF TRANSPORTE RECOGER TERCEROS' => 13,
+                '14ZF VISITA TECNICA' => 8,
+                'ACABADOS' => null,
+                'ACABADOS (APROBACI├ôN)' => null,
+                'ACTA DE ENTREGA' => 41,
+                'ACTA FINAL' => 41,
+                'ANTICIPO' => 26,
+                'ARCHIVOS' => 9,
+                'ARTE FINAL APROBADO POR EL CLIENTE' => 35,
+                'ARTE GUIA SUMINISTRADO POR EL CLIENTE' => 34,
+                'ARTES FINALES' => 35,
+                'ARTES FINALES (APROBACI├ôN)' => 35,
+                'AUTORIZACION POR ESCRITO CON OK JEFE' => 19,
+                'AVAL TENICO, ECOMOMICO Y FECHAS DE ENTREGA' => 20,
+                'AVANCE 2' => 28,
+                'AVANCE 3' => 29,
+                'AVANCE 4' => 30,
+                'AVANCES DE OBRA' => 27, 
+                'CARTA BODEGA' => null,
+                'CERFICADO APORTES PARAFISCALES' => 68,
+                'CERTIFICADO DEL MIN TRABAJO' => 66,
+                'COBRO BODEGA' => null,
+                'CODIGOS' => 44,
+                'COLORES APROBADOS POR EL CLIENTE' => 37,
+                'COLORES EN ESTUDIO POR EL CLIENTE' => 36,
+                'COMIT├ë T├ëCNICO DE CIERRE' => 7,
+                'COMIT├ë T├ëCNICO DE INICIO' => 1,
+                'COMIT├ë T├ëCNICO DE INICIO LOGISTICA' => 2,
+                'CONTRATO' => 18,
+                'CREDITO VIGENTE' => null,
+                'CUENTA DE COBRO' => null,
+                'DESARROLLO PARA LA PRODUCCION' => null,
+                'DETALLES EST├ëTICOS' => null,
+                'DETALLES EST├ëTICOS (APROBACI├ôN)' => null,
+                'DIMENSIONES' => null,
+                'DIMENSIONES (APROBACI├ôN)' => null,
+                'EMPAQUE DE LA MUESTRA' => null,
+                'EMPAQUE DE LA MUESTRA (APROBACI├ôN)' => null,
+                'ENCUESTA DE SATISFACCION' => 42,
+                'FACTURADO AL 100%' => 32,
+                'FECHAS A FACTURAR' => 31,
+                'FOTOS PRODUCTO INSTALADO' => null,
+                'FUNCIONAMIENTO' => null,
+                'FUNCIONAMIENTO (APROBACI├ôN)' => null,
+                'IMPLANTACI├ôN' => null,
+                'IMPLANTACI├ôN (APROBACI├ôN)' => null,
+                'LOGO CORPORATIVO' => null,
+                'MODELO DE COMPROBACI├ôN (PROPORCIONES/TAMA├æOS)' => null,
+                'MODELO DE COMPROBACI├ôN (PROPORCIONES/TAMA├æOS) (APROBACI├ôN)' => null,
+                'MODELO ESTETICO (ACABADOS)' => null,
+                'MODELO ESTETICO (ACABADOS) (APROBACI├ôN)' => null,
+                'MODELO FUNCIONAL (USO)' => null,
+                'MODELO FUNCIONAL (USO) (APROBACI├ôN)' => null,
+                'MUESTRA ACCESORIOS' => 39,
+                'MUESTRA ACCESORIOS (APROBACI├ôN)' => 40,
+                'MUESTRA APROBADA POR EL CLIENTE' => 40,
+                'MUESTRA DE COLOR' => 39,
+                'MUESTRA DE COLOR (APROBACI├ôN)' => 40,
+                'MUESTRA DE IMPRESI├ôN (APROBACI├ôN)' => 39,
+                'MUESTRA EN EVALUACION POR EL CLIENTE' => 39,
+                'MUESTRA EN PROCESO DE PRODUCCION' => 38,
+                'MUESTRA HERRAJERIA' => 38,
+                'MUESTRA HERRAJERIA (APROBACI├ôN)' => 40,
+                'MUESTRAS' => 38,
+                'MUESTRAS DE MATERIALES' => 38,
+                'MUESTRAS DE MATERIALES (APROBACI├ôN)' => 40,
+                'MUESTRAS DE VINILOS' => 38,
+                'MUESTRAS DE VINILOS (APROBACI├ôN)' => 40,
+                'OC' => 17,
+                'OTROS' => 13,
+                'PAGO DEL FIC' => 67,
+                'PANTONES' => null,
+                'PAZ Y SALVO INSTALADORES Y NOMINA' => null,
+                'PEGUES DE MATERIAL' => null,
+                'PEGUES DE MATERIAL (APROBACI├ôN)' => null,
+                'PERMISOS' => null,
+                'POLIZA DE CALIDAD' => 23,
+                'POLIZA DE CUMPLIMIENTO' => 22,
+                'POLIZA DE NOMINA' => 24,
+                'POLIZA DE RESPOSABILIDAD CIVIL' => 25,
+                'POLIZAS BUEN MANEJO DE ANTICIPO' => 21,
+                'PROPUESTA DISE├æO' => null,
+                'PRORROGA DE POLIZA' => null,
+                'PROTOTIPO ESCALA REAL' => null,
+                'PROTOTIPO ESCALA REAL (APROBACI├ôN)' => null,
+                'PRUEBA DE FACTIBILIDAD' => null,
+                'PRUEBA DE FACTIBILIDAD (APROBACI├ôN)' => null,
+                'RECAUDADO AL 100%' => 33,
+                'REGISTRO DAMA' => 45,
+                'SECCI├ôN DEL PRODUCTO (COMPROBACI├ôN)' => null,
+                'SECCI├ôN DEL PRODUCTO (COMPROBACI├ôN) (APROBACI├ôN)' => null,
+                'UBICACI├ôN DEL PRODUCTO (FOTOMONTAJE)' => 54,
+                'UBICACI├ôN DEL PRODUCTO (FOTOMONTAJE) (APROBACI├ôN)' => 54,
+                'VISUALIZACI├ôN (FOTOMONTAJE, ESQUEMA ├ô RENDER)' => 54,
+                'VISUALIZACI├ôN (FOTOMONTAJE, ESQUEMA ├ô RENDER) (APROBACI├ôN)' => 54
+            ];
+
+            return $array_checklist;
 
         }
 
@@ -217,24 +338,6 @@
 
             return $array_solicitud_g_r_reasignado;
 
-        }
-
-        public static function traeArrayMedidas($conexion_migracion_prueba){
-
-           $consulta_medidas = $conexion_migracion_prueba->query("SELECT * FROM dt_medida");
-
-           $array_medidas = $consulta_medidas->fetchAll(PDO::FETCH_OBJ);
-
-           $array_medidas_reasignado = [];
-
-           foreach($array_medidas as $registro_medida){
-
-                $array_medidas_reasignado[trim($registro_medida->medida)] = $registro_medida->id_medida;
-
-           }
-
-           return $array_medidas_reasignado;
-            
         }
 
         public static function traeArrayIdInventario($conexion_migracion_prueba){
@@ -473,6 +576,24 @@
 
         }
 
+        public static function traeArrayMedidas($conexion_migracion_prueba){
+
+            $consulta_medidas = $conexion_migracion_prueba->query("SELECT * FROM dt_medida");
+ 
+            $array_medidas = $consulta_medidas->fetchAll(PDO::FETCH_OBJ);
+ 
+            $array_medidas_reasignado = [];
+ 
+            foreach($array_medidas as $registro_medida){
+ 
+                 $array_medidas_reasignado[trim($registro_medida->medida)] = $registro_medida->id_medida;
+ 
+            }
+ 
+            return $array_medidas_reasignado;
+             
+        }
+
         public static function traeArrayTipoScript(){
             $array_tipo_script = [
                 'ENSAM.LONA' => 1,
@@ -544,6 +665,7 @@
             return $array_user_reasignado;
 
         }
+
 
     }
 

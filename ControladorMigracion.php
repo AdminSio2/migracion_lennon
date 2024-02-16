@@ -3640,6 +3640,286 @@
 
         }
 
+        public static function migraDtRemision($conexion_sio1,$conexion_migracion_prueba,$array_info_global){
+
+            //Iniciamos timer
+
+            $tiempo_inicio = microtime(true);
+            
+
+            //Hacemos el array con la información del dt_remisiones(Sin las de factura) del Sio 1
+
+            $consulta_dt_remisiones = $conexion_sio1->query("
+                SELECT id_remision,ref,remision,item_rm,nOrden,dir_factura,tel_factura,cantidad,adicionales,
+                elaboro,fecha,entregarEn,entregaCiud,factura,cod_itemop,contacto_rem from dt_remisiones
+                WHERE factura = 0 AND factura not REGEXP'[a-zA-Z]' AND  nOrden not in (0,'',1)
+                AND nOrden is not null AND remision is not NULL 
+            ");
+
+            $array_dt_remisiones = $consulta_dt_remisiones->fetchAll(PDO::FETCH_OBJ);
+
+            $conexion_migracion_prueba->exec("
+                CREATE TABLE `dt_remision` (
+                `id_remision` int,
+                `n_remision` int NOT NULL,
+                `n_ordenes` int NOT NULL,
+                `id_ordenes` int NOT NULL,
+                `direccion_factura` varchar(50) DEFAULT NULL,
+                `telefono` varchar(50) DEFAULT NULL,
+                `nombre_contacto` varchar(50) DEFAULT NULL,
+                `cantidad` int DEFAULT NULL,
+                `id_usuario` int NOT NULL,
+                `fecha_creacion` datetime DEFAULT NULL,
+                `observaciones` varchar(100) DEFAULT NULL,
+                `adicionales` varchar(100) DEFAULT NULL,
+                `direccion_entrega` varchar(50) DEFAULT NULL,
+                `id_ciudad` int DEFAULT NULL,
+                `estado` smallint DEFAULT NULL,
+                `descripcion_anulacion` varchar(100) DEFAULT NULL,
+                `salida` smallint DEFAULT NULL
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+            ");
+
+            $array_vendedor = $array_info_global['vendedor=>id'];
+
+            $array_vendedor_secundario = [
+                'HERRERA AMAYA MARTHA LUCIA' => 1135,
+                'SANDRA MARCELA ESPA├æOL MARROQUIN' => 474,
+                'Ret. MILENA OLARTE' => 37,
+                'ING. HERRERA LEON H. YESID' => 134,
+                'VASQUEZ LOPEZ BRIAN ALEXIS' => 533,
+                'FORERO ARTUNDUAGA LAURA NATALIA' => 517,
+                'MARTINEZ PRADA JEFFERSON ALEXANDER' => 1084,
+                'MARIBEL MOLINA COLLAZOS' => 265,
+                'ALEJANDRO BOHORQUEZ' => 109,
+                'PABLO VASQUEZ' => 154,
+                'GP7 AP BELTRAN PEREZ CARLOS JAVIER' => 804,
+                'GP7 AP BUITRAGO CONTRERAS JOHAN CANER' => 752,
+                'GP7 AP TEJADA GRISALES SANTIAGO' => 790,
+                'GP7 AP MELO TABARES VICTOR ALFONSO' => 815,
+                'GP8 PINZON SANCHEZ DAVID ANDRES' => 764,
+                'GP8 AP ROZO ALARCON SERGIO JULIAN' => 695,
+                'GP7 AP GALEANO GUERRERO EDISON' => 726,
+                'GP7 AP CARVAJAL GONZALEZ CARLOS ANDRES' => 694,
+                'GP7 AP OSORIO SEQUEDA VANESSA' => 644,
+                'GP4 AP CARRILLO VELASQUEZ' => 645,
+                'GP4 DI AUCIQUE SABOGAL KAREN JIMENA' => 407,
+                'GP7 AP CARRILLO VELASQUEZ ALEJANDRO' =>  645
+            ];
+
+
+            $array_ordenes = $array_info_global['nOrden|referencia=>id_orden'];
+
+            $array_ordenes_item_rem = $array_info_global['n_ordenes|item_op=>id_ordenes'];
+
+            $registros_insertados = 0;
+
+            $registros_no_incluidos = 0;
+
+            $conexion_migracion_prueba->beginTransaction();
+
+            foreach($array_dt_remisiones as $registro_dt_remisiones){
+
+                try{
+                    $codigo_producto_remision = strtok($registro_dt_remisiones->ref, " ");
+                    $observaciones = null;
+
+                    if(array_key_exists($registro_dt_remisiones->nOrden,$array_ordenes)&&array_key_exists($registro_dt_remisiones->ref,$array_ordenes[$registro_dt_remisiones->nOrden])){
+                        $id_ordenes = $array_ordenes[$registro_dt_remisiones->nOrden][$registro_dt_remisiones->ref];
+                    }elseif(array_key_exists($registro_dt_remisiones->nOrden,$array_ordenes)&&array_key_exists($codigo_producto_remision,$array_ordenes[$registro_dt_remisiones->nOrden])){
+                        $id_ordenes = $array_ordenes[$registro_dt_remisiones->nOrden][$codigo_producto_remision];
+                    }
+                    elseif(array_key_exists($registro_dt_remisiones->nOrden,$array_ordenes_item_rem)&&array_key_exists($registro_dt_remisiones->item_rm,$array_ordenes_item_rem[$registro_dt_remisiones->nOrden])){
+                        $id_ordenes = $array_ordenes_item_rem[$registro_dt_remisiones->nOrden][$registro_dt_remisiones->item_rm]['id_ordenes'];
+                        $observaciones = "Referencia original: ".$registro_dt_remisiones->ref;
+                    }
+                    else{
+                        $registros_no_incluidos++;
+                        continue;
+                    }
+
+                    $nombre_contacto = ControladorFuncionesAuxiliares::formateaString($registro_dt_remisiones->contacto_rem);
+
+                    if(array_key_exists(trim($registro_dt_remisiones->elaboro),$array_vendedor)){
+                        $id_usuario = $array_vendedor[trim($registro_dt_remisiones->elaboro)];
+                    }
+                    elseif(array_key_exists(trim($registro_dt_remisiones->elaboro),$array_vendedor_secundario)){
+                        $id_usuario = $array_vendedor_secundario[trim($registro_dt_remisiones->elaboro)];
+                    }else{
+                        $registros_no_incluidos++;
+                        continue;
+                    }
+                    
+
+                    $insert_registro = $conexion_migracion_prueba->prepare("
+                        INSERT INTO dt_remision(id_remision,n_remision,n_ordenes,id_ordenes,direccion_factura,telefono,nombre_contacto,
+                        cantidad,id_usuario,fecha_creacion,observaciones,adicionales,direccion_entrega,id_ciudad,estado,descripcion_anulacion,
+                        salida) VALUES(:id_remision,:n_remision,:n_ordenes,:id_ordenes,:direccion_factura,:telefono,:nombre_contacto,
+                        :cantidad,:id_usuario,:fecha_creacion,:observaciones,:adicionales,:direccion_entrega,:id_ciudad,:estado,:descripcion_anulacion,
+                        :salida)
+                    ");
+
+                    $insert_registro->execute([
+                        'id_remision' => $registro_dt_remisiones->id_remision,
+                        'n_remision' => $registro_dt_remisiones->remision,
+                        'n_ordenes' => $registro_dt_remisiones->nOrden,
+                        'id_ordenes' => $id_ordenes,
+                        'direccion_factura' => $registro_dt_remisiones->dir_factura,
+                        'telefono' => $registro_dt_remisiones->tel_factura,
+                        'nombre_contacto' => $nombre_contacto,
+                        'cantidad' => $registro_dt_remisiones->cantidad,
+                        'id_usuario' => $id_usuario,
+                        'fecha_creacion' => $registro_dt_remisiones->fecha,
+                        'observaciones' => $observaciones."Ciudad: ".$registro_dt_remisiones->entregaCiud,
+                        'adicionales' => $registro_dt_remisiones->adicionales,
+                        'direccion_entrega' => $registro_dt_remisiones->entregarEn,
+                        'id_ciudad' => null,
+                        'estado' => null,
+                        'descripcion_anulacion' => null,
+                        'salida' => null
+                    ]);
+
+                }catch(PDOException $e){
+                    $conexion_migracion_prueba->rollBack();
+                    echo "<pre>";
+                    echo "Hay un problema con el id_remision ".$registro_dt_remisiones->id_remision."<br> ".$e->getMessage();exit;
+                }
+
+                $registros_insertados++;
+
+            }
+
+            $conexion_migracion_prueba->commit();
+
+            //Asignamos la llave primaria con autoincremental 
+
+            $conexion_migracion_prueba->exec("
+                ALTER TABLE dt_remision
+                MODIFY id_remision INT AUTO_INCREMENT PRIMARY KEY
+            ");
+
+            // Finaliza timer y entregamos mensaje 
+
+            $tiempo_fin = microtime(true);
+            $tiempo_transcurrido = $tiempo_fin - $tiempo_inicio;
+
+            $mensaje = "Migración dt_remision completada ".$registros_insertados." registros insertados en ".$tiempo_transcurrido." segundos"."\n<br>".$registros_no_incluidos." registros no incluidos por ser elaborados por usuarios borrados de la bd o no tener una conexión clara con el item de la op a la que pertenece";
+
+            return $mensaje;
+
+        }
+
+        public static function migraDtEntregables($conexion_sio1,$conexion_migracion_prueba,$array_info_global){
+
+            //Iniciamos timer
+
+            $tiempo_inicio = microtime(true);
+            
+
+            //Hacemos el array con la información del dt_entregables  del Sio 1
+
+            $consulta_dt_entregables = $conexion_sio1->query("
+                SELECT id_ent,nOrden,item,indice,estado,fecha_inicio,codVendedor,
+                producto,nom_costo from dt_entregables
+            ");
+
+            
+
+            $conexion_migracion_prueba->exec("
+                CREATE TABLE `dt_entregables` (
+                `id_entregables` int NOT NULL AUTO_INCREMENT,
+                `id_ordenes` int DEFAULT NULL,
+                `n_ordenes` int NOT NULL,
+                `id_area` int DEFAULT NULL,
+                `id_check_list` int DEFAULT NULL,
+                `id_check_list_padre` int DEFAULT NULL,
+                `indice` int DEFAULT NULL,
+                `descripcion` longtext,
+                `estado` smallint DEFAULT NULL,
+                `fecha_inicio` datetime DEFAULT NULL,
+                `id_usuario` int DEFAULT NULL,
+                `archivo` varchar(100) DEFAULT NULL,
+                `diseno` smallint DEFAULT NULL,
+                `comite_realizado` smallint DEFAULT NULL,
+                `id_orden` int DEFAULT NULL,
+                PRIMARY KEY (`id_entregables`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+            ");
+
+            $registros_insertados = 0;
+
+            $array_usuarios = $array_info_global['codVendedor=>id'];
+
+            $array_ordenes = $array_info_global['nOrden|referencia=>id_orden'];
+
+            $array_check_list = $array_info_global['id_check_list'];
+
+            $array_checklist_padre = [
+                15 => 1,
+                16 => 2,
+                17 => 3,
+                26 => 4,
+                34 => 5,
+                41 => 6,
+                48 => 7
+            ];
+
+            while($registro_entregables = $consulta_dt_entregables->fetch(PDO::FETCH_OBJ)){
+
+                try{
+
+                    $id_ordenes = array_key_exists($registro_entregables->nOrden,$array_ordenes)&&array_key_exists($registro_entregables->producto,$array_ordenes[$registro_entregables->nOrden])?$array_ordenes[$registro_entregables->nOrden][$registro_entregables->producto]:null;
+                    $id_check_list = array_key_exists($registro_entregables->nom_costo,$array_check_list)?$array_check_list[$registro_entregables->nom_costo]:null;
+                    if($id_check_list){
+                        $id_check_list_padre = array_key_exists($id_check_list,$array_checklist_padre)?$array_checklist_padre[$id_check_list]:null;
+                    }else{
+                        $id_check_list_padre = null;
+                    }
+                    $id_usuario = array_key_exists($registro_entregables->codVendedor,$array_usuarios)?$array_usuarios[$registro_entregables->codVendedor]:null;
+                    
+
+                    $insert_registro = $conexion_migracion_prueba->prepare("
+                        INSERT INTO dt_entregables(id_ordenes,n_ordenes,id_area,id_check_list,
+                        id_check_list_padre,estado,id_usuario,fecha_inicio) VALUES(:id_ordenes,
+                        :n_ordenes,:id_area,:id_check_list,:id_check_list_padre,:estado,:id_usuario,
+                        :fecha_inicio)
+                    ");
+
+                    $insert_registro->execute([
+                        'id_ordenes' => $id_ordenes,
+                        'n_ordenes' => $registro_entregables->nOrden,
+                        'id_area' => 1,
+                        'id_check_list' => $id_check_list,
+                        'id_check_list_padre' => $id_check_list_padre,
+                        'estado' => $registro_entregables->estado,
+                        'id_usuario' => $id_usuario,
+                        'fecha_inicio' => $registro_entregables->fecha_inicio
+                    ]);
+
+                }catch(PDOException $e){
+                    $conexion_migracion_prueba->rollBack();
+                    echo "<pre>";
+                    echo "Hay un problema con el id_ent ".$registro_dt_remisiones->id_remision."<br> ".$e->getMessage();exit;
+                }
+
+                $registros_insertados++;
+
+            }
+
+            $conexion_migracion_prueba->commit();
+
+
+            // Finaliza timer y entregamos mensaje 
+
+            $tiempo_fin = microtime(true);
+            $tiempo_transcurrido = $tiempo_fin - $tiempo_inicio;
+
+            $mensaje = "Migración dt_entregables completada ".$registros_insertados." registros insertados en ".$tiempo_transcurrido." segundos"."\n<br>";
+
+            return $mensaje;
+
+        }
+
     }
 
 ?>

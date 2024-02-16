@@ -221,9 +221,21 @@
 
     $array_info_global['id_forma_pago'] = ControladorInformacionGlobal::traeArrayFormaPago();
 
-    echo ControladorMigracion::migraDtFactura($conexion_sio1,$conexion_migracion_prueba,$array_info_global);
+    //echo ControladorMigracion::migraDtFactura($conexion_sio1,$conexion_migracion_prueba,$array_info_global);
 
+    //Traemos array cod_prodTerm => id_orden
+
+    $array_info_global['nOrden|referencia=>id_orden'] =  ControladorInformacionGlobal::traeArrayCodProdTerm($conexion_migracion_prueba);
+
+    //echo ControladorMigracion::migraDtRemision($conexion_sio1,$conexion_migracion_prueba,$array_info_global);
+
+    //Traemos array id_check_list 
+
+    $array_info_global['id_check_list'] = ControladorInformacionGlobal::traeArrayIdCheckList();
     
+
+    echo ControladorMigracion::migraDtEntregables($conexion_sio1,$conexion_migracion_prueba,$array_info_global);
+
 
     $tiempo_fin = microtime(true);
     $tiempo_transcurrido = $tiempo_fin - $tiempo_inicio;
