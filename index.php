@@ -234,7 +234,7 @@
     $array_info_global['id_check_list'] = ControladorInformacionGlobal::traeArrayIdCheckList();
     
 
-    echo ControladorMigracion::migraDtEntregables($conexion_sio1,$conexion_migracion_prueba,$array_info_global);
+    //echo ControladorMigracion::migraDtEntregables($conexion_sio1,$conexion_migracion_prueba,$array_info_global);
 
 
     $tiempo_fin = microtime(true);
