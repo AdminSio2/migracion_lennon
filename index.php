@@ -8,7 +8,7 @@
     $db = new Database();
 
     $conexion_sio1 = $db->contectarBDSio1();
-    $conexion_semana_prueba = $db->contectarBDSemanaPrueba();
+    //$conexion_semana_prueba = $db->contectarBDSemanaPrueba();
     $conexion_migracion_prueba = $db->contectarBDMigracionPrueba();
 
     //Las siguientes tablas ya deben estar disponibles para que la migración funcione
