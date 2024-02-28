@@ -1167,6 +1167,10 @@
 
                     $id_coordinador = array_key_exists($registro_dt_ordenes->id_Coordinador,$array_info_global['codVendedor=>id'])?$array_info_global['codVendedor=>id'][$registro_dt_ordenes->id_Coordinador]:null;
 
+                    $referencia = $registro_dt_ordenes->referencia != null? ControladorFuncionesAuxiliares::formateaString($registro_dt_ordenes->referencia):null;
+
+                    $ref_general = ControladorFuncionesAuxiliares::formateaString($registro_dt_ordenes->ref_general);
+
                     // if($registro_dt_ordenes->id_orden == 13539){
                     //     $conexion_migracion_prueba->rollBack();
                     //     echo $registro_dt_ordenes->vUnidad." ".$registro_dt_ordenes->vTotal;exit;
@@ -1182,14 +1186,14 @@
                     "); 
                     $insert_registro->execute([
                         'id_ordenes' => $registro_dt_ordenes->id_orden,
-                        'referencia' => $registro_dt_ordenes->referencia != null?$registro_dt_ordenes->referencia:null,
+                        'referencia' => $referencia,
                         'cod' => $var66,
                         'id_codprodfinal' =>$id_codprodfinal != null?$id_codprodfinal:null,
                         'id_subcategoria' => $id_subcategoria,
                         'id_categoria' => $id_categoria,
                         'cobro' => $cobro,
                         'id_cliente' => $id_cliente,
-                        'ref_general' => $registro_dt_ordenes->ref_general,
+                        'ref_general' => $ref_general,
                         'localizacion' => $registro_dt_ordenes->descripcionItem,
                         'cantidad' => $registro_dt_ordenes->cantidad,
                         'item_op' => $registro_dt_ordenes->item_op,
@@ -1443,6 +1447,8 @@
 
             $array_codvendedor_user = $array_info_global['codVendedor=>id'];
 
+            $descripcion = ControladorFuncionesAuxiliares::formateaString($registro_tareasnew->Descripcion);
+
             foreach($array_dt_tareasnew as $registro_tareasnew){
 
                 try{
@@ -1458,7 +1464,7 @@
                         'fecha_final' => $registro_tareasnew->FechaFinal,
                         'fecha_final_cli' => $registro_tareasnew->FechaFinalCli,
                         'id_encargado' => array_key_exists($registro_tareasnew->Recibe,$array_codvendedor_user)?$array_codvendedor_user[$registro_tareasnew->Recibe]:0,
-                        'descripcion' => $registro_tareasnew->Descripcion,
+                        'descripcion' => $descripcion,
                         'satisfaccion' => $registro_tareasnew->estado,
                         'observaciones' => $registro_tareasnew->observaciones
 
@@ -1573,6 +1579,9 @@
                         $estado = 1;
                     }
 
+                    $nom_producto =  ControladorFuncionesAuxiliares::formateaString($registro_cotiza->producto_trm);
+                    $descripcion =  ControladorFuncionesAuxiliares::formateaString($registro_cotiza->descripcion);
+
                     $insert_registro = $conexion_migracion_prueba->prepare("
                         INSERT INTO dt_cotizacion(id_cotizacion,id_codprodfinal,cod_producto,nom_producto,n_cotiza,estado,fecha_ingreso,fecha_compromiso,
                         item,cantidad,v_unidad,v_total,descripcion,tam_x,tam_y,tam_z,usuario_creador,id_cliente,id_plantilla,id_categoria_tabla,
@@ -1586,7 +1595,7 @@
                         'id_cotizacion' => $registro_cotiza->id_cotiza,
                         'id_codprodfinal' => $id_codprodfinal,
                         'cod_producto' => $registro_cotiza->cod_ptoTerm,
-                        'nom_producto' => $registro_cotiza->producto_trm,
+                        'nom_producto' => $nom_producto,
                         'n_cotiza' => $registro_cotiza->nCotiza,
                         'estado' => $estado,
                         'fecha_ingreso' => $registro_cotiza->fechaCot,
@@ -1595,7 +1604,7 @@
                         'cantidad' => $registro_cotiza->cantidad1,
                         'v_unidad' => $registro_cotiza->vUnidad1,
                         'v_total' => $registro_cotiza->vTotal1,
-                        'descripcion' => $registro_cotiza->descripcion,
+                        'descripcion' => $descripcion,
                         'tam_x' => $registro_cotiza->tamX,
                         'tam_y' => $registro_cotiza->tamY,
                         'tam_z' => $registro_cotiza->tamZ,
@@ -2586,6 +2595,7 @@
                     $id_vendedor = array_key_exists($registro_tareas->codVendedor,$array_usuarios)?$array_usuarios[$registro_tareas->codVendedor]:null;
                     $id_ordenes = array_key_exists($registro_tareas->nOrden,$array_ordenes)&&array_key_exists($registro_tareas->item,$array_ordenes[$registro_tareas->nOrden])?$array_ordenes[$registro_tareas->nOrden][$registro_tareas->item]['id_ordenes']:null;
                     $id_area = array_key_exists($registro_tareas->area,$array_areas)?$array_areas[$registro_tareas->area]:null;
+                    $nombre_costo = ControladorFuncionesAuxiliares::formateaString($registro_tareas->nom_costo);
 
                     if(!$id_vendedor){
                         $registros_no_incluidos++;
@@ -2608,7 +2618,7 @@
                         'can_horas' => $registro_tareas->can_horas,
                         'fecha_inicio' => $registro_tareas->FechaInicio,
                         'cod_material' => $registro_tareas->cod,
-                        'nombre_costo' => $registro_tareas->nom_costo,
+                        'nombre_costo' => $nombre_costo,
                         'id_area' => $id_area,
                         'recurso' => $registro_tareas->recurso,
                         'fecha_inicio_real' => $registro_tareas->FechaInicioR,
@@ -2938,6 +2948,8 @@
 
             $array_materiales = $array_info_global['codigo_prod=>id_inventario'];
 
+            $array_pucs = $array_info_global['cuenta=>id_pucs_oc'];
+
             $registros_insertados = 0;
 
             $registros_no_incluidos = 0;
@@ -2954,6 +2966,12 @@
                         $registros_no_incluidos++;
                         continue;
                     }
+                    if($registro_rotaciones->puc_prodrt != null && $registro_rotaciones->puc_prodrt != ''){
+                        $puc_id = array_key_exists($registro_rotaciones->puc_prodrt,$array_pucs)?$array_pucs[$registro_rotaciones->puc_prodrt]:null;
+                    }else{
+                        $puc_id = null;
+                    }
+                    
 
                     if($registro_rotaciones->id_costo != null){
                         $id_ordenes = array_key_exists($registro_rotaciones->id_costo,$array_data_costos)?$array_data_costos[$registro_rotaciones->id_costo]['id_ordenes']:null;
@@ -2971,12 +2989,6 @@
                             $id_costo = $array_sin_id_costo['id_costos'];
                             $id_compra = $array_sin_id_costo['id_compras'];
                             $n_ordenes = $array_sin_id_costo['n_ordenes'];
-                            if($registro_rotaciones->tipo == 9){
-                                $puc_id = $array_sin_id_costo['puc_id'];
-                            }else{
-                                $puc_id = null;
-                            }
-                            
                             
                         }else{
 
@@ -2984,7 +2996,6 @@
                             $id_costo = null;
                             $id_compra = null;
                             $n_ordenes = null;
-                            $puc_id = null;
 
                         }
 
@@ -3148,6 +3159,7 @@
                 try{
 
                     $user_id = array_key_exists($registro_solicitud_g_r->reporta,$array_usuarios)?$array_usuarios[$registro_solicitud_g_r->reporta]:null;
+                    $nombre_g_r = ControladorFuncionesAuxiliares::formateaString($registro_solicitud_g_r->nombre_g_r);
 
                     $insert_registro = $conexion_migracion_prueba->prepare("
                         INSERT INTO dt_solicitud_g_r(fecha_registro,tipo_g_r,descripcion,n_solicitud,estado,nombre_g_r,archivo_1,archivo_2,archivo_3,
@@ -3161,7 +3173,7 @@
                         'descripcion' => $registro_solicitud_g_r->descripcion,
                         'n_solicitud' => $registro_solicitud_g_r->n_solicitud,
                         'estado' => $registro_solicitud_g_r->estado,
-                        'nombre_g_r' => $registro_solicitud_g_r->nombre_g_r,
+                        'nombre_g_r' => $nombre_g_r,
                         'archivo_1' => $registro_solicitud_g_r->archivo,
                         'archivo_2' => $registro_solicitud_g_r->archivo_2,
                         'archivo_3' => $registro_solicitud_g_r->archivo_3,

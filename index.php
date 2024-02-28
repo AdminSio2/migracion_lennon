@@ -21,12 +21,13 @@
     - auth_item_group 
     - auth_rule
     - chat
-    - dt_area  AGREGAR INSERT INTO dt_area(nombre,descripcion) values('TERCEROS','AGREGADO MIGRACION ANDRES')
+    - dt_area  AGREGAR INSERT INTO dt_area(nombre,descripcion) values('FINANCIERA','AGREGADO MIGRACION ANDRES'),('CONTABILIDAD','AGREGADO MIGRACION ANDRES'),('TERCEROS','AGREGADO MIGRACION ANDRES')
     - dt_cargos
     - dt_categoria
     - dt_clase_costo
     - dt_clase_proveedor
     - dt_ciudad
+    - dt_codigo_categoria
     - dt_contrasenas_secundarias
     - dt_documentos
     - dt_estado_civil
@@ -45,9 +46,11 @@
     - dt_subcategoria
     - dt_subgrupo
     - dt_tipo_costo
+    - dt_tipo_informe
     - dt_tipo_pago
 
-    Traer vacias de las bases de prueba 
+
+    Traer vacias previamente de las bases de prueba 
 
     - dt_empresa
     - dt_familiar_cliente
@@ -67,7 +70,6 @@
     - dt_inventario
     - dt_kardex
 
-    FALTA REVISAR: DT_CHECKLIST, DT_ENTREGABLES Y DT_COMITE
 
     Se pueden migrar desde SQL
     
@@ -85,6 +87,18 @@
     echo "\n<br>";
 
     $array_info_global = [];
+
+    //Traemos el array id_proveedor => descuento_ica
+
+    $array_info_global['id_proveedor=>descuento_ica'] = ControladorInformacionGlobal::traeArrayCheckIca($conexion_sio1);
+
+    //echo ControladorFuncionesAuxiliares::corrigeDtInfContableProve($conexion_migracion_prueba,$array_info_global);
+    
+    //Traemos el array id_cod => medidas_codigos
+
+    $array_info_global['id_cod=>medidas_codigos'] = ControladorInformacionGlobal::traeDataCorreccionCodprodfinal($conexion_sio1);
+
+    //echo ControladorFuncionesAuxiliares::corrijeDtCodprodfinal($conexion_migracion_prueba,$array_info_global);
 
     //Traemos el array codigo_prod => id_inventario
 
@@ -161,6 +175,7 @@
     //echo ControladorMigracion::migraDtCostos($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
     //echo ControladorMigracion::migraDtDiseno($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
     //echo ControladorMigracion::migraDtProgramacionDiseno($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
+    echo ControladorFuncionesAuxiliares::creaTablaDtProgramacionDisenoOrdenes($conexion_migracion_prueba);
 
     //Traemos array: n_programacion => id_programacion_diseno
 
@@ -200,6 +215,10 @@
 
     $array_info_global['id_costos=>id_compras'] = ControladorInformacionGlobal::traeArrayIdCompras($conexion_migracion_prueba);
 
+    //Traemos array cuenta => id_pucs_oc
+
+    $array_info_global['cuenta=>id_pucs_oc'] = ControladorInformacionGlobal::traeArrayIdPucsOc($conexion_migracion_prueba);
+
     //echo ControladorMigracion::migraDtRotacion($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
     //echo ControladorMigracion::migraDtSolicitudGR($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
 
@@ -208,6 +227,7 @@
     $array_info_global['n_solicitud=>id_solicitud_g_r'] = ControladorInformacionGlobal::traeArrayIdSolicitudGR($conexion_migracion_prueba);
 
     //echo ControladorMigracion::migraDtHistoricoGR($conexion_sio1,$conexion_migracion_prueba,$array_info_global);
+    echo ControladorFuncionesAuxiliares::creaTablasGarantia($conexion_migracion_prueba);
 
 
     //Traemos array nit => id_proveedores

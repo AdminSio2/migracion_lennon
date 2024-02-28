@@ -2,6 +2,24 @@
 
     class ControladorInformacionGlobal{
 
+        public static function traeArrayCheckIca($conexion_sio1){
+
+            $consulta_proveedores = $conexion_sio1->query("SELECT id_proveedor,descuento_ica  FROM dt_proveedores");
+
+            $array_ica = $consulta_proveedores->fetchAll(PDO::FETCH_OBJ);
+
+            $array_ica_reasignado = [];
+
+            foreach($array_ica as $registro_prove){
+
+                $array_ica_reasignado[$registro_prove->id_proveedor] = $registro_prove->descuento_ica;
+
+            }
+
+            return $array_ica_reasignado;
+
+        }
+
         public static function traeArrayCodProdTerm($conexion_migracion_prueba){
 
             $consulta_ordenes = $conexion_migracion_prueba->query("SELECT n_ordenes,referencia,id_ordenes,cod FROM dt_ordenes");
@@ -64,6 +82,29 @@
 
         }
 
+        public static function traeDataCorreccionCodprodfinal($conexion_sio1){
+
+            $consulta_dt_codprodfinal = $conexion_sio1->query("SELECT id_cod,tamX ,tamY,tamZ,tamL FROM dt_codprodfinal");
+
+            $array_codprodfinal = $consulta_dt_codprodfinal->fetchAll(PDO::FETCH_OBJ);
+
+            $array_codprodfinal_reasignado = [];
+
+            foreach($array_codprodfinal as $registro_codprodfinal){
+
+                $array_codprodfinal_reasignado[$registro_codprodfinal->id_cod] = [
+                    'tamX' => $registro_codprodfinal->tamX,
+                    'tamY' => $registro_codprodfinal->tamY,
+                    'tamZ' => $registro_codprodfinal->tamZ,
+                    'tamL' => $registro_codprodfinal->tamL,
+                ];
+
+            }
+
+            return $array_codprodfinal_reasignado;
+
+        }
+
         public static function traeArrayFechaEstructuraPDiseno($conexion_migracion_prueba){
 
             $consulta_historico_diseno = $conexion_migracion_prueba->query("SELECT fecha_registro,id_historico_diseno,id_programacion_diseno FROM dt_historico_diseno WHERE observacion = 'Nueva Planeacion'");
@@ -118,6 +159,121 @@
             ];
             
             return $array_tipo_pago;
+
+        }
+
+        public static function traeArrayIdAcabados($conexion_sio1){
+
+            $consulta_acabados = $conexion_sio1->query("SELECT id_acabado,cod FROM dt_acabados");
+
+            $array_acabados = $consulta_acabados->fetchAll(PDO::FETCH_OBJ);
+
+            $array_acabados_reasignado = [];
+
+            foreach($array_acabados as $registro_acabados){
+                $array_acabados_reasignado[$registro_acabados->cod] = $registro_acabados->id_acabado;
+            }
+
+            return $array_acabados_reasignado;
+        }
+
+        public static function traeArrayIdArea(){
+            $array_areas = [
+                'ADMINISTRACION' => 1,
+                'ALMACEN' => 12,
+                'AREA ADMINISTRACION' => 1,
+                'AREA FINANCIERA' => 24,
+                'ASISTENTE FINANCIERA' => 24,
+                'ASISTENTE GERENCIA GENERAL' => 1,
+                'AUXILIAR DE PRODUCCION' => 11,
+                'BODEGAJE' => 12,
+                'COMERCIAL' => 23,
+                'COMPRAS' => 10,
+                'CONDUCTOR' => 8,
+                'CONTABILIDAD' => 25,
+                'CONTRATISTA' => 11,
+                'CONTRATISTA DIS' => 22,
+                'CONTRATISTA DISE├æO' => 22,
+                'CONTRATISTA ENSAMBLE Y TERMIN' => 16,
+                'CONTRATISTA INSTALACION' => 7,
+                'CONTRATISTAS ENS' => 16,
+                'CONTRATISTAS ENSAMBLE' => 16,
+                'CONTRATISTAS ENSAMBLE Y TERMIN' => 16,
+                'CONTRATISTAS METAL' => 13,
+                'CONTRATISTAS METALMECANICA' => 13,
+                'CONTRATISTAS PIN' => 14,
+                'CONTRATISTAS PINTURA' => 14,
+                'CONTRATISTAS SUS' => 15,
+                'CONTRATISTAS SUSTRATOS' => 15,
+                'COORDINACION ADMINISTRATIVA' => 1,
+                'COORDINADOR' => 20,
+                'COORDINADOR PROYECTOS' => 20,
+                'CORTE CNC ESKO BLANDOS' => 15,
+                'CORTE CNC MULTICAM RIGIDOS' => 15,
+                'CORTE DE LAMINA' => 13,
+                'COSTOS' => 21,
+                'DECORACION' => 18,
+                'DESPACHOS' => 19,
+                'DISE├æO' => 22,
+                'DISE├æO Y DESARROLLO' => 22,
+                'DOCUMENTACION' => 1,
+                'DOBLADO' => 13,
+                'ENSAMBLE Y TERMINADO' => 16,
+                'FINANCIERA' => 24,
+                'GERENCIA COMERCIAL' => 23,
+                'GERENCIA DE DESARROLLO' => 11,
+                'GERENCIA DE PRODUCCION' => 11,
+                'GERENCIA DE PRODUCCION Y LOGIS' => 11,
+                'GERENCIA DE PRODUCCION Y LOGISTICA' => 11,
+                'GERENCIA FINANCIERA' => 24,
+                'GERENCIA GENERAL' => 5,
+                'GESTION DE HSE' => 6,
+                'GESTION DE TALENTO HUMANO' => 6,
+                'IMPRESION DIGITAL' => 17,
+                'PRODUCCION DE IMPRESION' => 17,
+                'INSTALACION' => 7,
+                'LASER' => 15,
+                'LOGISTICA' => 9,
+                'MADERAS' => 15,
+                'MANTENIMIENTO MAQUINARIA' => 11,
+                'MANTENIMIENTO TECNOLOGICO' => 4,
+                'MEJORAMIENTO DE PROCESOS' => 11,
+                'METALMECANICA' => 13,
+                'OFICINA LOGISTICA' => 9,
+                'OFICINA PRODUCCION' => 11,
+                'OTROS CONTRATISTAS' => 11,
+                'OTROS DIRECTOS' => 11,
+                'PERSONAL RETIRADO' => 0,
+                'PINTURA' => 14,
+                'PINTURA LIQUIDA' => 14,
+                'PUNZONADO' => 0,
+                'SERIGRAFIA Y/O SCREEN' => 14,
+                'SUB GERENCIA GENERAL' => 5,
+                'SUPERVISOR PRODUCCION' => 11,
+                'SUSTRATOS' => 15,
+                'TERCEROS' => 26,
+                'TRASFORMACION DE PLASTICOS' => 15,
+                'VENTAS CARTAGENA' => 23,
+                'VENTAS CONTRATISTAS' => 23,
+                'VENTAS DANIEL' => 23,
+                'VENTAS GERENCIA' => 23,
+                'VENTAS GP1' => 23,
+                'VENTAS GP2' => 23,
+                'VENTAS GP3' => 23,
+                'VENTAS GP4' => 23,
+                'VENTAS GP5' => 23,
+                'VENTAS GP6 LICITACIONES' => 3,
+                'VENTAS GP7' => 23,
+                'VENTAS GP8' => 23,
+                'VENTAS KATERIN' => 23,
+                'VENTAS MARIA DEL PILAR' => 23,
+                'VENTAS REINALDO' => 23,
+                'VENTAS SIN APORTE' => 23,
+                'ViVaS' => 1,
+                'VIATICOS' => 8,
+            ];
+
+            return $array_areas;
 
         }
 
@@ -322,24 +478,6 @@
 
         }
 
-        public static function traeArrayIdSolicitudGR($conexion_migracion_prueba){
-
-            $consulta_solicitud_g_r = $conexion_migracion_prueba->query("SELECT id_solicitud_g_r,n_solicitud FROM dt_solicitud_g_r GROUP BY n_solicitud");
-
-            $array_solicitud_g_r = $consulta_solicitud_g_r->fetchAll(PDO::FETCH_OBJ);
-
-            $array_solicitud_g_r_reasignado = [];
-
-            foreach($array_solicitud_g_r as $registro_solicitud_g_r){
-
-                $array_solicitud_g_r_reasignado[$registro_solicitud_g_r->n_solicitud] = $registro_solicitud_g_r->id_solicitud_g_r;
-
-            }
-
-            return $array_solicitud_g_r_reasignado;
-
-        }
-
         public static function traeArrayIdInventario($conexion_migracion_prueba){
 
             $consulta_inventario = $conexion_migracion_prueba->query("SELECT id_inventario,codigo_prod,id_medida,producto FROM dt_inventario");
@@ -360,121 +498,6 @@
 
 
             return $array_inventario_reasignado;
-
-        }
-
-        public static function traeArrayIdAcabados($conexion_sio1){
-
-            $consulta_acabados = $conexion_sio1->query("SELECT id_acabado,cod FROM dt_acabados");
-
-            $array_acabados = $consulta_acabados->fetchAll(PDO::FETCH_OBJ);
-
-            $array_acabados_reasignado = [];
-
-            foreach($array_acabados as $registro_acabados){
-                $array_acabados_reasignado[$registro_acabados->cod] = $registro_acabados->id_acabado;
-            }
-
-            return $array_acabados_reasignado;
-        }
-
-        public static function traeArrayIdArea(){
-            $array_areas = [
-                'ADMINISTRACION' => 1,
-                'ALMACEN' => 12,
-                'AREA ADMINISTRACION' => 1,
-                'AREA FINANCIERA' => 24,
-                'ASISTENTE FINANCIERA' => 24,
-                'ASISTENTE GERENCIA GENERAL' => 1,
-                'AUXILIAR DE PRODUCCION' => 11,
-                'BODEGAJE' => 12,
-                'COMERCIAL' => 23,
-                'COMPRAS' => 10,
-                'CONDUCTOR' => 8,
-                'CONTABILIDAD' => 25,
-                'CONTRATISTA' => 11,
-                'CONTRATISTA DIS' => 22,
-                'CONTRATISTA DISE├æO' => 22,
-                'CONTRATISTA ENSAMBLE Y TERMIN' => 16,
-                'CONTRATISTA INSTALACION' => 7,
-                'CONTRATISTAS ENS' => 16,
-                'CONTRATISTAS ENSAMBLE' => 16,
-                'CONTRATISTAS ENSAMBLE Y TERMIN' => 16,
-                'CONTRATISTAS METAL' => 13,
-                'CONTRATISTAS METALMECANICA' => 13,
-                'CONTRATISTAS PIN' => 14,
-                'CONTRATISTAS PINTURA' => 14,
-                'CONTRATISTAS SUS' => 15,
-                'CONTRATISTAS SUSTRATOS' => 15,
-                'COORDINACION ADMINISTRATIVA' => 1,
-                'COORDINADOR' => 20,
-                'COORDINADOR PROYECTOS' => 20,
-                'CORTE CNC ESKO BLANDOS' => 15,
-                'CORTE CNC MULTICAM RIGIDOS' => 15,
-                'CORTE DE LAMINA' => 13,
-                'COSTOS' => 21,
-                'DECORACION' => 18,
-                'DESPACHOS' => 19,
-                'DISE├æO' => 22,
-                'DISE├æO Y DESARROLLO' => 22,
-                'DOCUMENTACION' => 1,
-                'DOBLADO' => 13,
-                'ENSAMBLE Y TERMINADO' => 16,
-                'FINANCIERA' => 24,
-                'GERENCIA COMERCIAL' => 23,
-                'GERENCIA DE DESARROLLO' => 11,
-                'GERENCIA DE PRODUCCION' => 11,
-                'GERENCIA DE PRODUCCION Y LOGIS' => 11,
-                'GERENCIA DE PRODUCCION Y LOGISTICA' => 11,
-                'GERENCIA FINANCIERA' => 24,
-                'GERENCIA GENERAL' => 5,
-                'GESTION DE HSE' => 6,
-                'GESTION DE TALENTO HUMANO' => 6,
-                'IMPRESION DIGITAL' => 17,
-                'PRODUCCION DE IMPRESION' => 17,
-                'INSTALACION' => 7,
-                'LASER' => 15,
-                'LOGISTICA' => 9,
-                'MADERAS' => 15,
-                'MANTENIMIENTO MAQUINARIA' => 11,
-                'MANTENIMIENTO TECNOLOGICO' => 4,
-                'MEJORAMIENTO DE PROCESOS' => 11,
-                'METALMECANICA' => 13,
-                'OFICINA LOGISTICA' => 9,
-                'OFICINA PRODUCCION' => 11,
-                'OTROS CONTRATISTAS' => 11,
-                'OTROS DIRECTOS' => 11,
-                'PERSONAL RETIRADO' => 0,
-                'PINTURA' => 14,
-                'PINTURA LIQUIDA' => 14,
-                'PUNZONADO' => 0,
-                'SERIGRAFIA Y/O SCREEN' => 14,
-                'SUB GERENCIA GENERAL' => 5,
-                'SUPERVISOR PRODUCCION' => 11,
-                'SUSTRATOS' => 15,
-                'TERCEROS' => 26,
-                'TRASFORMACION DE PLASTICOS' => 15,
-                'VENTAS CARTAGENA' => 23,
-                'VENTAS CONTRATISTAS' => 23,
-                'VENTAS DANIEL' => 23,
-                'VENTAS GERENCIA' => 23,
-                'VENTAS GP1' => 23,
-                'VENTAS GP2' => 23,
-                'VENTAS GP3' => 23,
-                'VENTAS GP4' => 23,
-                'VENTAS GP5' => 23,
-                'VENTAS GP6 LICITACIONES' => 3,
-                'VENTAS GP7' => 23,
-                'VENTAS GP8' => 23,
-                'VENTAS KATERIN' => 23,
-                'VENTAS MARIA DEL PILAR' => 23,
-                'VENTAS REINALDO' => 23,
-                'VENTAS SIN APORTE' => 23,
-                'ViVaS' => 1,
-                'VIATICOS' => 8,
-            ];
-
-            return $array_areas;
 
         }
 
@@ -551,6 +574,42 @@
             }
 
             return $array_proveedores_reasignado;
+
+        }
+
+        public static function traeArrayIdPucsOc($conexion_migracion_prueba){
+
+            $consulta_pucs_oc = $conexion_migracion_prueba->query("SELECT cuenta,id_pucs_oc  FROM dt_pucs_oc dpo ");
+
+            $array_pucs_oc = $consulta_pucs_oc->fetchAll(PDO::FETCH_OBJ);
+
+            $array_pucs_oc_reasignado = [];
+
+            foreach($array_pucs_oc as $registro_puc_oc){
+
+                $array_pucs_oc_reasignado[$registro_puc_oc->cuenta] = $registro_puc_oc->id_pucs_oc;
+
+            }
+
+            return $array_pucs_oc_reasignado;
+
+        }
+
+        public static function traeArrayIdSolicitudGR($conexion_migracion_prueba){
+
+            $consulta_solicitud_g_r = $conexion_migracion_prueba->query("SELECT id_solicitud_g_r,n_solicitud FROM dt_solicitud_g_r GROUP BY n_solicitud");
+
+            $array_solicitud_g_r = $consulta_solicitud_g_r->fetchAll(PDO::FETCH_OBJ);
+
+            $array_solicitud_g_r_reasignado = [];
+
+            foreach($array_solicitud_g_r as $registro_solicitud_g_r){
+
+                $array_solicitud_g_r_reasignado[$registro_solicitud_g_r->n_solicitud] = $registro_solicitud_g_r->id_solicitud_g_r;
+
+            }
+
+            return $array_solicitud_g_r_reasignado;
 
         }
 
