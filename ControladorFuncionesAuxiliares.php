@@ -23,6 +23,9 @@
             elseif(strpos($string_formatear, '├ì') !== false){
                 $string_formateado = str_replace('├ì', 'Í', $string_formatear);
             }
+            elseif(strpos($string_formatear, '├®') !== false){
+                $string_formateado = str_replace('├®', 'é', $string_formatear);
+            }
             else{
                 $string_formateado = $string_formatear;
             }
@@ -36,6 +39,33 @@
             try{
 
                 $conexion_migracion_prueba->exec("
+
+
+                
+                CREATE TABLE `dt_comite_g_r` (
+                    `id_comite_g_r` int NOT NULL AUTO_INCREMENT,
+                    `fecha_comite` date NOT NULL,
+                    `observacion` varchar(256) DEFAULT NULL,
+                    `valor_g_r_f` double DEFAULT NULL,
+                    `user_id` int NOT NULL,
+                    `n_solicitud` int NOT NULL,
+                    PRIMARY KEY (`id_comite_g_r`),
+                    UNIQUE KEY `dt_comite_g_r_n_solicitud_idx` (`n_solicitud`) USING BTREE
+                  ) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb3;
+
+                  CREATE TABLE `dt_comite_g_r_f` (
+                    `id_comite_g_r_f` int NOT NULL AUTO_INCREMENT,
+                    `fecha_comite_f` date NOT NULL,
+                    `observacion_f` varchar(256) DEFAULT NULL,
+                    `valor_g_r_f` double DEFAULT NULL,
+                    `id_user` int NOT NULL,
+                    `n_solicitud` int NOT NULL,
+                    PRIMARY KEY (`id_comite_g_r_f`),
+                    UNIQUE KEY `dt_comite_g_r_f_n_solicitud_idx` (`n_solicitud`) USING BTREE,
+                    KEY `fk_dt_comite_g_r_f_user1` (`id_user`),
+                    CONSTRAINT `fk_dt_comite_g_r_f_user1` FOREIGN KEY (`id_user`) REFERENCES `user` (`id`)
+                  ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb3;
+                
                 
                     CREATE TABLE `dt_actividades` (
                         `id_acitvidades_forma` int NOT NULL AUTO_INCREMENT,
@@ -81,6 +111,9 @@
                         CONSTRAINT `fk_dt_acitvidades_forma_user10` FOREIGN KEY (`id_user`) REFERENCES `user` (`id`),
                         CONSTRAINT `fk_dt_acitvidades_user10` FOREIGN KEY (`responsable`) REFERENCES `user` (`id`)
                     ) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb3;
+
+
+                  
                     
                     
                     
@@ -96,6 +129,20 @@
                         CONSTRAINT `fk_dt_aprobado_g_r_dt_solicitud_g_r1` FOREIGN KEY (`id_solicitud_g_r`) REFERENCES `dt_solicitud_g_r` (`id_solicitud_g_r`),
                         CONSTRAINT `fk_dt_aprobado_g_r_user1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
                     ) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8mb3;
+
+                    CREATE TABLE `dt_comite_g_r_f` (
+                        `id_comite_g_r_f` int NOT NULL AUTO_INCREMENT,
+                        `fecha_comite_f` date NOT NULL,
+                        `observacion_f` varchar(256) DEFAULT NULL,
+                        `valor_g_r_f` double DEFAULT NULL,
+                        `id_user` int NOT NULL,
+                        `n_solicitud` int NOT NULL,
+                        PRIMARY KEY (`id_comite_g_r_f`),
+                        UNIQUE KEY `dt_comite_g_r_f_n_solicitud_idx` (`n_solicitud`) USING BTREE,
+                        KEY `fk_dt_comite_g_r_f_user1` (`id_user`),
+                        CONSTRAINT `fk_dt_comite_g_r_f_user1` FOREIGN KEY (`id_user`) REFERENCES `user` (`id`)
+                      ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb3;
+                    
                 
 
                 ");
@@ -103,7 +150,7 @@
                 echo "Error al generar las tablas complementarias a dt_solicitud_g_r".$e->getMessage();exit;
             }
 
-            return "Se crearon las tablas dt_actividades, dt_actividades_f y dt_aprobado_g_r complemetarias a dt_solicitud_g_r";
+            return "Se crearon las tablas dt_actividades, dt_actividades_f, dt_aprobado_g_r,dt_comite_g_r_f y dt_comite_g_r complemetarias a dt_solicitud_g_r";
 
 
         }

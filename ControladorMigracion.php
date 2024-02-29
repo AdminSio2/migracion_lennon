@@ -1447,11 +1447,13 @@
 
             $array_codvendedor_user = $array_info_global['codVendedor=>id'];
 
-            $descripcion = ControladorFuncionesAuxiliares::formateaString($registro_tareasnew->Descripcion);
+            
 
             foreach($array_dt_tareasnew as $registro_tareasnew){
 
                 try{
+
+                    $descripcion = ControladorFuncionesAuxiliares::formateaString($registro_tareasnew->Descripcion);
 
                     $insert_registro = $conexion_migracion_prueba->prepare("
                         INSERT INTO dt_tareas(id_responsable,fecha_inicio,fecha_final,fecha_final_cli,id_encargado,descripcion,satisfaccion,observaciones)
@@ -2135,7 +2137,7 @@
             $tiempo_fin = microtime(true);
             $tiempo_transcurrido = $tiempo_fin - $tiempo_inicio;
 
-            $mensaje = "Migración dt_diseno completada ".$registros_insertados." registros insertados en ".$tiempo_transcurrido." segundos"."\n<br>".$registros_no_incluidos." registros no incluidos por no tener id_ordenes relacionado"."\n<br>"."adicionalmente no se incluyeron ".$registros_vacios." por esrar completamente vacios";
+            $mensaje = "Migración dt_diseno completada ".$registros_insertados." registros insertados en ".$tiempo_transcurrido." segundos"."\n<br>".$registros_no_incluidos." registros no incluidos por no tener id_ordenes relacionado"."\n<br>"."adicionalmente no se incluyeron ".$registros_vacios." por estar completamente vacios";
 
             return $mensaje;
 
@@ -3875,6 +3877,8 @@
                 41 => 6,
                 48 => 7
             ];
+
+            $conexion_migracion_prueba->beginTransaction();
 
             while($registro_entregables = $consulta_dt_entregables->fetch(PDO::FETCH_OBJ)){
 
