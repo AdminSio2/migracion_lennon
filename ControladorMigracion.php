@@ -1073,6 +1073,26 @@
 
             $array_clientes = $array_info_global['nit=>id_cliente'];
 
+            $array_subcategorias = $array_info_global['nOrden=>cod'];
+
+            //subcategorias desde el modulo de la op
+
+            $subcategorias = [
+                'EZT'=>2,
+                'AEX'=>2,
+                'EST'=>2,
+                'DEP'=>1,
+                'INS'=>3,
+                'VEX'=>4,
+                'GRT'=>6,
+                'RPC'=>5,
+                'DGT'=>7,
+                'RGC'=>8,
+                'MOB'=>9,
+                'MBR'=>9,
+                'OPC'=>10
+            ];
+
 
             //id_proyecto_op que fueron borrados de la fuenta en el Sio 1
         
@@ -1100,24 +1120,14 @@
                         }
 
 
-                    //Buscamos subcategoría
+                    
 
-                    $subcategorias = [
-                        'EZT'=>2,
-                        'DEP'=>1,
-                        'INS'=>3,
-                        'VEX'=>4,
-                        'GRT'=>6,
-                        'RPC'=>5,
-                        'DGT'=>7,
-                        'RGC'=>8,
-                        'MOB'=>9,
-                        'OPC'=>10
-                    ];
-
-                    if(array_key_exists($registro_dt_ordenes->modulo, $subcategorias) && $registro_dt_ordenes->modulo != null){
+                    if(array_key_exists($registro_dt_ordenes->nOrden,$array_subcategorias)&&array_key_exists($array_subcategorias[$registro_dt_ordenes->nOrden],$subcategorias)){
+                        $id_subcategoria = $subcategorias[$array_subcategorias[$registro_dt_ordenes->nOrden]];
+                    }elseif(array_key_exists($registro_dt_ordenes->modulo, $subcategorias) && $registro_dt_ordenes->modulo != null){
                         $id_subcategoria = $subcategorias[$registro_dt_ordenes->modulo];
-                    }else{
+                    }
+                    else{
                         $id_subcategoria = null;
                     }
 
@@ -1139,7 +1149,10 @@
 
                         if(array_key_exists($array_codprodfinal[$registro_dt_ordenes->var66]['nom_grupo'], $categorias)){
                             $id_categoria = $categorias[$array_codprodfinal[$registro_dt_ordenes->var66]['nom_grupo']];
-                        }else{
+                        }elseif($registro_dt_ordenes->modulo == 'POP'){
+                            $id_categoria = 2;
+                        }
+                        else{
                             $id_categoria = null;
                         }
 
@@ -1159,15 +1172,17 @@
 
                     //Asignamos id_usuario 
 
-                    $elaboro = rtrim($registro_dt_ordenes->elaboro);
+                    $elaboro = trim($registro_dt_ordenes->elaboro);
 
-                    $id_usuario = array_key_exists($elaboro ,$array_info_global['vendedor=>id'])?$array_info_global['vendedor=>id'][$elaboro]:null;
+                    $id_usuario = array_key_exists($elaboro,$array_info_global['vendedor=>id'])?$array_info_global['vendedor=>id'][$elaboro]:null;
                     
                     $id_vend = array_key_exists($registro_dt_ordenes->idVend,$array_info_global['codVendedor=>id'])?$array_info_global['codVendedor=>id'][$registro_dt_ordenes->idVend]:null;
 
                     $id_coordinador = array_key_exists($registro_dt_ordenes->id_Coordinador,$array_info_global['codVendedor=>id'])?$array_info_global['codVendedor=>id'][$registro_dt_ordenes->id_Coordinador]:null;
 
-                    $referencia = $registro_dt_ordenes->referencia != null? ControladorFuncionesAuxiliares::formateaString($registro_dt_ordenes->referencia):null;
+                    $referencia = $registro_dt_ordenes->referencia != null?$registro_dt_ordenes->referencia :null;
+
+                    $referencia = ControladorFuncionesAuxiliares::formateaString($referencia);
 
                     $ref_general = ControladorFuncionesAuxiliares::formateaString($registro_dt_ordenes->ref_general);
 

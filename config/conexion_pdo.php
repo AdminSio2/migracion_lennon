@@ -8,7 +8,7 @@ class Database{
 
             $usuario = "masterUS";
             $password = 'z2p5usaQl_UpR$Sp&v6K';
-            $dsn = 'mysql:host=savivpdndb.chcfkkmlwrdq.us-east-1.rds.amazonaws.com;dbname=Sio1BackupSept';
+            $dsn = 'mysql:host=savivpdndb.chcfkkmlwrdq.us-east-1.rds.amazonaws.com;dbname=Sio1BackupSept'; //Sio1BackupFeb2024(backup 2024 fen)
             $conexion = new PDO($dsn,$usuario,$password);
 
             return $conexion;

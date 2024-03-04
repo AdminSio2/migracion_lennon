@@ -37,6 +37,25 @@
 
         }
 
+        public static function traeArrayCodSubcategorias($conexion_sio1){
+
+            $consulta_subcategorias = $conexion_sio1->query("SELECT nOrden,cod  FROM dt_subcategorias GROUP BY nOrden ");
+
+            $array_subcategorias = $consulta_subcategorias->fetchAll(PDO::FETCH_OBJ);
+
+            $array_subcategorias_reasignado = [];
+
+            foreach($array_subcategorias as $registro_subcategorias){
+
+                $array_subcategorias_reasignado[$registro_subcategorias->nOrden] = $registro_subcategorias->cod;
+
+            }
+
+            return $array_subcategorias_reasignado;
+
+
+        }
+
         public static function traeArrayDataCompras($conexion_migracion_prueba){
 
             $consulta_compras = $conexion_migracion_prueba->query("SELECT cod_producto,n_compra,id_compras,id_ordenes,id_costos,n_ordenes,puc_id from dt_compras GROUP BY n_compra,cod_producto");

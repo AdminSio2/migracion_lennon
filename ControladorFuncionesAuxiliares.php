@@ -17,11 +17,17 @@
             elseif(strpos($string_formatear, '├│') !== false){
                 $string_formateado = str_replace('├│', 'ó', $string_formatear);
             }
+            elseif(strpos($string_formatear, '├▓') !== false){
+                $string_formateado = str_replace('├▓', 'ó', $string_formatear);
+            }
             elseif(strpos($string_formatear, '├Ü') !== false){
                 $string_formateado = str_replace('├Ü', 'Ú', $string_formatear);
             }
             elseif(strpos($string_formatear, '├ì') !== false){
                 $string_formateado = str_replace('├ì', 'Í', $string_formatear);
+            }
+            elseif(strpos($string_formatear, '├¡') !== false){
+                $string_formateado = str_replace('├ì', 'í', $string_formatear);
             }
             elseif(strpos($string_formatear, '├®') !== false){
                 $string_formateado = str_replace('├®', 'é', $string_formatear);
@@ -113,9 +119,6 @@
                     ) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb3;
 
 
-                  
-                    
-                    
                     
                     CREATE TABLE `dt_aprobado_g_r` (
                         `id_aprobado_g_r` int NOT NULL AUTO_INCREMENT,
@@ -130,19 +133,6 @@
                         CONSTRAINT `fk_dt_aprobado_g_r_user1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
                     ) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8mb3;
 
-                    CREATE TABLE `dt_comite_g_r_f` (
-                        `id_comite_g_r_f` int NOT NULL AUTO_INCREMENT,
-                        `fecha_comite_f` date NOT NULL,
-                        `observacion_f` varchar(256) DEFAULT NULL,
-                        `valor_g_r_f` double DEFAULT NULL,
-                        `id_user` int NOT NULL,
-                        `n_solicitud` int NOT NULL,
-                        PRIMARY KEY (`id_comite_g_r_f`),
-                        UNIQUE KEY `dt_comite_g_r_f_n_solicitud_idx` (`n_solicitud`) USING BTREE,
-                        KEY `fk_dt_comite_g_r_f_user1` (`id_user`),
-                        CONSTRAINT `fk_dt_comite_g_r_f_user1` FOREIGN KEY (`id_user`) REFERENCES `user` (`id`)
-                      ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb3;
-                    
                 
 
                 ");
@@ -202,7 +192,7 @@
 
                 }catch(PDOException $e){
                     $conexion_migracion_prueba->rollBack();
-                    echo "Hubo un problema con el id_proveedor ".$registro_prove['id_proveedores']."<br>".$e->getMessage();;
+                    echo "Hubo un problema con el id_proveedor ".$registro_prove['id_proveedores']."<br>".$e->getMessage();
                     exit;
                 }
 
@@ -214,7 +204,7 @@
             $tiempo_fin = microtime(true);
             $tiempo_transcurrido = $tiempo_fin - $tiempo_inicio;
 
-            $mensaje = "Corrección dt_inf_contable_prove completada ".$registros_corregidos." registros corregidos en ".$tiempo_transcurrido." segundos"."\n<br>";
+            $mensaje = "Corrección dt_inf_contable_prove completada ".$registros_corregidos." registros corregidos en ".$tiempo_transcurrido." segundos";
 
             return $mensaje;
 
@@ -295,7 +285,7 @@
             $tiempo_fin = microtime(true);
             $tiempo_transcurrido = $tiempo_fin - $tiempo_inicio;
 
-            $mensaje = "Corrección dt_codprodfinal completada ".$registros_corregidos." registros corregidos en ".$tiempo_transcurrido." segundos"."\n<br>";
+            $mensaje = "Corrección dt_codprodfinal completada ".$registros_corregidos." registros corregidos en ".$tiempo_transcurrido." segundos";
 
             return $mensaje;
 
