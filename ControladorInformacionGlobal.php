@@ -537,6 +537,8 @@
                     'id_categoria' => $registro_ordenes->id_categoria
                 ];
 
+                $array_ordenes_reasignado['lista_id_ordenes'][]= $registro_ordenes->id_ordenes;
+
             } 
 
             return $array_ordenes_reasignado;

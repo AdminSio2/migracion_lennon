@@ -238,12 +238,20 @@
             $array_materiales = $array_info_global['codigo_prod=>id_inventario'];
             
             $registros_insertados = 0;
+            $registros_no_incluidos = 0;
             $conexion_migracion_prueba->beginTransaction();
 
         
             foreach($array_dt_inventarioxarea as $registro_dt_inventarioxarea){
 
                 try{ 
+
+                    $codigo_prod = $registro_dt_inventarioxarea->codigo_prod;
+
+                    if($codigo_prod == null || $codigo_prod == ''){
+                        $registros_no_incluidos++;
+                        continue;
+                    }
 
                     $insert_registro = $conexion_migracion_prueba->prepare("
                         INSERT INTO dt_inventarioxarea(id_inventarioxarea,codigo_prod,stock,id_inventario,id_area)
@@ -282,7 +290,7 @@
             $tiempo_fin = microtime(true);
             $tiempo_transcurrido = $tiempo_fin - $tiempo_inicio;
 
-            $mensaje = "Migración dt_inventarioxarea completada ".$registros_insertados." registros insertados en ".$tiempo_transcurrido." segundos";
+            $mensaje = "Migración dt_inventarioxarea completada ".$registros_insertados." registros insertados en ".$tiempo_transcurrido." segundos"."\n<br>".$registros_no_incluidos." no incluidos por no tener codigo_prod";
 
             return $mensaje;
 
@@ -3167,13 +3175,24 @@
 
             $array_usuarios = $array_info_global['codVendedor=>id'];
 
+            $array_ordenes = $array_info_global['n_ordenes|item_op=>id_ordenes'];
+
             $registros_insertados = 0;
+
+            $registros_no_incluidos = 0;
 
             $conexion_migracion_prueba->beginTransaction();
 
             foreach($array_dt_solicitud_g_r as $registro_solicitud_g_r){
 
                 try{
+
+                    if(in_array($registro_solicitud_g_r->id_orden,$array_ordenes['lista_id_ordenes'])){
+                        $id_orden = $registro_solicitud_g_r->id_orden;
+                    }else{
+                        $registros_no_incluidos++;
+                        continue;
+                    }
 
                     $user_id = array_key_exists($registro_solicitud_g_r->reporta,$array_usuarios)?$array_usuarios[$registro_solicitud_g_r->reporta]:null;
                     $nombre_g_r = ControladorFuncionesAuxiliares::formateaString($registro_solicitud_g_r->nombre_g_r);
@@ -3216,7 +3235,7 @@
             $tiempo_fin = microtime(true);
             $tiempo_transcurrido = $tiempo_fin - $tiempo_inicio;
 
-            $mensaje = "Migración dt_solicitud_g_r completada, ".$registros_insertados." registros insertados en ".$tiempo_transcurrido." segundos"."\n<br>";
+            $mensaje = "Migración dt_solicitud_g_r completada, ".$registros_insertados." registros insertados en ".$tiempo_transcurrido." segundos"."\n<br>".$registros_no_incluidos." registros no incluidos por estar ligadas a id_ordenes que ya no existen o fueron borrados";
 
             return $mensaje;
 
@@ -3259,6 +3278,8 @@
 
             $registros_insertados = 0;
 
+            $registros_no_incluidos = 0;
+
             $conexion_migracion_prueba->beginTransaction();
 
             foreach($array_dt_historico_g_r as $registro_historico_g_r){
@@ -3267,7 +3288,14 @@
 
                     $id_user = array_key_exists($registro_historico_g_r->idUser,$array_usuarios)?$array_usuarios[$registro_historico_g_r->idUser]:989;
 
-                    $id_solicitud_g_r = array_key_exists($registro_historico_g_r->n_solicitud,$array_solicitud)?$array_solicitud[$registro_historico_g_r->n_solicitud]:null;
+                    if(array_key_exists($registro_historico_g_r->n_solicitud,$array_solicitud)){
+                        $id_solicitud_g_r = $array_solicitud[$registro_historico_g_r->n_solicitud];
+                    }else{
+                        $registros_no_incluidos++;
+                        continue;
+                    }
+
+                    
 
                     $observacion_apro = $registro_historico_g_r->observacion_apro != null ? $registro_historico_g_r->observacion_apro:'Sin comentarios desde el Sio1';
 
@@ -3300,7 +3328,7 @@
             $tiempo_fin = microtime(true);
             $tiempo_transcurrido = $tiempo_fin - $tiempo_inicio;
 
-            $mensaje = "Migración dt_historico_g_r completada, ".$registros_insertados." registros insertados en ".$tiempo_transcurrido." segundos"."\n<br>";
+            $mensaje = "Migración dt_historico_g_r completada, ".$registros_insertados." registros insertados en ".$tiempo_transcurrido." segundos"."\n<br>".$registros_no_incluidos." no incluidos por pertenecer a solicitudes que no se migraron, probablemente porque la op a la que se ligó fue borrada";
 
             return $mensaje;
 
