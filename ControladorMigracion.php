@@ -3409,6 +3409,11 @@
                     }else{
                         $id_usuarios = array_key_exists($registro_fa_prove->autoriza,$array_usuarios)?$array_usuarios[$registro_fa_prove->autoriza]:1;
                     }
+                    if(strpos($registro_fa_prove->factura,'@')){
+                        $estado = 2; //anulada
+                    }else{
+                        $estado = 1; //activa
+                    }
                     
 
                     $insert_registro = $conexion_migracion_prueba->prepare("
@@ -3428,7 +3433,7 @@
                         'id_proveedor' => $id_proveedor,
                         'id_usuario' => $id_usuarios,
                         'valor' => $registro_fa_prove->valor,
-                        'estado' => $registro_fa_prove->factura,
+                        'estado' => $estado,
                         'n_rotaciones' => $registro_fa_prove->rc,
                         'id_compras' => $registro_fa_prove->oc,
                         'n_ordenes' => $registro_fa_prove->op,

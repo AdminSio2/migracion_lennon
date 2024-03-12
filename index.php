@@ -88,6 +88,7 @@
 
     $array_info_global = [];
 
+
     //Traemos el array id_proveedor => descuento_ica
 
     $array_info_global['id_proveedor=>descuento_ica'] = ControladorInformacionGlobal::traeArrayCheckIca($conexion_sio1);
@@ -126,8 +127,8 @@
 
     $array_info_global['grupos_diseno'] = ControladorInformacionGlobal::traeArrayGruposDiseno();
 
-    //echo ControladorMigracion::migraDtAcabados($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
-
+    // echo ControladorMigracion::migraDtAcabados($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
+    // echo ControladorFuncionesAuxiliares::corrigeDtInventario($conexion_migracion_prueba)."\n<br>";
     
 
     /*Solo estos ids_inventarioxarea del 1 al 13 deben ir con 1 
@@ -138,10 +139,13 @@
     $array_info_global['cod=>id_acabados'] = ControladorInformacionGlobal::traeArrayIdAcabados($conexion_sio1);
 
     // echo ControladorMigracion::migraDtUsuariosUser($conexion_sio1,$conexion_migracion_prueba)."\n<br>";
+    // echo ControladorFuncionesAuxiliares::complementaInfoUsuariosActivos($conexion_migracion_prueba)."\n<br>";
+    // echo ControladorFuncionesAuxiliares::actualizaAuthAssignment($conexion_migracion_prueba)."\n<br>";
     // echo ControladorFuncionesAuxiliares::actualizaRegistrosNuevosTablasOz($conexion_migracion_prueba)."\n<br>"; //Actualización tablas Oz
     // echo ControladorFuncionesAuxiliares::corrigeDtInfContableProve($conexion_migracion_prueba,$array_info_global)."\n<br>";
     // echo ControladorFuncionesAuxiliares::corrijeDtCodprodfinal($conexion_migracion_prueba,$array_info_global)."\n<br>";
     // echo ControladorMigracion::migraDtInventarioxarea($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
+    
 
     //Traemos los arrays: user codVendedor => id_usuario y vendedor => id_usuario 
 
@@ -149,7 +153,7 @@
 
     $array_info_global['codVendedor=>id'] = ControladorInformacionGlobal::traeArrayUser($conexion_sio1,$conexion_migracion_prueba,2);
 
-    //echo ControladorMigracion::migraDtProyectoOp($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
+    // echo ControladorMigracion::migraDtProyectoOp($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
 
     //Traemos el array cod => id_codprodfinal 
 
@@ -159,7 +163,7 @@
 
     $array_info_global['nOrden=>cod'] = ControladorInformacionGlobal::traeArrayCodSubcategorias($conexion_sio1);
 
-    //echo ControladorMigracion::migraDtOrdenes($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
+    // echo ControladorMigracion::migraDtOrdenes($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
 
     
     //Traemos el array: n_ordenes|item_op => id_ordenes
@@ -202,17 +206,17 @@
 
     //Traemos array: empresa => id_proveedores
  
-    //$array_info_global['empresa=>id_proveedores'] = ControladorInformacionGlobal::traeArrayIdProveedores($conexion_migracion_prueba);
+    $array_info_global['empresa=>id_proveedores'] = ControladorInformacionGlobal::traeArrayIdProveedores($conexion_migracion_prueba);
 
     //Traemos array: id_costo => data_costos
 
-    //$array_info_global['id_costo=>data_costos'] = ControladorInformacionGlobal::traeArrayDataCostos($conexion_migracion_prueba);
+    $array_info_global['id_costo=>data_costos'] = ControladorInformacionGlobal::traeArrayDataCostos($conexion_migracion_prueba);
 
     //Traemos array: id_tipo_pago 
 
     $array_info_global['id_tipo_pago'] = ControladorInformacionGlobal::traeArrayTipoPago();
 
-    //echo ControladorMigracion::migraDtCompras($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
+    // echo ControladorMigracion::migraDtCompras($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
 
     //Traemos array: n_compra|cod_producto => data_compras
 
@@ -226,7 +230,7 @@
 
     $array_info_global['cuenta=>id_pucs_oc'] = ControladorInformacionGlobal::traeArrayIdPucsOc($conexion_migracion_prueba);
 
-    //echo ControladorMigracion::migraDtRotacion($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
+    echo ControladorMigracion::migraDtRotacion($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
     echo ControladorMigracion::migraDtSolicitudGR($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
 
     //Traemos array: n_solicitud => id_solicitud_g_r
