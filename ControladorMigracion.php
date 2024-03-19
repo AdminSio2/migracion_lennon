@@ -15,7 +15,7 @@
 
            $consulta_dt_acabados = $conexion_sio1->query("
             SELECT id_acabado,cod,acabado,tipo,clase,grupo,medida,unidadMin,
-            vr_hora_hombre,xMin,xMax,yMin,yMax  from dt_acabados  order by id_acabado
+            vr_hora_hombre,xMin,xMax,yMin,yMax,grupo  from dt_acabados  order by id_acabado
            ");
            $array_dt_acabados = $consulta_dt_acabados->fetchAll(PDO::FETCH_OBJ);
 
@@ -142,6 +142,7 @@
             $array_medidas = $array_info_global['medidas=>id_medida'];
 
             $registros_insertados = 0;
+            $registros_no_incluidos = 0;
             $conexion_migracion_prueba->beginTransaction();
 
             foreach($array_dt_acabados as $registro_dt_acabados){
@@ -156,6 +157,32 @@
                         $id_medida = 0;
                     }
 
+                    if(in_array($registro_dt_acabados->grupo,['TRASFORMACION DE PLASTICOS','CORTE CNC MULTICAM RIGIDOS'])){
+                        if($registro_dt_acabados->grupo == 'TRASFORMACION DE PLASTICOS'){
+                            $id_clase_costo = 27;
+                        }
+                        if($registro_dt_acabados->grupo == 'CORTE CNC MULTICAM RIGIDOS'){
+                            $id_clase_costo = 25;
+                        }
+                    }else{
+                        $id_clase_costo = $registro_dt_acabados->clase != null?$registro_dt_acabados->clase:1;
+                    }
+
+                    if(!strpos($registro_dt_acabados->cod,'.')){
+                        if($registro_dt_acabados->tipo == 0 || $registro_dt_acabados->tipo == 1){
+                            $id_tipo_costo = 4;
+                        }else{
+                            $id_tipo_costo = $registro_dt_acabados->tipo;
+                        }
+                    }else{
+                        $registros_no_incluidos++;
+                        continue;
+                    }
+
+                    $acabado = ControladorFuncionesAuxiliares::formateaString($registro_dt_acabados->acabado);
+
+                    
+
                     $insert_registro = $conexion_migracion_prueba->prepare("
                         INSERT INTO dt_acabados(id_acabados,cod,acabado,id_tipo_costo,id_clase_costo,id_area,id_medida,unidad_minima,vr_hora_hombre,x_min,
                         x_max,y_min,y_max) VALUES(:id_acabados,:cod,:acabado,:id_tipo_costo,:id_clase_costo,:id_area,:id_medida,:unidad_minima,:vr_hora_hombre,
@@ -165,9 +192,9 @@
                     $insert_registro->execute([
                         'id_acabados' => $registro_dt_acabados->id_acabado,
                         'cod' => $registro_dt_acabados->cod,
-                        'acabado' => $registro_dt_acabados->acabado,
-                        'id_tipo_costo' => $registro_dt_acabados->tipo,
-                        'id_clase_costo' => $registro_dt_acabados->clase != null?$registro_dt_acabados->clase:0,
+                        'acabado' => $acabado,
+                        'id_tipo_costo' => $id_tipo_costo,
+                        'id_clase_costo' => $id_clase_costo,
                         'id_area' => array_key_exists($registro_dt_acabados->grupo,$array_areas)?$array_areas[$registro_dt_acabados->grupo]:0,
                         'id_medida' => $id_medida,
                         'unidad_minima' => $registro_dt_acabados->unidadMin,
@@ -198,7 +225,7 @@
             $tiempo_fin = microtime(true);
             $tiempo_transcurrido = $tiempo_fin - $tiempo_inicio;
 
-            $mensaje = "Migración dt_acabados completada ".$registros_insertados." registros insertados en ".$tiempo_transcurrido." segundos";
+            $mensaje = "Migración dt_acabados completada ".$registros_insertados." registros insertados en ".$tiempo_transcurrido." segundos"."\n<br>".$registros_no_incluidos." no incluidos por tener . en el código (nunca se usan en el sio 1 están excluidos en los filtros)";
 
             return $mensaje;
 
@@ -904,6 +931,8 @@
                     elseif(strpos($nombre_proyecto, '├ì') !== false){
                         $nombre_proyecto = str_replace('├ì', 'Í', $nombre_proyecto);
                     }
+
+                    $nombre_proyecto = ControladorFuncionesAuxiliares::formateaString($nombre_proyecto);
                     
                     //Traemos el id_user
 
@@ -1342,6 +1371,7 @@
                 `acepta_script` char(1) DEFAULT NULL,
                 `tipo_script` varchar(100) DEFAULT NULL,
                 `id_acabados` int DEFAULT NULL,
+                `id_tipo_costo` int DEFAULT NULL,
                 `id_clase_costo` int DEFAULT NULL,
                 `id_medida` int DEFAULT NULL,
                 `tam_x` float DEFAULT NULL,
@@ -1367,6 +1397,23 @@
 
 
             foreach($array_dt_plantillas as $registro_dt_plantillas){
+
+                if(array_key_exists($registro_dt_plantillas->nom_guia,$array_inventario)){
+                    $nom_guia = $array_inventario[$registro_dt_plantillas->nom_guia]['producto'];
+           
+
+                    $vr_unid_g = $array_inventario[$registro_dt_plantillas->nom_guia]['valor_unidad_compra'] != 0 ? $array_inventario[$registro_dt_plantillas->nom_guia]['valor_unidad_compra']:$registro_dt_plantillas->vr_unid_G;
+                }else{
+                    $nom_guia = $registro_dt_plantillas->nom_guia;
+
+                    $vr_unid_g = $registro_dt_plantillas->vr_unid_G;
+                }
+                
+                $nom_guia = ControladorFuncionesAuxiliares::formateaString($nom_guia);
+
+                $id_clase_costo = $registro_dt_plantillas->clase_guia;
+                $id_tipo_costo = $registro_dt_plantillas->tipo_guia;
+
                 if(!array_key_exists($registro_dt_plantillas->cod_guia,$array_codprodfinal)){
                     $registros_no_incluidos++;
                     continue;
@@ -1374,18 +1421,18 @@
                 try{
                     $insert_registro = $conexion_migracion_prueba->prepare("
                         INSERT INTO dt_plantilla(id_plantilla,nom_guia,cod_guia,cant_xun_g,vr_unid_g,vr_unit_g,estado,id_codprodfinal,
-                        id_inventario,cierre,posicion,formula,comentarios,acepta_script,tipo_script,id_acabados,id_clase_costo,id_medida,
+                        id_inventario,cierre,posicion,formula,comentarios,acepta_script,tipo_script,id_acabados,id_tipo_costo,id_clase_costo,id_medida,
                         tam_x,tam_y,tam_z,tam_l,factor_inicial,factor_dependiente,duracion)
                         VALUES(:id_plantilla,:nom_guia,:cod_guia,:cant_xun_g,:vr_unid_g,:vr_unit_g,:estado,:id_codprodfinal,
-                        :id_inventario,:cierre,:posicion,:formula,:comentarios,:acepta_script,:tipo_script,:id_acabados,:id_clase_costo,:id_medida,
+                        :id_inventario,:cierre,:posicion,:formula,:comentarios,:acepta_script,:tipo_script,:id_acabados,:id_tipo_costo,:id_clase_costo,:id_medida,
                         :tam_x,:tam_y,:tam_z,:tam_l,:factor_inicial,:factor_dependiente,:duracion)
                     ");
                     $insert_registro->execute([
                         'id_plantilla' =>$registro_dt_plantillas->id_guia,
-                        'nom_guia' => array_key_exists($registro_dt_plantillas->nom_guia,$array_inventario)?$array_inventario[$registro_dt_plantillas->nom_guia]['producto']:$registro_dt_plantillas->nom_guia,
+                        'nom_guia' => $nom_guia,
                         'cod_guia' => $registro_dt_plantillas->codigo,
                         'cant_xun_g' => $registro_dt_plantillas->cantXun_G,
-                        'vr_unid_g' => $registro_dt_plantillas->vr_unid_G,
+                        'vr_unid_g' => $vr_unid_g,
                         'vr_unit_g' => $registro_dt_plantillas->vr_unit_G,
                         'estado' => $registro_dt_plantillas->gestion,
                         'id_codprodfinal' => $array_codprodfinal[$registro_dt_plantillas->cod_guia]['id_cod'],
@@ -1397,7 +1444,8 @@
                         'acepta_script' => $registro_dt_plantillas->aceptScript == 'SI' ? 1 : 2,
                         'tipo_script' => array_key_exists($registro_dt_plantillas->tipoScript,$array_tipo_script)?$array_tipo_script[$registro_dt_plantillas->tipoScript]:null,
                         'id_acabados' => array_key_exists($registro_dt_plantillas->codigo,$array_acabados)?$array_acabados[$registro_dt_plantillas->codigo]:null,
-                        'id_clase_costo'=>1,
+                        'id_tipo_costo' => $id_tipo_costo,
+                        'id_clase_costo'=> $id_clase_costo,
                         'id_medida' => array_key_exists($registro_dt_plantillas->codigo,$array_inventario)?$array_inventario[$registro_dt_plantillas->codigo]['id_medida']:null,
                         'tam_x' => $array_codprodfinal[$registro_dt_plantillas->cod_guia]['x']??0,
                         'tam_y' => $array_codprodfinal[$registro_dt_plantillas->cod_guia]['y']??0,

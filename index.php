@@ -78,7 +78,8 @@
     */ 
 
     date_default_timezone_set('America/Bogota');
-    set_time_limit(7800); //Seteamos tiempo de ejecución máximo en 130 min/ 2 h y 10 m
+    set_time_limit(8100); //Seteamos tiempo de ejecución máximo en 135 min/ 2 h y 15 m
+    ini_set('memory_limit', '2G'); //Seteamos una memoria de 2G
     $fechaHoraActual = date('Y-m-d H:i:s');
 
     echo "*****************";
@@ -109,13 +110,13 @@
 
     //Traemos array medidas => id_medida
 
-    $array_convierte_medidas = ControladorInformacionGlobal::traeArrayMedidas($conexion_migracion_prueba);
+    //$array_convierte_medidas = ControladorInformacionGlobal::traeArrayMedidas($conexion_migracion_prueba); borrar
 
-    $array_info_global['medidas=>id_medida'] = ControladorInformacionGlobal::traeArrayMedidas($conexion_migracion_prueba);
+    $array_info_global['medidas=>id_medida'] = ControladorInformacionGlobal::traeArrayMedidas($conexion_migracion_prueba); 
 
     //Traemos array area_sio1 => id_area
 
-    $array_convierte_nombre_area = ControladorInformacionGlobal::traeArrayIdArea();
+    //$array_convierte_nombre_area = ControladorInformacionGlobal::traeArrayIdArea(); borrar
 
     $array_info_global['id_area'] = ControladorInformacionGlobal::traeArrayIdArea($conexion_migracion_prueba);
 
@@ -127,8 +128,8 @@
 
     $array_info_global['grupos_diseno'] = ControladorInformacionGlobal::traeArrayGruposDiseno();
 
-    // echo ControladorMigracion::migraDtAcabados($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
-    // echo ControladorFuncionesAuxiliares::corrigeDtInventario($conexion_migracion_prueba)."\n<br>";
+    echo ControladorMigracion::migraDtAcabados($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
+    echo ControladorFuncionesAuxiliares::corrigeDtInventario($conexion_migracion_prueba)."\n<br>";
     
 
     /*Solo estos ids_inventarioxarea del 1 al 13 deben ir con 1 
@@ -138,13 +139,13 @@
 
     $array_info_global['cod=>id_acabados'] = ControladorInformacionGlobal::traeArrayIdAcabados($conexion_sio1);
 
-    // echo ControladorMigracion::migraDtUsuariosUser($conexion_sio1,$conexion_migracion_prueba)."\n<br>";
-    // echo ControladorFuncionesAuxiliares::complementaInfoUsuariosActivos($conexion_migracion_prueba)."\n<br>";
-    // echo ControladorFuncionesAuxiliares::actualizaAuthAssignment($conexion_migracion_prueba)."\n<br>";
-    // echo ControladorFuncionesAuxiliares::actualizaRegistrosNuevosTablasOz($conexion_migracion_prueba)."\n<br>"; //Actualización tablas Oz
-    // echo ControladorFuncionesAuxiliares::corrigeDtInfContableProve($conexion_migracion_prueba,$array_info_global)."\n<br>";
-    // echo ControladorFuncionesAuxiliares::corrijeDtCodprodfinal($conexion_migracion_prueba,$array_info_global)."\n<br>";
-    // echo ControladorMigracion::migraDtInventarioxarea($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
+    echo ControladorMigracion::migraDtUsuariosUser($conexion_sio1,$conexion_migracion_prueba)."\n<br>";
+    echo ControladorFuncionesAuxiliares::complementaInfoUsuariosActivos($conexion_migracion_prueba)."\n<br>";
+    echo ControladorFuncionesAuxiliares::actualizaAuthAssignment($conexion_migracion_prueba)."\n<br>";
+    echo ControladorFuncionesAuxiliares::actualizaRegistrosNuevosTablasOz($conexion_migracion_prueba)."\n<br>"; //Actualización tablas Oz
+    echo ControladorFuncionesAuxiliares::corrigeDtInfContableProve($conexion_migracion_prueba,$array_info_global)."\n<br>";
+    echo ControladorFuncionesAuxiliares::corrijeDtCodprodfinal($conexion_migracion_prueba,$array_info_global)."\n<br>";
+    echo ControladorMigracion::migraDtInventarioxarea($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
     
 
     //Traemos los arrays: user codVendedor => id_usuario y vendedor => id_usuario 
@@ -153,7 +154,7 @@
 
     $array_info_global['codVendedor=>id'] = ControladorInformacionGlobal::traeArrayUser($conexion_sio1,$conexion_migracion_prueba,2);
 
-    // echo ControladorMigracion::migraDtProyectoOp($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
+    echo ControladorMigracion::migraDtProyectoOp($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
 
     //Traemos el array cod => id_codprodfinal 
 
@@ -163,7 +164,7 @@
 
     $array_info_global['nOrden=>cod'] = ControladorInformacionGlobal::traeArrayCodSubcategorias($conexion_sio1);
 
-    // echo ControladorMigracion::migraDtOrdenes($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
+    echo ControladorMigracion::migraDtOrdenes($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
 
     
     //Traemos el array: n_ordenes|item_op => id_ordenes
@@ -174,19 +175,19 @@
 
     $array_info_global['tipo_script'] = ControladorInformacionGlobal::traeArrayTipoScript();
 
-    // echo ControladorMigracion::migraDtPlantilla($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>"; //No migramos registros de códigos borrados
-    // echo ControladorMigracion::migracionDtTareas($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
-    // echo ControladorMigracion::migracionDtCotizacion($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";// Con catagoria y plantilla faltantes
-    // echo ControladorMigracion::migracionDtPresupuestoInicial($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
+    echo ControladorMigracion::migraDtPlantilla($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>"; //No migramos registros de códigos borrados
+    echo ControladorMigracion::migracionDtTareas($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
+    echo ControladorMigracion::migracionDtCotizacion($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";// Con catagoria y plantilla faltantes
+    echo ControladorMigracion::migracionDtPresupuestoInicial($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
 
     //Traemos array: n_cotiza => id_cotizacion
 
     $array_info_global['n_cotiza|item=>id_cotizacion'] = ControladorInformacionGlobal::traeArrayIdCotizacion($conexion_migracion_prueba);
 
-    // echo ControladorMigracion::migraDtCostos($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
-    // echo ControladorMigracion::migraDtDiseno($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
-    // echo ControladorMigracion::migraDtProgramacionDiseno($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
-    // echo ControladorFuncionesAuxiliares::creaTablaDtProgramacionDisenoOrdenes($conexion_migracion_prueba)."\n<br>";
+    echo ControladorMigracion::migraDtCostos($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
+    echo ControladorMigracion::migraDtDiseno($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
+    echo ControladorMigracion::migraDtProgramacionDiseno($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
+    echo ControladorFuncionesAuxiliares::creaTablaDtProgramacionDisenoOrdenes($conexion_migracion_prueba)."\n<br>";
 
     //Traemos array: n_programacion => id_programacion_diseno
 
@@ -194,15 +195,15 @@
 
     
 
-    // echo ControladorMigracion::migraDtEstructuraPDiseno($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
-    // echo ControladorMigracion::migraDtHistoricoDiseno($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
+    echo ControladorMigracion::migraDtEstructuraPDiseno($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
+    echo ControladorMigracion::migraDtHistoricoDiseno($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
 
     //Traemos array: id_programacion_diseno|archivo => id_estructura_p_diseno
 
     $array_info_global['id_programacion_diseno=>fecha_ingreso'] = ControladorInformacionGlobal::traeArrayFechaEstructuraPDiseno($conexion_migracion_prueba);
 
-    // echo ControladorMigracion::migraDtHistoricoFt($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
-    // echo ControladorMigracion::migraDtTareasCosto($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
+    echo ControladorMigracion::migraDtHistoricoFt($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
+    echo ControladorMigracion::migraDtTareasCosto($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
 
     //Traemos array: empresa => id_proveedores
  
@@ -216,7 +217,7 @@
 
     $array_info_global['id_tipo_pago'] = ControladorInformacionGlobal::traeArrayTipoPago();
 
-    // echo ControladorMigracion::migraDtCompras($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
+    echo ControladorMigracion::migraDtCompras($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
 
     //Traemos array: n_compra|cod_producto => data_compras
 

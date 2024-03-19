@@ -499,7 +499,7 @@
 
         public static function traeArrayIdInventario($conexion_migracion_prueba){
 
-            $consulta_inventario = $conexion_migracion_prueba->query("SELECT id_inventario,codigo_prod,id_medida,producto FROM dt_inventario");
+            $consulta_inventario = $conexion_migracion_prueba->query("SELECT id_inventario,codigo_prod,id_medida,producto,valor_unidad_compra FROM dt_inventario");
 
             $consulta_inventario = $consulta_inventario->fetchAll(PDO::FETCH_OBJ);
 
@@ -510,7 +510,8 @@
                 $array_inventario_reasignado[$registro_inventario->codigo_prod] = [
                     'id_inventario' => $registro_inventario->id_inventario,
                     'id_medida' => $registro_inventario->id_medida,
-                    'producto' => $registro_inventario->producto
+                    'producto' => $registro_inventario->producto,
+                    'valor_unidad_compra' => $registro_inventario->valor_unidad_compra
                 ];
 
             }
