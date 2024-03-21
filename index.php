@@ -110,13 +110,9 @@
 
     //Traemos array medidas => id_medida
 
-    //$array_convierte_medidas = ControladorInformacionGlobal::traeArrayMedidas($conexion_migracion_prueba); borrar
-
     $array_info_global['medidas=>id_medida'] = ControladorInformacionGlobal::traeArrayMedidas($conexion_migracion_prueba); 
 
     //Traemos array area_sio1 => id_area
-
-    //$array_convierte_nombre_area = ControladorInformacionGlobal::traeArrayIdArea(); borrar
 
     $array_info_global['id_area'] = ControladorInformacionGlobal::traeArrayIdArea($conexion_migracion_prueba);
 
@@ -267,6 +263,16 @@
     
 
     echo ControladorMigracion::migraDtEntregables($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
+
+    echo ControladorMigracion::migraDtHistorialCostos($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
+    echo ControladorMigracion::migraDtHistoricoCierres($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
+    echo ControladorMigracion::migraDtTrazaOp($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
+    echo ControladorMigracion::migraDtHistoricoTareasCosto($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
+    echo ControladorFuncionesAuxiliares::creaProcedimientosAlmacenados($conexion_migracion_prueba)."\n<br>";
+    echo ControladorFuncionesAuxiliares::creaVistasBd($conexion_migracion_prueba)."\n<br>";
+    echo ControladorFuncionesAuxiliares::implementaLlavesComplementarias($conexion_migracion_prueba)."\n<br>";
+    
+
 
 
     $tiempo_fin = microtime(true);

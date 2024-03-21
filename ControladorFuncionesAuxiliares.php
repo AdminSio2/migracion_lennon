@@ -22701,6 +22701,3819 @@
 
         }
 
+        public static function implementaLlavesComplementarias($conexion_migracion_prueba){
+            try{
+                $conexion_migracion_prueba->exec("
+                
+                    /*create index indx_cod_prod on dt_rotacion(cod_prod);*/
+                    create index indx_id_tipo_rotacion on dt_rotacion(id_tipo_rotacion);
+                    /*alter table dt_fechas_op 
+                    add constraint dt_fechas_op_dt_ordenes_fk 
+                    FOREIGN KEY (id_ordenes) references dt_ordenes(id_ordenes);*/
+                    alter table dt_compras
+                    add constraint dt_compras_dt_costos_fk 
+                    FOREIGN KEY (id_costos) references dt_costos(id_costo);
+                    alter table dt_compras  
+                    add constraint dt_compras_dt_proveedores_fk 
+                    FOREIGN KEY (id_proveedores) references dt_proveedores(id_proveedores);
+                
+                ");
+
+            }catch(PDOException $e){
+                echo "Hubo un error en la implementación de las llaves complementarias ".$e->getMessage();exit;
+            }
+        }
+
+        public static function creaProcedimientosAlmacenados($conexion_migracion_prueba){
+
+            try{
+
+                $conexion_migracion_prueba->exec("
+                    CREATE DEFINER=`masterUS`@`%` PROCEDURE `migracion_prueba`.`agendaOperadores`(id_area int)
+                    select
+                    t.id_tarea_costo as 'id_tarea_costo',
+                    o.id_ordenes as 'id_ordenes',
+                    o.n_ordenes as 'op',
+                    c.nom_empresa as 'cliente',
+                    o.referencia as 'producto',
+                    o.item_op as 'item',
+                    o.cantidad as 'cantidad',
+                    uO.nombre_usuario as 'experto',
+                    t.id_costo as 'id_costo',
+                    t.fecha_inicio_real as 'fecha_inicio',
+                    t.fecha_final as 'fecha_final',
+                    t.nombre_costo as 'tarea',
+                    t.can_horas as 'horas',
+                    o.id_usuario as 'comercial_id',
+                    o.id_coordinador as 'coordinador_id'
+                    from dt_tareas_costo t 
+                    inner join dt_ordenes o on t.id_ordenes = o.id_ordenes
+                    inner join `user` uP on t.id_usuario = uP.id
+                    inner join `user` uO on t.id_vendedor = uO.id
+                    left join dt_clientes c on c.id_cliente = o.id_cliente where t.id_area = id_area and t.fecha_retro is null
+                    order by o.n_ordenes asc, t.fecha_inicio asc,o.item_op asc;
+                    
+                    CREATE DEFINER=`masterUS`@`%` PROCEDURE `migracion_prueba`.`agendaOperadoresOP`(id_area int,n_ordenes int)
+                    select
+                    t.id_tarea_costo as 'id_tarea_costo',
+                    o.id_ordenes as 'id_ordenes',
+                    o.n_ordenes as 'op',
+                    c.nom_empresa as 'cliente',
+                    o.referencia as 'producto',
+                    o.item_op as 'item',
+                    o.cantidad as 'cantidad',
+                    uO.nombre_usuario as 'experto',
+                    t.id_costo as 'id_costo',
+                    t.fecha_inicio_real as 'fecha_inicio',
+                    t.fecha_final as 'fecha_final',
+                    t.nombre_costo as 'tarea',
+                    t.can_horas as 'horas',
+                    o.id_usuario as 'comercial_id',
+                    o.id_coordinador as 'coordinador_id'
+                    from dt_tareas_costo t 
+                    inner join dt_ordenes o on t.id_ordenes = o.id_ordenes
+                    inner join `user` uP on t.id_usuario = uP.id
+                    inner join `user` uO on t.id_vendedor = uO.id
+                    left join dt_clientes c on c.id_cliente = o.id_cliente where t.id_area = id_area and t.fecha_retro is null and o.n_ordenes = n_ordenes
+                    order by o.n_ordenes asc, t.fecha_inicio asc,o.item_op asc;
+                    
+                    CREATE DEFINER=`masterUS`@`%` PROCEDURE `migracion_prueba`.`buscadorDiseno`(n_ordenes int)
+                    select 
+                    n_ordenes,
+                    id_ordenes,
+                    foto
+                    
+                    from dt_diseno where n_ordenes = n_ordenes;
+                    
+                    CREATE DEFINER=`masterUS`@`%` PROCEDURE `migracion_prueba`.`ganttProduccion`(id int)
+                    select * from dt_costos where id_tipo_costo = 4 and id_ordenes = id;
+                    
+                    CREATE DEFINER=`masterUS`@`%` PROCEDURE `migracion_prueba`.`generarInformeProduccion`(n_ordenes int)
+                    select 
+                        c.n_ordenes as 'op',
+                        c.cod_material as 'codigo_material',
+                        c.nombre_costo as 'Material', 
+                        ROUND(sum(c.cant_sol),1) as 'cantidad_costeada',
+                        sum(case when r.id_tipo_rotacion = 25 then r.cantidad else r.cantidad = 0 end) as 'entregado_por_almacen',
+                        sum(case when r.id_tipo_rotacion = 26 then r.cantidad else r.cantidad = 0 end) as 'descargado_por_op',
+                        ROUND(sum(c.cant_sol),1)- sum(case when r.id_tipo_rotacion = 26 then r.cantidad else r.cantidad = 0 end)as 'saldo'
+                            
+                    from dt_costos c 
+                    left join dt_rotacion r on (c.id_costo = r.id_costo) 
+                    
+                    where c.id_tipo_costo = 1 and c.n_ordenes = n_ordenes
+                    group by c.nombre_costo;
+                    
+                    CREATE DEFINER=`masterUS`@`%` PROCEDURE `migracion_prueba`.`informeRotacionesMaterial`(n_ordenes int)
+                    SELECT 
+                    dc.id_costo, 
+                    dr.id_compra, 
+                    dc.id_ordenes,
+                    dc.n_ordenes,
+                    dc.cod_material,
+                    dc.comentarios,
+                    dc.nombre_costo,
+                    di.stock,
+                    dc.cant_sol,  
+                    round(sum(case when dr.id_tipo_rotacion = 9 then dr.cantidad else dr.cantidad = 0 end),2) as 'cantidad_entradas',
+                    round(sum(case when dr.id_tipo_rotacion = 25 and dr.estado = 7 then dr.cantidad else dr.cantidad = 0 end),2) as 'traslado_a_producción_sin_aceptar',
+                    round(sum(case when dr.id_tipo_rotacion = 25 and dr.estado = 1 then dr.cantidad else dr.cantidad = 0 end),2) as 'traslado_a_producción_aceptado',
+                    round(sum(case when dr.id_tipo_rotacion = 26 and dr.estado = 1 then dr.cantidad else dr.cantidad = 0 end),2) as 'salidas_de_producción'
+                    FROM dt_costos dc 
+                    LEFT JOIN dt_inventarioxarea di on dc.id_inventario = di.id_inventario 
+                    AND di.id_area = 12
+                    LEFT JOIN dt_rotacion dr  on dc.id_costo = dr.id_costo 
+                    AND dr.id_tipo_rotacion in (9,25,26) and dr.estado != 2
+                    WHERE  dc.id_tipo_costo = 1 AND dc.n_ordenes = n_ordenes
+                    GROUP BY dc.id_costo order by dc.id_ordenes,dc.nombre_costo;
+                    
+                    CREATE DEFINER=`masterUS`@`%` PROCEDURE `migracion_prueba`.`informeRotacionesMaterialAgrupado`(n_ordenes int)
+                    SELECT 
+                    dc.id_costo, 
+                    dr.id_compra, 
+                    dc.id_ordenes,
+                    dc.n_ordenes,
+                    dc.cod_material,
+                    dc.comentarios,
+                    dc.nombre_costo,
+                    di.stock,
+                    round(sum(dc.cant_sol),2) as 'cant_sol',  
+                    round(sum(case when dr.id_tipo_rotacion = 9 then dr.cantidad else dr.cantidad = 0 end),2) as 'cantidad_entradas',
+                    round(sum(case when dr.id_tipo_rotacion = 25 and dr.estado = 7 then dr.cantidad else dr.cantidad = 0 end),2) as 'traslado_a_producción_sin_aceptar',
+                    round(sum(case when dr.id_tipo_rotacion = 25 and dr.estado = 1 then dr.cantidad else dr.cantidad = 0 end),2) as 'traslado_a_producción_aceptado',
+                    round(sum(case when dr.id_tipo_rotacion = 26 and dr.estado = 1 then dr.cantidad else dr.cantidad = 0 end),2) as 'salidas_de_producción'
+                    FROM dt_costos dc 
+                    LEFT JOIN dt_inventarioxarea di on dc.id_inventario = di.id_inventario 
+                    AND di.id_area = 12
+                    LEFT JOIN dt_rotacion dr  on dc.id_costo = dr.id_costo 
+                    AND dr.id_tipo_rotacion in (9,25,26) and dr.estado != 2
+                    WHERE  dc.id_tipo_costo = 1 AND dc.n_ordenes = n_ordenes
+                    GROUP BY dc.cod_material  order by dc.id_ordenes,dc.nombre_costo;
+                    
+                    CREATE DEFINER=`masterUS`@`%` PROCEDURE `migracion_prueba`.`informeRotacionMaterialxOP`(n_ordeness int)
+                    select 
+                    tablauno.cod_material,tablauno.comentarios,tablauno.nombre_costo,tablauno.cantidad_costeada,tablados.entradas_almacen,tablados.entrada_a_producción_sin_aprobar,
+                    tablados.entrada_a_producción_aprobadas,tablados.salidas_de_producción
+                    from
+                    (select n_ordenes,comentarios,nombre_costo,cod_material,round(sum(cant_sol),1) as 'cantidad_costeada' 
+                    from dt_costos where  n_ordenes = n_ordeness and id_tipo_costo = 1
+                    group by nombre_costo order by nombre_costo) tablauno
+                    join
+                    (select 
+                    c.nombre_costo,c.cod_material, 
+                    round(sum(case when r.id_tipo_rotacion = 9 then r.cantidad else r.cantidad = 0 end),1)as 'entradas_almacen',
+                    round(sum(case when r.id_tipo_rotacion = 25 and r.estado = 7 then r.cantidad else r.cantidad = 0 end),1) as 'entrada_a_producción_sin_aprobar',
+                    round(sum(case when r.id_tipo_rotacion = 25 and r.estado = 1 then r.cantidad else r.cantidad = 0 end),1) as 'entrada_a_producción_aprobadas',
+                    round(sum(case when r.id_tipo_rotacion = 26 and r.estado = 1 then r.cantidad else r.cantidad = 0 end),1) as 'salidas_de_producción'
+                    from dt_rotacion  r 
+                    right join dt_costos c on r.id_costo = c.id_costo where c.id_tipo_costo = 1  and c.n_ordenes = n_ordeness group by c.nombre_costo 
+                    order by c.nombre_costo) tablados
+                    on tablauno.nombre_costo = tablados.nombre_costo;
+                    
+                    CREATE DEFINER=`masterUS`@`%` PROCEDURE `migracion_prueba`.`itemsaProgramarconAreaOP`(id_area int,n_ordenes int)
+                    select 
+                    dt_acabados.id_area,
+                    dt_costos.n_ordenes,
+                    dt_ordenes.cod,
+                    dt_ordenes.referencia,
+                    dt_ordenes.id_ordenes,
+                    dt_ordenes.item_op 
+                    from dt_costos 
+                    inner join dt_acabados on dt_costos.id_acabados =+ dt_acabados.id_acabados
+                    left join dt_ordenes on dt_ordenes.id_ordenes = dt_costos.id_ordenes
+                    left join dt_tareas_costo on dt_tareas_costo.id_costo = dt_costos.id_costo
+                    left join dt_fechas_op on dt_ordenes.id_ordenes = dt_fechas_op.id_ordenes
+                    where dt_ordenes.estado <> 0 and year(dt_fechas_op.fecha_ingreso) in (2022,2023,2024)and dt_costos.n_ordenes <> 0 and dt_costos.id_tipo_costo in (4,8) and   dt_costos.cierre = 0 
+                    and dt_acabados.id_area = id_area and dt_ordenes.n_ordenes = n_ordenes
+                    group by dt_ordenes.id_ordenes ORDER BY dt_costos.n_ordenes,dt_costos.id_ordenes,dt_costos.id_costo,dt_acabados.id_area,dt_acabados.cod;
+                    
+                    CREATE DEFINER=`masterUS`@`%` PROCEDURE `migracion_prueba`.`itemsaProgramarconOP`(n_ordenes int)
+                    select 
+                    dt_acabados.id_area,
+                    dt_costos.n_ordenes,
+                    dt_ordenes.cod,
+                    dt_ordenes.referencia,
+                    dt_ordenes.id_ordenes,
+                    dt_ordenes.item_op 
+                    from dt_costos 
+                    inner join dt_acabados on dt_costos.id_acabados =+ dt_acabados.id_acabados
+                    left join dt_ordenes on dt_ordenes.id_ordenes = dt_costos.id_ordenes
+                    left join dt_tareas_costo on dt_tareas_costo.id_costo = dt_costos.id_costo
+                    left join dt_fechas_op on dt_ordenes.id_ordenes = dt_fechas_op.id_ordenes
+                    where dt_ordenes.estado <> 0 and year(dt_fechas_op.fecha_ingreso) in (2022,2023,2024)and dt_costos.n_ordenes <> 0 and dt_costos.id_tipo_costo in (4,8) and   dt_costos.cierre = 0 
+                    and dt_ordenes.n_ordenes = n_ordenes
+                    group by dt_ordenes.id_ordenes ORDER BY dt_costos.n_ordenes,dt_costos.id_ordenes,dt_costos.id_costo,dt_acabados.id_area,dt_acabados.cod;
+                    
+                    CREATE DEFINER=`masterUS`@`%` PROCEDURE `migracion_prueba`.`itemsProgramadosAreaOP`(id_area int,n_ordenes int)
+                    select
+                    t.id_area,
+                    t.n_ordenes,
+                    o.cod,
+                    o.referencia,
+                    o.id_ordenes,
+                    o.item_op
+                    from dt_tareas_costo t
+                    inner join dt_ordenes o on t.id_ordenes = o.id_ordenes 
+                    where t.id_area = id_area and o.n_ordenes = n_ordenes
+                    group by o.id_ordenes;
+                    
+                    CREATE DEFINER=`masterUS`@`%` PROCEDURE `migracion_prueba`.`itemsProgramadosOP`(n_ordenes int)
+                    select
+                    t.id_area,
+                    t.n_ordenes,
+                    o.cod,
+                    o.referencia,
+                    o.id_ordenes,
+                    o.item_op
+                    from dt_tareas_costo t
+                    inner join dt_ordenes o on t.id_ordenes = o.id_ordenes 
+                    where o.n_ordenes = n_ordenes
+                    group by o.id_ordenes;
+                    
+                    CREATE DEFINER=`masterUS`@`%` PROCEDURE `migracion_prueba`.`ordenesaProgramar`()
+                    select 
+                    
+                    dt_costos.n_ordenes,
+                    dt_ordenes.ref_general
+                    
+                    from dt_costos 
+                    left join dt_ordenes on dt_ordenes.id_ordenes = dt_costos.id_ordenes
+                    left join dt_fechas_op on dt_ordenes.id_ordenes = dt_fechas_op.id_ordenes
+                    where dt_ordenes.estado <> 0 and year(dt_fechas_op.fecha_ingreso) in (2022,2023,2024) and dt_costos.n_ordenes <> 0 and dt_costos.id_tipo_costo in (4,8) and   dt_costos.cierre = 0 
+                    
+                    group by dt_ordenes.n_ordenes ORDER BY dt_costos.n_ordenes,dt_costos.id_ordenes,dt_costos.id_costo;
+                    
+                    CREATE DEFINER=`masterUS`@`%` PROCEDURE `migracion_prueba`.`ordenesaProgramarconAreaOP`()
+                    select 
+                    
+                    dt_costos.n_ordenes
+                    
+                    from dt_costos 
+                    left join dt_ordenes on dt_ordenes.id_ordenes = dt_costos.id_ordenes
+                    left join dt_fechas_op on dt_ordenes.id_ordenes = dt_fechas_op.id_ordenes
+                    where dt_ordenes.estado <> 0 and year(dt_fechas_op.fecha_ingreso) in (2022,2023,2024) and dt_costos.n_ordenes <> 0 and dt_costos.id_tipo_costo in (4,8) and   dt_costos.cierre = 0 
+                    
+                    group by dt_ordenes.n_ordenes ORDER BY dt_costos.n_ordenes,dt_costos.id_ordenes,dt_costos.id_costo;
+                    
+                    CREATE DEFINER=`masterUS`@`%` PROCEDURE `migracion_prueba`.`ordenesProgramadas`()
+                    select 
+                    
+                    o.n_ordenes,
+                    o.ref_general
+                    
+                    from dt_ordenes o right join dt_tareas_costo t on o.id_ordenes = t.id_ordenes 
+                    
+                    where o.estado<>0 group by o.n_ordenes;
+                    
+                    CREATE DEFINER=`masterUS`@`%` PROCEDURE `migracion_prueba`.`programacionAreaOPItem`(id_area int,n_ordenes int,id_ordenes int)
+                    select 
+                    dt_empresa.nombre_empresa,
+                    dt_ordenes.ref_general,
+                    dt_acabados.cod,
+                    dt_acabados.acabado,
+                    dt_costos.cant_sol,
+                    dt_acabados.id_area, 
+                    case when dt_acabados.id_area = 17 then 'IMPRESION DIGITAL'
+                        when dt_acabados.id_area= 18 then 'DECORACION'
+                        when dt_acabados.id_area=13 then 'METALMECANICA'
+                        when dt_acabados.id_area=14 then 'PINTURA' 
+                        when dt_acabados.id_area=15 then 'SUSTRATOS' 
+                        when dt_acabados.id_area=16 then 'ENSAMBLE Y TERMINADO'
+                        when dt_acabados.id_area=19 then 'DESPACHOS' 
+                        else 'OTROS' end as 'area',
+                    dt_costos.n_ordenes,
+                    dt_costos.id_ordenes,
+                    dt_costos.comentarios,
+                    dt_costos.id_costo,
+                    dt_costos.gantt_des,
+                    dt_ordenes.cod,
+                    dt_ordenes.referencia,
+                    dt_costos.estado,
+                    dt_ordenes.id_ordenes,
+                    dt_ordenes.id_cotizacion,
+                    dt_ordenes.item_op,
+                    dt_ordenes.id_vend,
+                    dt_fechas_op.fecha_ingreso 
+                    from dt_costos 
+                    inner join dt_acabados on dt_costos.id_acabados =+ dt_acabados.id_acabados
+                    left join dt_ordenes on dt_ordenes.id_ordenes = dt_costos.id_ordenes
+                    left join dt_tareas_costo on dt_tareas_costo.id_costo = dt_costos.id_costo
+                    left join dt_fechas_op on dt_ordenes.id_ordenes = dt_fechas_op.id_ordenes
+                    join dt_empresa on dt_ordenes.id_cliente=dt_empresa.id_cliente
+                    where dt_ordenes.estado <> 0 and year(dt_fechas_op.fecha_ingreso) in (2022,2023,2024) and dt_costos.n_ordenes <> 0 and dt_costos.id_tipo_costo = 4 and   dt_costos.cierre = 0 
+                    and dt_acabados.id_area = id_area and dt_ordenes.n_ordenes = n_ordenes and dt_ordenes.id_ordenes = id_ordenes
+                    group by dt_costos.id_costo ORDER BY dt_costos.n_ordenes,dt_costos.id_ordenes,dt_costos.id_costo,dt_acabados.id_area,dt_acabados.cod;
+                    
+                    CREATE DEFINER=`masterUS`@`%` PROCEDURE `migracion_prueba`.`programacionxAreayItem`(id_area int,id_ordenes int)
+                    select 
+                    dt_acabados.cod,
+                    dt_acabados.acabado,
+                    dt_costos.cant_sol,
+                    dt_acabados.id_area, 
+                    case when dt_acabados.id_area = 17 then 'IMPRESION DIGITAL'
+                        when dt_acabados.id_area= 18 then 'DECORACION'
+                        when dt_acabados.id_area=13 then 'METALMECANICA'
+                        when dt_acabados.id_area=14 then 'PINTURA' 
+                        when dt_acabados.id_area=15 then 'SUSTRATOS' 
+                        when dt_acabados.id_area=16 then 'ENSAMBLE Y TERMINADO'
+                        when dt_acabados.id_area=19 then 'DESPACHOS' 
+                        else 'OTROS' end as 'area',
+                    dt_costos.n_ordenes,
+                    dt_costos.n_cotiza,
+                    dt_costos.id_ordenes,
+                    dt_costos.comentarios,
+                    dt_costos.id_costo,
+                    dt_costos.gantt_des,
+                    dt_ordenes.cod,
+                    dt_ordenes.referencia,
+                    dt_costos.estado,
+                    dt_ordenes.id_ordenes,
+                    dt_ordenes.id_cotizacion,
+                    dt_ordenes.item_op,
+                    dt_ordenes.id_vend,
+                    dt_fechas_op.fecha_ingreso 
+                    from dt_costos 
+                    inner join dt_acabados on dt_costos.id_acabados =+ dt_acabados.id_acabados
+                    left join dt_ordenes on dt_ordenes.id_ordenes = dt_costos.id_ordenes
+                    left join dt_tareas_costo on dt_tareas_costo.id_costo = dt_costos.id_costo
+                    left join dt_fechas_op on dt_ordenes.id_ordenes = dt_fechas_op.id_ordenes
+                    where dt_ordenes.estado <> 0 and year(dt_fechas_op.fecha_ingreso) in (2022,2023,2024) and dt_costos.n_ordenes <> 0 and dt_costos.id_tipo_costo in (4,8) and   dt_costos.cierre = 0 
+                    and dt_acabados.id_area = id_area and dt_ordenes.id_ordenes = id_ordenes
+                    group by dt_costos.id_costo ORDER BY dt_costos.n_ordenes,dt_costos.id_ordenes,dt_costos.id_costo,dt_acabados.id_area,dt_acabados.cod;
+                    
+                    CREATE DEFINER=`masterUS`@`%` PROCEDURE `migracion_prueba`.`programacionxAreayOp`(id_area int,n_ordenes int)
+                    select 
+                    dt_acabados.cod,
+                    dt_acabados.acabado,
+                    dt_costos.cant_sol,
+                    dt_acabados.id_area, 
+                    case when dt_acabados.id_area = 17 then 'IMPRESION DIGITAL'
+                        when dt_acabados.id_area= 18 then 'DECORACION'
+                        when dt_acabados.id_area=13 then 'METALMECANICA'
+                        when dt_acabados.id_area=14 then 'PINTURA' 
+                        when dt_acabados.id_area=15 then 'SUSTRATOS' 
+                        when dt_acabados.id_area=16 then 'ENSAMBLE Y TERMINADO'
+                        when dt_acabados.id_area=19 then 'DESPACHOS' 
+                        else 'OTROS' end as area,
+                    dt_costos.n_ordenes,
+                    dt_costos.n_cotiza,
+                    dt_costos.id_ordenes,
+                    dt_costos.comentarios,
+                    dt_costos.id_costo,
+                    dt_costos.gantt_des,
+                    dt_ordenes.cod,
+                    dt_ordenes.referencia,
+                    dt_ordenes.id_cliente,
+                    dt_ordenes.ref_general,
+                    dt_costos.estado,
+                    dt_ordenes.id_ordenes,
+                    dt_ordenes.id_cotizacion,
+                    dt_ordenes.item_op,
+                    dt_ordenes.id_vend,
+                    dt_fechas_op.fecha_ingreso 
+                    from dt_costos 
+                    inner join dt_acabados on dt_costos.id_acabados =+ dt_acabados.id_acabados
+                    left join dt_ordenes on dt_ordenes.id_ordenes = dt_costos.id_ordenes
+                    left join dt_tareas_costo on dt_tareas_costo.id_costo = dt_costos.id_costo
+                    left join dt_fechas_op on dt_ordenes.id_ordenes = dt_fechas_op.id_ordenes
+                    where dt_ordenes.estado <> 0 and year(dt_fechas_op.fecha_ingreso) in (2022,2023,2024) and dt_costos.n_ordenes <> 0 and dt_costos.id_tipo_costo in (4,8) and   dt_costos.estado <> 0 
+                    and dt_acabados.id_area = id_area and dt_ordenes.n_ordenes = n_ordenes
+                    group by dt_costos.id_costo ORDER BY dt_costos.n_ordenes,dt_costos.id_ordenes,dt_costos.id_costo,dt_acabados.id_area,dt_acabados.cod;
+                    
+                    CREATE DEFINER=`masterUS`@`%` PROCEDURE `migracion_prueba`.`programacionxItem`(id_ordenes int)
+                    select 
+                    dt_acabados.cod,
+                    dt_acabados.acabado,
+                    dt_costos.cant_sol,
+                    dt_acabados.id_area, 
+                    case when dt_acabados.id_area = 17 then 'IMPRESION DIGITAL'
+                        when dt_acabados.id_area= 18 then 'DECORACION'
+                        when dt_acabados.id_area=13 then 'METALMECANICA'
+                        when dt_acabados.id_area=14 then 'PINTURA' 
+                        when dt_acabados.id_area=15 then 'SUSTRATOS' 
+                        when dt_acabados.id_area=16 then 'ENSAMBLE Y TERMINADO'
+                        when dt_acabados.id_area=19 then 'DESPACHOS' 
+                        else 'OTROS' end,
+                    dt_costos.n_ordenes,
+                    dt_costos.n_cotiza,
+                    dt_costos.id_ordenes,
+                    dt_costos.comentarios,
+                    dt_costos.id_costo,
+                    dt_costos.gantt_des,
+                    dt_ordenes.cod,
+                    dt_ordenes.referencia,
+                    dt_costos.estado,
+                    dt_ordenes.id_ordenes,
+                    dt_ordenes.id_cotizacion,
+                    dt_ordenes.item_op,
+                    dt_ordenes.id_vend,
+                    dt_fechas_op.fecha_ingreso 
+                    from dt_costos 
+                    inner join dt_acabados on dt_costos.id_acabados =+ dt_acabados.id_acabados
+                    left join dt_ordenes on dt_ordenes.id_ordenes = dt_costos.id_ordenes
+                    left join dt_tareas_costo on dt_tareas_costo.id_costo = dt_costos.id_costo
+                    left join dt_fechas_op on dt_ordenes.id_ordenes = dt_fechas_op.id_ordenes
+                    where dt_ordenes.estado <> 0 and year(dt_fechas_op.fecha_ingreso) in (2022,2023,2024) and dt_costos.n_ordenes <> 0 and dt_costos.id_tipo_costo in (4,8) and   dt_costos.cierre = 0 
+                    and dt_ordenes.id_ordenes = id_ordenes
+                    group by dt_costos.id_costo ORDER BY dt_costos.n_ordenes,dt_costos.id_ordenes,dt_costos.id_costo,dt_acabados.id_area,dt_acabados.cod;
+                    
+                    CREATE DEFINER=`masterUS`@`%` PROCEDURE `migracion_prueba`.`programacionxOp`(n_ordenes int)
+                    select 
+                    dt_acabados.cod,
+                    dt_acabados.acabado,
+                    dt_costos.cant_sol,
+                    dt_acabados.id_area, 
+                    case when dt_acabados.id_area = 17 then 'IMPRESION DIGITAL'
+                        when dt_acabados.id_area= 18 then 'DECORACION'
+                        when dt_acabados.id_area=13 then 'METALMECANICA'
+                        when dt_acabados.id_area=14 then 'PINTURA' 
+                        when dt_acabados.id_area=15 then 'SUSTRATOS' 
+                        when dt_acabados.id_area=16 then 'ENSAMBLE Y TERMINADO'
+                        when dt_acabados.id_area=19 then 'DESPACHOS' 
+                        else 'OTROS' end as area,
+                    dt_costos.n_ordenes,
+                    dt_costos.n_cotiza,
+                    dt_costos.id_ordenes,
+                    dt_costos.comentarios,
+                    dt_costos.id_costo,
+                    dt_costos.gantt_des,
+                    dt_ordenes.cod,
+                    dt_ordenes.referencia,
+                    dt_ordenes.id_cliente,
+                    dt_ordenes.ref_general,
+                    dt_costos.estado,
+                    dt_ordenes.id_ordenes,
+                    dt_ordenes.id_cotizacion,
+                    dt_ordenes.item_op,
+                    dt_ordenes.id_vend,
+                    dt_fechas_op.fecha_ingreso 
+                    from dt_costos 
+                    inner join dt_acabados on dt_costos.id_acabados =+ dt_acabados.id_acabados
+                    left join dt_ordenes on dt_ordenes.id_ordenes = dt_costos.id_ordenes
+                    left join dt_tareas_costo on dt_tareas_costo.id_costo = dt_costos.id_costo
+                    left join dt_fechas_op on dt_ordenes.id_ordenes = dt_fechas_op.id_ordenes
+                    where dt_ordenes.estado <> 0 and year(dt_fechas_op.fecha_ingreso) in (2022,2023,2024)and dt_costos.n_ordenes <> 0 and dt_costos.id_tipo_costo = 4 and   dt_costos.estado <> 0 
+                    and dt_ordenes.n_ordenes = n_ordenes
+                    group by dt_costos.id_costo ORDER BY dt_costos.n_ordenes,dt_costos.id_ordenes,dt_costos.id_costo,dt_acabados.id_area,dt_acabados.cod;
+                    
+                    CREATE DEFINER=`masterUS`@`%` PROCEDURE `migracion_prueba`.`programacionxOPyItem`(n_ordenes int,id_ordenes int)
+                    select 
+                    dt_empresa.nombre_empresa,
+                    dt_ordenes.ref_general,
+                    dt_acabados.cod,
+                    dt_acabados.acabado,
+                    dt_costos.cant_sol,
+                    dt_acabados.id_area, 
+                    case when dt_acabados.id_area = 17 then 'IMPRESION DIGITAL'
+                        when dt_acabados.id_area= 18 then 'DECORACION'
+                        when dt_acabados.id_area=13 then 'METALMECANICA'
+                        when dt_acabados.id_area=14 then 'PINTURA' 
+                        when dt_acabados.id_area=15 then 'SUSTRATOS' 
+                        when dt_acabados.id_area=16 then 'ENSAMBLE Y TERMINADO'
+                        when dt_acabados.id_area=19 then 'DESPACHOS' 
+                        else 'OTROS' end as 'area',
+                    dt_costos.n_ordenes,
+                    dt_costos.id_ordenes,
+                    dt_costos.comentarios,
+                    dt_costos.id_costo,
+                    dt_costos.gantt_des,
+                    dt_ordenes.cod,
+                    dt_ordenes.referencia,
+                    dt_costos.estado,
+                    dt_ordenes.id_ordenes,
+                    dt_ordenes.id_cotizacion,
+                    dt_ordenes.item_op,
+                    dt_ordenes.id_vend,
+                    dt_fechas_op.fecha_ingreso 
+                    from dt_costos 
+                    inner join dt_acabados on dt_costos.id_acabados =+ dt_acabados.id_acabados
+                    left join dt_ordenes on dt_ordenes.id_ordenes = dt_costos.id_ordenes
+                    left join dt_tareas_costo on dt_tareas_costo.id_costo = dt_costos.id_costo
+                    left join dt_fechas_op on dt_ordenes.id_ordenes = dt_fechas_op.id_ordenes
+                    join dt_empresa on dt_ordenes.id_cliente=dt_empresa.id_cliente
+                    where dt_ordenes.estado <> 0 and year(dt_fechas_op.fecha_ingreso) in (2022,2023,2024) and dt_costos.n_ordenes <> 0 and dt_costos.id_tipo_costo = 4 and   dt_costos.estado <> 0 
+                    and dt_ordenes.n_ordenes = n_ordenes and dt_ordenes.id_ordenes = id_ordenes
+                    group by dt_costos.id_costo ORDER BY dt_costos.n_ordenes,dt_costos.id_ordenes,dt_costos.id_costo,dt_acabados.id_area,dt_acabados.cod;
+                    
+                    CREATE DEFINER=`masterUS`@`%` PROCEDURE `migracion_prueba`.`reporteCostos`(fecha_inicio datetime,fecha_fin datetime)
+                    select o.n_ordenes,o.id_cliente,o.nit,o.id_categoria,o.id_vend,
+                    sum(case when c.id_tipo_costo = 9 and c.id_clase_costo != 2 or c.id_tipo_costo = 9 and c.id_clase_costo is null then c.valor_total else c.valor_total = 1 end) as 'viaticos_prod',
+                    sum(case when c.id_tipo_costo = 9 and c.id_clase_costo = 2 then c.valor_total else c.valor_total = 1 end) as 'viaticos_log',
+                    sum(case when c.id_tipo_costo = 3 and c.id_clase_costo != 2 or c.id_tipo_costo = 3 and c.id_clase_costo is null then c.valor_total else c.valor_total = 1 end) as 'insumos_prod',
+                    sum(case when c.id_tipo_costo = 3 and c.id_clase_costo = 2 then c.valor_total else c.valor_total = 1 end) as 'insumos_log',
+                    sum(case when c.id_tipo_costo = 1 then c.valor_total else c.valor_total = 1 end) as 'mp',
+                    sum(case when c.id_tipo_costo = 4 and c.id_clase_costo != 2 or c.id_tipo_costo = 4 and c.id_clase_costo is null then c.valor_total else c.valor_total = 1 end) as 'mo_prod',
+                    sum(case when c.id_tipo_costo = 4 and c.id_clase_costo = 2 then c.valor_total else c.valor_total = 1 end) as 'mo_log',
+                    sum(case when c.id_tipo_costo = 5 and c.id_clase_costo != 2 or c.id_tipo_costo = 5 and c.id_clase_costo is null then c.valor_total else c.valor_total = 1 end) as 'transporte_prod',
+                    sum(case when c.id_tipo_costo = 5 and c.id_clase_costo = 2 then c.valor_total else c.valor_total = 1 end) as 'transporte_log',
+                    sum(case when c.id_tipo_costo = 8 and c.id_clase_costo != 2 or c.id_tipo_costo = 8 and c.id_clase_costo is null then c.valor_total else c.valor_total = 1 end) as 'terceros_prod',
+                    sum(case when c.id_tipo_costo = 8 and c.id_clase_costo = 2 then c.valor_total else c.valor_total = 1 end) as 'terceros_log',
+                    sum(case when c.id_tipo_costo = 6 then c.valor_total else c.valor_total = 1 end) as 'otros_directos',
+                    sum(case when c.id_tipo_costo = 7 then c.valor_total else c.valor_total = 1 end) as 'otros_indirectos'
+                    from dt_ordenes o 
+                    inner join dt_fechas_op f on o.id_ordenes = f.id_ordenes
+                    inner join dt_costos c on o.id_ordenes = c.id_ordenes
+                    where f.fecha_ingreso between fecha_inicio and fecha_fin group by o.n_ordenes;
+                    
+                    CREATE DEFINER=`masterUS`@`%` PROCEDURE `migracion_prueba`.`tablaKardex`(ano int,mes int)
+                    (select i.codigo_prod,i.producto,r.n_rotacion,r.cantidad,r.fecha,r.id_ordenes,r.id_tipo_rotacion,r.vr_total,null as 'id_kardex' from dt_inventario i  
+                    right join dt_rotacion r on r.id_inventario = i.id_inventario
+                    where r.id_tipo_rotacion in (9,26) and r.estado != 2 
+                    and year(r.fecha) = ano  AND month(r.fecha) = mes)
+                    union
+                    (select codigo_prod,producto,1 as 'n_rotacion',null as 'cantidad',null as 'fecha',null as 'id_ordenes',null as 'id_tipo_rotacion',null as 'vr_total',id_kardex 
+                    from dt_kardex)
+                    order by producto,n_rotacion,fecha;
+                    
+                    CREATE DEFINER=`masterUS`@`%` PROCEDURE `migracion_prueba`.`tareasPxAreaOPItem`(id_area int,n_ordenes int, id_ordenes int)
+                    select
+                    
+                    t.id_costo,
+                    o.id_ordenes,
+                    o.n_ordenes,
+                    o.referencia,
+                    c.nom_empresa,
+                    o.ref_general,
+                    t.id_area,
+                    case when t.id_area = 17 then 'IMPRESION DIGITAL'
+                        when t.id_area= 18 then 'DECORACION'
+                        when t.id_area=13 then 'METALMECANICA'
+                        when t.id_area=14 then 'PINTURA' 
+                        when t.id_area=15 then 'SUSTRATOS' 
+                        when t.id_area=16 then 'ENSAMBLE Y TERMINADO'
+                        when t.id_area=19 then 'DESPACHOS' 
+                        else 'OTROS' end as area,
+                    t.nombre_costo,
+                    t.can_horas,
+                    t.fecha_inicio,
+                    t.fecha_final,
+                    u.nombre_usuario
+                    
+                    from dt_ordenes o 
+                    inner join dt_clientes c on o.id_cliente = c.id_cliente
+                    inner join dt_tareas_costo t on t.id_ordenes = o.id_ordenes 
+                    inner join `user` u on u.id = t.id_vendedor
+                    where t.id_area = id_area and o.n_ordenes = n_ordenes and o.id_ordenes = id_ordenes  group by t.id_costo;
+                    
+                    CREATE DEFINER=`masterUS`@`%` PROCEDURE `migracion_prueba`.`tareasPxAreayOP`(id_area int, n_ordenes int)
+                    select
+                    
+                    t.id_costo,
+                    o.id_ordenes,
+                    o.n_ordenes,
+                    o.referencia,
+                    c.nom_empresa,
+                    o.ref_general,
+                    t.id_area,
+                    case when t.id_area = 17 then 'IMPRESION DIGITAL'
+                        when t.id_area= 18 then 'DECORACION'
+                        when t.id_area=13 then 'METALMECANICA'
+                        when t.id_area=14 then 'PINTURA' 
+                        when t.id_area=15 then 'SUSTRATOS' 
+                        when t.id_area=16 then 'ENSAMBLE Y TERMINADO'
+                        when t.id_area=19 then 'DESPACHOS' 
+                        else 'OTROS' end as area,
+                    t.nombre_costo,
+                    t.can_horas,
+                    t.fecha_inicio,
+                    t.fecha_final,
+                    u.nombre_usuario
+                    
+                    from dt_ordenes o 
+                    inner join dt_clientes c on o.id_cliente = c.id_cliente
+                    inner join dt_tareas_costo t on t.id_ordenes = o.id_ordenes 
+                    inner join `user` u on u.id = t.id_vendedor
+                    where t.id_area = id_area and o.n_ordenes = n_ordenes  group by t.id_costo;
+                    
+                    CREATE DEFINER=`masterUS`@`%` PROCEDURE `migracion_prueba`.`tareasPxOP`(n_ordenes int)
+                    select 
+                    
+                    t.id_costo,
+                    o.id_ordenes,
+                    o.n_ordenes,
+                    o.referencia,
+                    c.nom_empresa,
+                    o.ref_general,
+                    t.id_area,
+                    case when t.id_area = 17 then 'IMPRESION DIGITAL'
+                        when t.id_area= 18 then 'DECORACION'
+                        when t.id_area=13 then 'METALMECANICA'
+                        when t.id_area=14 then 'PINTURA' 
+                        when t.id_area=15 then 'SUSTRATOS' 
+                        when t.id_area=16 then 'ENSAMBLE Y TERMINADO'
+                        when t.id_area=19 then 'DESPACHOS' 
+                        else 'OTROS' end as area,
+                    t.nombre_costo,
+                    t.can_horas,
+                    t.fecha_inicio,
+                    t.fecha_final,
+                    u.nombre_usuario
+                    
+                    from dt_ordenes o 
+                    inner join dt_clientes c on o.id_cliente = c.id_cliente
+                    inner join dt_tareas_costo t on t.id_ordenes = o.id_ordenes 
+                    inner join `user` u on u.id = t.id_vendedor
+                    where o.n_ordenes = n_ordenes  group by t.id_costo;
+                    
+                    CREATE DEFINER=`masterUS`@`%` PROCEDURE `migracion_prueba`.`tareasPxOPyItem`(n_ordenes int, id_ordenes int)
+                    select
+                    
+                    t.id_costo,
+                    o.id_ordenes,
+                    o.n_ordenes,
+                    o.referencia,
+                    c.nom_empresa,
+                    o.ref_general,
+                    t.id_area,
+                    case when t.id_area = 17 then 'IMPRESION DIGITAL'
+                        when t.id_area= 18 then 'DECORACION'
+                        when t.id_area=13 then 'METALMECANICA'
+                        when t.id_area=14 then 'PINTURA' 
+                        when t.id_area=15 then 'SUSTRATOS' 
+                        when t.id_area=16 then 'ENSAMBLE Y TERMINADO'
+                        when t.id_area=19 then 'DESPACHOS' 
+                        else 'OTROS' end as area,
+                    t.nombre_costo,
+                    t.can_horas,
+                    t.fecha_inicio,
+                    t.fecha_final,
+                    u.nombre_usuario
+                    
+                    from dt_ordenes o 
+                    inner join dt_clientes c on o.id_cliente = c.id_cliente
+                    inner join dt_tareas_costo t on t.id_ordenes = o.id_ordenes 
+                    inner join `user` u on u.id = t.id_vendedor
+                    where o.n_ordenes = n_ordenes and o.id_ordenes = id_ordenes  group by t.id_costo;
+                ");
+
+            }catch(PDOException $e){
+                echo "Hubo un error en la creación de los procedimientos almacenados ".$e->getMessage();exit;
+            }
+
+            return "Se ha completado la creación de procedimientos almacenados";
+
+        }
+        public static function creaVistasBd($conexion_migracion_prueba){
+
+            try{
+
+                $conexion_migracion_prueba->exec("
+                    -- migracion_prueba.vw_1meses_home source
+
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_1meses_home` AS
+                    select
+                        `migracion_prueba`.`dt_factura`.`id_factura` AS `id_factura`,
+                        `migracion_prueba`.`dt_factura`.`n_factura` AS `n_factura`,
+                        `migracion_prueba`.`dt_factura`.`n_ordenes` AS `n_ordenes`,
+                        `migracion_prueba`.`dt_factura`.`id_usuario` AS `id_usuario`,
+                        `migracion_prueba`.`dt_factura`.`id_usuario_act` AS `id_usuario_act`,
+                        `migracion_prueba`.`dt_factura`.`id_vendedor` AS `id_vendedor`,
+                        `migracion_prueba`.`dt_factura`.`id_cliente` AS `id_cliente`,
+                        `migracion_prueba`.`dt_factura`.`valor_venta` AS `valor_venta`,
+                        `migracion_prueba`.`dt_factura`.`valor` AS `valor`,
+                        `migracion_prueba`.`dt_factura`.`fecha_creacion` AS `fecha_creacion`,
+                        `migracion_prueba`.`dt_factura`.`fecha_actualizacion` AS `fecha_actualizacion`,
+                        `migracion_prueba`.`dt_factura`.`fecha_factura` AS `fecha_factura`,
+                        `migracion_prueba`.`dt_factura`.`fecha_vencimiento` AS `fecha_vencimiento`,
+                        `migracion_prueba`.`dt_factura`.`fecha_recaudo` AS `fecha_recaudo`,
+                        `migracion_prueba`.`dt_factura`.`cotizacion` AS `cotizacion`,
+                        `migracion_prueba`.`dt_factura`.`id_forma_pago` AS `id_forma_pago`,
+                        `migracion_prueba`.`dt_factura`.`concepto` AS `concepto`,
+                        `migracion_prueba`.`dt_factura`.`estado` AS `estado`,
+                        `migracion_prueba`.`dt_factura`.`plazo` AS `plazo`,
+                        `migracion_prueba`.`dt_factura`.`iva` AS `iva`,
+                        `migracion_prueba`.`dt_factura`.`r_fuente` AS `r_fuente`,
+                        `migracion_prueba`.`dt_factura`.`r_iva` AS `r_iva`,
+                        `migracion_prueba`.`dt_factura`.`r_ica` AS `r_ica`,
+                        `migracion_prueba`.`dt_factura`.`nota_credito` AS `nota_credito`,
+                        `migracion_prueba`.`dt_factura`.`puc_cuenta` AS `puc_cuenta`,
+                        `migracion_prueba`.`dt_factura`.`cta_iva` AS `cta_iva`,
+                        `migracion_prueba`.`dt_factura`.`cta_rfte` AS `cta_rfte`,
+                        `migracion_prueba`.`dt_factura`.`cta_rtiva` AS `cta_rtiva`,
+                        `migracion_prueba`.`dt_factura`.`cta_rtica` AS `cta_rtica`,
+                        `migracion_prueba`.`dt_factura`.`comision` AS `comision`,
+                        `migracion_prueba`.`dt_factura`.`anticipo` AS `anticipo`,
+                        `migracion_prueba`.`dt_factura`.`cta_anticipo` AS `cta_anticipo`,
+                        `migracion_prueba`.`dt_factura`.`rc_anticipo` AS `rc_anticipo`,
+                        `migracion_prueba`.`dt_factura`.`contacto_factura` AS `contacto_factura`,
+                        `migracion_prueba`.`dt_factura`.`aplica_vt` AS `aplica_vt`,
+                        `migracion_prueba`.`dt_factura`.`estado_traza` AS `estado_traza`,
+                        `migracion_prueba`.`dt_factura`.`ano_indicador` AS `ano_indicador`,
+                        `migracion_prueba`.`dt_factura`.`estado_an` AS `estado_an`,
+                        `migracion_prueba`.`dt_factura`.`observaciones` AS `observaciones`,
+                        `migracion_prueba`.`dt_factura`.`items` AS `items`,
+                        `migracion_prueba`.`dt_factura`.`valor_bruto` AS `valor_bruto`,
+                        `migracion_prueba`.`dt_factura`.`orden_compra` AS `orden_compra`,
+                        `migracion_prueba`.`dt_factura`.`cantidad` AS `cantidad`,
+                        `migracion_prueba`.`dt_factura`.`codigo` AS `codigo`,
+                        `migracion_prueba`.`dt_factura`.`referencia` AS `referencia`,
+                        `migracion_prueba`.`dt_factura`.`id_codigo_categoria` AS `id_codigo_categoria`,
+                        `migracion_prueba`.`dt_factura`.`vr_unidad` AS `vr_unidad`,
+                        `migracion_prueba`.`dt_factura`.`descuento` AS `descuento`,
+                        `migracion_prueba`.`dt_factura`.`vr_total` AS `vr_total`,
+                        `migracion_prueba`.`dt_factura`.`id_puc_oc` AS `id_puc_oc`,
+                        `migracion_prueba`.`dt_factura`.`abonos` AS `abonos`,
+                        `migracion_prueba`.`dt_factura`.`saldo` AS `saldo`,
+                        `migracion_prueba`.`dt_factura`.`letra` AS `letra`,
+                        `migracion_prueba`.`dt_factura`.`letra_cta` AS `letra_cta`,
+                        `migracion_prueba`.`dt_factura`.`puc_contra` AS `puc_contra`,
+                        `migracion_prueba`.`dt_factura`.`anuladas` AS `anuladas`,
+                        `migracion_prueba`.`dt_factura`.`id_remision` AS `id_remision`,
+                        `migracion_prueba`.`dt_factura`.`nit` AS `nit`
+                    from
+                        `migracion_prueba`.`dt_factura`
+                    where
+                        ((month(`migracion_prueba`.`dt_factura`.`fecha_factura`) = (
+                        select
+                            extract(month from (select curdate()))))
+                            and (year(`migracion_prueba`.`dt_factura`.`fecha_factura`) = (
+                            select
+                                extract(year from (select curdate())))))
+                    group by
+                        `migracion_prueba`.`dt_factura`.`n_factura`
+                    order by
+                        `migracion_prueba`.`dt_factura`.`n_factura`;
+                    
+                    
+                    -- migracion_prueba.vw_1meses_home_barrazul source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_1meses_home_barrazul` AS
+                    select
+                        sum(`o`.`v_total`) AS `barra_azul`
+                    from
+                        (`migracion_prueba`.`dt_ordenes` `o`
+                    join `migracion_prueba`.`dt_fechas_op` `f` on
+                        ((`o`.`id_ordenes` = `f`.`id_ordenes`)))
+                    where
+                        ((`o`.`cobro` <> 0)
+                            and (month(`f`.`fecha_ingreso`) = (
+                            select
+                                extract(month from (select curdate()))))
+                                and (year(`f`.`fecha_ingreso`) = (
+                                select
+                                    extract(year from (select curdate())))));
+                    
+                    
+                    -- migracion_prueba.vw_2meses_home source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_2meses_home` AS
+                    select
+                        `migracion_prueba`.`dt_factura`.`id_factura` AS `id_factura`,
+                        `migracion_prueba`.`dt_factura`.`n_factura` AS `n_factura`,
+                        `migracion_prueba`.`dt_factura`.`n_ordenes` AS `n_ordenes`,
+                        `migracion_prueba`.`dt_factura`.`id_usuario` AS `id_usuario`,
+                        `migracion_prueba`.`dt_factura`.`id_usuario_act` AS `id_usuario_act`,
+                        `migracion_prueba`.`dt_factura`.`id_vendedor` AS `id_vendedor`,
+                        `migracion_prueba`.`dt_factura`.`id_cliente` AS `id_cliente`,
+                        `migracion_prueba`.`dt_factura`.`valor_venta` AS `valor_venta`,
+                        `migracion_prueba`.`dt_factura`.`valor` AS `valor`,
+                        `migracion_prueba`.`dt_factura`.`fecha_creacion` AS `fecha_creacion`,
+                        `migracion_prueba`.`dt_factura`.`fecha_actualizacion` AS `fecha_actualizacion`,
+                        `migracion_prueba`.`dt_factura`.`fecha_factura` AS `fecha_factura`,
+                        `migracion_prueba`.`dt_factura`.`fecha_vencimiento` AS `fecha_vencimiento`,
+                        `migracion_prueba`.`dt_factura`.`fecha_recaudo` AS `fecha_recaudo`,
+                        `migracion_prueba`.`dt_factura`.`cotizacion` AS `cotizacion`,
+                        `migracion_prueba`.`dt_factura`.`id_forma_pago` AS `id_forma_pago`,
+                        `migracion_prueba`.`dt_factura`.`concepto` AS `concepto`,
+                        `migracion_prueba`.`dt_factura`.`estado` AS `estado`,
+                        `migracion_prueba`.`dt_factura`.`plazo` AS `plazo`,
+                        `migracion_prueba`.`dt_factura`.`iva` AS `iva`,
+                        `migracion_prueba`.`dt_factura`.`r_fuente` AS `r_fuente`,
+                        `migracion_prueba`.`dt_factura`.`r_iva` AS `r_iva`,
+                        `migracion_prueba`.`dt_factura`.`r_ica` AS `r_ica`,
+                        `migracion_prueba`.`dt_factura`.`nota_credito` AS `nota_credito`,
+                        `migracion_prueba`.`dt_factura`.`puc_cuenta` AS `puc_cuenta`,
+                        `migracion_prueba`.`dt_factura`.`cta_iva` AS `cta_iva`,
+                        `migracion_prueba`.`dt_factura`.`cta_rfte` AS `cta_rfte`,
+                        `migracion_prueba`.`dt_factura`.`cta_rtiva` AS `cta_rtiva`,
+                        `migracion_prueba`.`dt_factura`.`cta_rtica` AS `cta_rtica`,
+                        `migracion_prueba`.`dt_factura`.`comision` AS `comision`,
+                        `migracion_prueba`.`dt_factura`.`anticipo` AS `anticipo`,
+                        `migracion_prueba`.`dt_factura`.`cta_anticipo` AS `cta_anticipo`,
+                        `migracion_prueba`.`dt_factura`.`rc_anticipo` AS `rc_anticipo`,
+                        `migracion_prueba`.`dt_factura`.`contacto_factura` AS `contacto_factura`,
+                        `migracion_prueba`.`dt_factura`.`aplica_vt` AS `aplica_vt`,
+                        `migracion_prueba`.`dt_factura`.`estado_traza` AS `estado_traza`,
+                        `migracion_prueba`.`dt_factura`.`ano_indicador` AS `ano_indicador`,
+                        `migracion_prueba`.`dt_factura`.`estado_an` AS `estado_an`,
+                        `migracion_prueba`.`dt_factura`.`observaciones` AS `observaciones`,
+                        `migracion_prueba`.`dt_factura`.`items` AS `items`,
+                        `migracion_prueba`.`dt_factura`.`valor_bruto` AS `valor_bruto`,
+                        `migracion_prueba`.`dt_factura`.`orden_compra` AS `orden_compra`,
+                        `migracion_prueba`.`dt_factura`.`cantidad` AS `cantidad`,
+                        `migracion_prueba`.`dt_factura`.`codigo` AS `codigo`,
+                        `migracion_prueba`.`dt_factura`.`referencia` AS `referencia`,
+                        `migracion_prueba`.`dt_factura`.`id_codigo_categoria` AS `id_codigo_categoria`,
+                        `migracion_prueba`.`dt_factura`.`vr_unidad` AS `vr_unidad`,
+                        `migracion_prueba`.`dt_factura`.`descuento` AS `descuento`,
+                        `migracion_prueba`.`dt_factura`.`vr_total` AS `vr_total`,
+                        `migracion_prueba`.`dt_factura`.`id_puc_oc` AS `id_puc_oc`,
+                        `migracion_prueba`.`dt_factura`.`abonos` AS `abonos`,
+                        `migracion_prueba`.`dt_factura`.`saldo` AS `saldo`,
+                        `migracion_prueba`.`dt_factura`.`letra` AS `letra`,
+                        `migracion_prueba`.`dt_factura`.`letra_cta` AS `letra_cta`,
+                        `migracion_prueba`.`dt_factura`.`puc_contra` AS `puc_contra`,
+                        `migracion_prueba`.`dt_factura`.`anuladas` AS `anuladas`,
+                        `migracion_prueba`.`dt_factura`.`id_remision` AS `id_remision`,
+                        `migracion_prueba`.`dt_factura`.`nit` AS `nit`
+                    from
+                        `migracion_prueba`.`dt_factura`
+                    where
+                        ((month(`migracion_prueba`.`dt_factura`.`fecha_factura`) = (
+                        select
+                            extract(month from (select (curdate() - interval 1 month)))))
+                            and (year(`migracion_prueba`.`dt_factura`.`fecha_factura`) = (
+                            select
+                                extract(year from (select (curdate() - interval 1 month))))))
+                    group by
+                        `migracion_prueba`.`dt_factura`.`n_factura`
+                    order by
+                        `migracion_prueba`.`dt_factura`.`n_factura`;
+                    
+                    
+                    -- migracion_prueba.vw_2meses_home_barrazul source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_2meses_home_barrazul` AS
+                    select
+                        sum(`o`.`v_total`) AS `barra_azul`
+                    from
+                        (`migracion_prueba`.`dt_ordenes` `o`
+                    join `migracion_prueba`.`dt_fechas_op` `f` on
+                        ((`o`.`id_ordenes` = `f`.`id_ordenes`)))
+                    where
+                        ((`o`.`cobro` <> 0)
+                            and (month(`f`.`fecha_ingreso`) = (
+                            select
+                                extract(month from (select (curdate() - interval 1 month)))))
+                                and (year(`f`.`fecha_ingreso`) = (
+                                select
+                                    extract(year from (select (curdate() - interval 1 month))))));
+                    
+                    
+                    -- migracion_prueba.vw_3meses_home source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_3meses_home` AS
+                    select
+                        `migracion_prueba`.`dt_factura`.`id_factura` AS `id_factura`,
+                        `migracion_prueba`.`dt_factura`.`n_factura` AS `n_factura`,
+                        `migracion_prueba`.`dt_factura`.`n_ordenes` AS `n_ordenes`,
+                        `migracion_prueba`.`dt_factura`.`id_usuario` AS `id_usuario`,
+                        `migracion_prueba`.`dt_factura`.`id_usuario_act` AS `id_usuario_act`,
+                        `migracion_prueba`.`dt_factura`.`id_vendedor` AS `id_vendedor`,
+                        `migracion_prueba`.`dt_factura`.`id_cliente` AS `id_cliente`,
+                        `migracion_prueba`.`dt_factura`.`valor_venta` AS `valor_venta`,
+                        `migracion_prueba`.`dt_factura`.`valor` AS `valor`,
+                        `migracion_prueba`.`dt_factura`.`fecha_creacion` AS `fecha_creacion`,
+                        `migracion_prueba`.`dt_factura`.`fecha_actualizacion` AS `fecha_actualizacion`,
+                        `migracion_prueba`.`dt_factura`.`fecha_factura` AS `fecha_factura`,
+                        `migracion_prueba`.`dt_factura`.`fecha_vencimiento` AS `fecha_vencimiento`,
+                        `migracion_prueba`.`dt_factura`.`fecha_recaudo` AS `fecha_recaudo`,
+                        `migracion_prueba`.`dt_factura`.`cotizacion` AS `cotizacion`,
+                        `migracion_prueba`.`dt_factura`.`id_forma_pago` AS `id_forma_pago`,
+                        `migracion_prueba`.`dt_factura`.`concepto` AS `concepto`,
+                        `migracion_prueba`.`dt_factura`.`estado` AS `estado`,
+                        `migracion_prueba`.`dt_factura`.`plazo` AS `plazo`,
+                        `migracion_prueba`.`dt_factura`.`iva` AS `iva`,
+                        `migracion_prueba`.`dt_factura`.`r_fuente` AS `r_fuente`,
+                        `migracion_prueba`.`dt_factura`.`r_iva` AS `r_iva`,
+                        `migracion_prueba`.`dt_factura`.`r_ica` AS `r_ica`,
+                        `migracion_prueba`.`dt_factura`.`nota_credito` AS `nota_credito`,
+                        `migracion_prueba`.`dt_factura`.`puc_cuenta` AS `puc_cuenta`,
+                        `migracion_prueba`.`dt_factura`.`cta_iva` AS `cta_iva`,
+                        `migracion_prueba`.`dt_factura`.`cta_rfte` AS `cta_rfte`,
+                        `migracion_prueba`.`dt_factura`.`cta_rtiva` AS `cta_rtiva`,
+                        `migracion_prueba`.`dt_factura`.`cta_rtica` AS `cta_rtica`,
+                        `migracion_prueba`.`dt_factura`.`comision` AS `comision`,
+                        `migracion_prueba`.`dt_factura`.`anticipo` AS `anticipo`,
+                        `migracion_prueba`.`dt_factura`.`cta_anticipo` AS `cta_anticipo`,
+                        `migracion_prueba`.`dt_factura`.`rc_anticipo` AS `rc_anticipo`,
+                        `migracion_prueba`.`dt_factura`.`contacto_factura` AS `contacto_factura`,
+                        `migracion_prueba`.`dt_factura`.`aplica_vt` AS `aplica_vt`,
+                        `migracion_prueba`.`dt_factura`.`estado_traza` AS `estado_traza`,
+                        `migracion_prueba`.`dt_factura`.`ano_indicador` AS `ano_indicador`,
+                        `migracion_prueba`.`dt_factura`.`estado_an` AS `estado_an`,
+                        `migracion_prueba`.`dt_factura`.`observaciones` AS `observaciones`,
+                        `migracion_prueba`.`dt_factura`.`items` AS `items`,
+                        `migracion_prueba`.`dt_factura`.`valor_bruto` AS `valor_bruto`,
+                        `migracion_prueba`.`dt_factura`.`orden_compra` AS `orden_compra`,
+                        `migracion_prueba`.`dt_factura`.`cantidad` AS `cantidad`,
+                        `migracion_prueba`.`dt_factura`.`codigo` AS `codigo`,
+                        `migracion_prueba`.`dt_factura`.`referencia` AS `referencia`,
+                        `migracion_prueba`.`dt_factura`.`id_codigo_categoria` AS `id_codigo_categoria`,
+                        `migracion_prueba`.`dt_factura`.`vr_unidad` AS `vr_unidad`,
+                        `migracion_prueba`.`dt_factura`.`descuento` AS `descuento`,
+                        `migracion_prueba`.`dt_factura`.`vr_total` AS `vr_total`,
+                        `migracion_prueba`.`dt_factura`.`id_puc_oc` AS `id_puc_oc`,
+                        `migracion_prueba`.`dt_factura`.`abonos` AS `abonos`,
+                        `migracion_prueba`.`dt_factura`.`saldo` AS `saldo`,
+                        `migracion_prueba`.`dt_factura`.`letra` AS `letra`,
+                        `migracion_prueba`.`dt_factura`.`letra_cta` AS `letra_cta`,
+                        `migracion_prueba`.`dt_factura`.`puc_contra` AS `puc_contra`,
+                        `migracion_prueba`.`dt_factura`.`anuladas` AS `anuladas`,
+                        `migracion_prueba`.`dt_factura`.`id_remision` AS `id_remision`,
+                        `migracion_prueba`.`dt_factura`.`nit` AS `nit`
+                    from
+                        `migracion_prueba`.`dt_factura`
+                    where
+                        ((month(`migracion_prueba`.`dt_factura`.`fecha_factura`) = (
+                        select
+                            extract(month from (select (curdate() - interval 2 month)))))
+                            and (year(`migracion_prueba`.`dt_factura`.`fecha_factura`) = (
+                            select
+                                extract(year from (select (curdate() - interval 2 month))))))
+                    group by
+                        `migracion_prueba`.`dt_factura`.`n_factura`
+                    order by
+                        `migracion_prueba`.`dt_factura`.`n_factura`;
+                    
+                    
+                    -- migracion_prueba.vw_3meses_home_barrazul source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_3meses_home_barrazul` AS
+                    select
+                        sum(`o`.`v_total`) AS `barra_azul`
+                    from
+                        (`migracion_prueba`.`dt_ordenes` `o`
+                    join `migracion_prueba`.`dt_fechas_op` `f` on
+                        ((`o`.`id_ordenes` = `f`.`id_ordenes`)))
+                    where
+                        ((`o`.`cobro` <> 0)
+                            and (month(`f`.`fecha_ingreso`) = (
+                            select
+                                extract(month from (select (curdate() - interval 2 month)))))
+                                and (year(`f`.`fecha_ingreso`) = (
+                                select
+                                    extract(year from (select (curdate() - interval 2 month))))));
+                    
+                    
+                    -- migracion_prueba.vw_acumulado_ops_x_comprar source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_acumulado_ops_x_comprar` AS
+                    select
+                        sum(`migracion_prueba`.`dt_costos`.`valor_total`) AS `valor_total`,
+                        year(`migracion_prueba`.`dt_fechas_op`.`fecha_ingreso`) AS `year`,
+                        `migracion_prueba`.`dt_fechas_op`.`fecha_ingreso` AS `fecha_ingreso`
+                    from
+                        (`migracion_prueba`.`dt_costos`
+                    left join `migracion_prueba`.`dt_fechas_op` on
+                        ((`migracion_prueba`.`dt_costos`.`id_ordenes` = `migracion_prueba`.`dt_fechas_op`.`id_ordenes`)))
+                    where
+                        ((`migracion_prueba`.`dt_fechas_op`.`fecha_ingreso` is not null)
+                            and (`migracion_prueba`.`dt_costos`.`id_tipo_costo` = 1)
+                                and (`migracion_prueba`.`dt_costos`.`estado` in (1, 8, 4)))
+                    group by
+                        year(`migracion_prueba`.`dt_fechas_op`.`fecha_ingreso`);
+                    
+                    
+                    -- migracion_prueba.vw_acumulado_ter source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_acumulado_ter` AS
+                    select
+                        sum(`migracion_prueba`.`dt_costos`.`valor_total`) AS `total`,
+                        year(`migracion_prueba`.`dt_fechas_op`.`fecha_ingreso`) AS `year`
+                    from
+                        ((`migracion_prueba`.`dt_costos`
+                    left join `migracion_prueba`.`dt_ordenes` on
+                        ((`migracion_prueba`.`dt_costos`.`id_ordenes` = `migracion_prueba`.`dt_ordenes`.`id_ordenes`)))
+                    left join `migracion_prueba`.`dt_fechas_op` on
+                        ((`migracion_prueba`.`dt_fechas_op`.`id_ordenes` = `migracion_prueba`.`dt_ordenes`.`id_ordenes`)))
+                    where
+                        ((`migracion_prueba`.`dt_costos`.`id_tipo_costo` in (3, 9, 6, 7, 8))
+                            and (`migracion_prueba`.`dt_costos`.`estado` in (1, 8, 4))
+                                and (`migracion_prueba`.`dt_costos`.`n_ordenes` <> 0)
+                                    and (`migracion_prueba`.`dt_costos`.`cierre` = 0)
+                                        and (`migracion_prueba`.`dt_ordenes`.`estado` in (1, 10, 12, 13))
+                                            and (`migracion_prueba`.`dt_ordenes`.`conciliado` <> 1)
+                                                and (year(`migracion_prueba`.`dt_fechas_op`.`fecha_ingreso`) >= 2018)
+                                                    and (not((`migracion_prueba`.`dt_costos`.`nombre_costo` like '%viatico%'))))
+                    group by
+                        year(`migracion_prueba`.`dt_fechas_op`.`fecha_ingreso`)
+                    order by
+                        `migracion_prueba`.`dt_costos`.`nombre_costo`;
+                    
+                    
+                    -- migracion_prueba.vw_acumulado_terceros_x_comprar source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_acumulado_terceros_x_comprar` AS
+                    select
+                        sum(`migracion_prueba`.`dt_costos`.`valor_total`) AS `valor_total`,
+                        year(`migracion_prueba`.`dt_fechas_op`.`fecha_ingreso`) AS `year`,
+                        `migracion_prueba`.`dt_fechas_op`.`fecha_ingreso` AS `fecha_ingreso`
+                    from
+                        (`migracion_prueba`.`dt_costos`
+                    left join `migracion_prueba`.`dt_fechas_op` on
+                        ((`migracion_prueba`.`dt_costos`.`id_ordenes` = `migracion_prueba`.`dt_fechas_op`.`id_ordenes`)))
+                    where
+                        ((`migracion_prueba`.`dt_fechas_op`.`fecha_ingreso` is not null)
+                            and (`migracion_prueba`.`dt_costos`.`id_tipo_costo` in (3, 9, 6, 7, 8))
+                                and (`migracion_prueba`.`dt_costos`.`estado` in (1, 8, 4))
+                                    and ((`migracion_prueba`.`dt_costos`.`nombre_costo` like '%LASER%')
+                                        or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%POLIZA%')
+                                            or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%PERMISO%')
+                                                or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%PUNZONADO%')
+                                                    or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%VIDRIO%')
+                                                        or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%BRAILE%')
+                                                            or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%ROLADO%')))
+                    group by
+                        year(`migracion_prueba`.`dt_fechas_op`.`fecha_ingreso`);
+                    
+                    
+                    -- migracion_prueba.vw_acumulado_terceros_x_comprar_p source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_acumulado_terceros_x_comprar_p` AS
+                    select
+                        sum(`migracion_prueba`.`dt_costos`.`valor_total`) AS `valor_total`,
+                        year(`migracion_prueba`.`dt_fechas_op`.`fecha_ingreso`) AS `year`,
+                        `migracion_prueba`.`dt_fechas_op`.`fecha_ingreso` AS `fecha_ingreso`
+                    from
+                        (`migracion_prueba`.`dt_costos`
+                    left join `migracion_prueba`.`dt_fechas_op` on
+                        ((`migracion_prueba`.`dt_costos`.`id_ordenes` = `migracion_prueba`.`dt_fechas_op`.`id_ordenes`)))
+                    where
+                        ((`migracion_prueba`.`dt_fechas_op`.`fecha_ingreso` is not null)
+                            and (`migracion_prueba`.`dt_costos`.`id_tipo_costo` in (3, 9, 6, 7, 8))
+                                and (`migracion_prueba`.`dt_costos`.`estado` in (1, 8, 4))
+                                    and (`migracion_prueba`.`dt_costos`.`cierre` = 0)
+                                        and ((`migracion_prueba`.`dt_costos`.`nombre_costo` like '%01A%')
+                                            or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%01B%')
+                                                or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%01C%')
+                                                    or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%01D2%')
+                                                        or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%01E%')
+                                                            or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%01F%')
+                                                                or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%01I%')
+                                                                    or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%01P1%')
+                                                                        or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%01z%')
+                                                                            or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%021C%')
+                                                                                or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%02A%')
+                                                                                    or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%02B%')
+                                                                                        or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%02C%')
+                                                                                            or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%02D%')
+                                                                                                or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%02E%')
+                                                                                                    or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%02F%')
+                                                                                                        or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%02H%')
+                                                                                                            or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%02I%')
+                                                                                                                or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%03D%')
+                                                                                                                    or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%05D%')
+                                                                                                                        or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%06A%')
+                                                                                                                            or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%07B%')
+                                                                                                                                or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%07C%')
+                                                                                                                                    or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%09A%')
+                                                                                                                                        or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%09C%')
+                                                                                                                                            or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%09F%')
+                                                                                                                                                or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%09I%')
+                                                                                                                                                    or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%09K%')
+                                                                                                                                                        or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%09L%')
+                                                                                                                                                            or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%09M%')
+                                                                                                                                                                or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%09z%')
+                                                                                                                                                                    or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%10F%')
+                                                                                                                                                                        or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%12A%')
+                                                                                                                                                                            or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%12C%')
+                                                                                                                                                                                or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%12D%')
+                                                                                                                                                                                    or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%12N%')
+                                                                                                                                                                                        or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%12P%')
+                                                                                                                                                                                            or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%12z%')
+                                                                                                                                                                                                or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%14ZD%')
+                                                                                                                                                                                                    or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%14ZE%')
+                                                                                                                                                                                                        or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%16C%')
+                                                                                                                                                                                                            or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%17A%')
+                                                                                                                                                                                                                or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%17AC%')
+                                                                                                                                                                                                                    or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%17GE%')
+                                                                                                                                                                                                                        or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%17GK%')
+                                                                                                                                                                                                                            or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%22H6%')
+                                                                                                                                                                                                                                or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%22M5%')
+                                                                                                                                                                                                                                    or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%2da%')
+                                                                                                                                                                                                                                        or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%6Z%')
+                                                                                                                                                                                                                                            or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%SUSTRATOS%')
+                                                                                                                                                                                                                                                or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%ENSAMBLE%')
+                                                                                                                                                                                                                                                    or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%IMPRESION%')
+                                                                                                                                                                                                                                                        or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%DECORACION%')
+                                                                                                                                                                                                                                                            or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%METALMECANICA%')
+                                                                                                                                                                                                                                                                or (`migracion_prueba`.`dt_costos`.`nombre_costo` like '%PINTURA%')))
+                    group by
+                        year(`migracion_prueba`.`dt_fechas_op`.`fecha_ingreso`);
+                    
+                    
+                    -- migracion_prueba.vw_agenda_diseno source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_agenda_diseno` AS
+                    select
+                        `e`.`id_estructura_p_diseno` AS `id_estructura_p_diseno`,
+                        `cp`.`nom_codigo` AS `nom_codigo`,
+                        `u`.`nombre_usuario` AS `nombre_usuario`,
+                        `e`.`grupo` AS `grupo`,
+                        `e`.`fecha_inicio` AS `fecha_inicio`,
+                        `e`.`fecha_fin` AS `fecha_fin`
+                    from
+                        (((`migracion_prueba`.`dt_estructura_p_diseno` `e`
+                    join `migracion_prueba`.`user` `u` on
+                        ((`u`.`id` = `e`.`responsable`)))
+                    join `migracion_prueba`.`dt_programacion_diseno` `p` on
+                        ((`p`.`n_programacion` = `e`.`id_programacion_diseno`)))
+                    join `migracion_prueba`.`dt_codprodfinal` `cp` on
+                        ((`cp`.`id_codprodfinal` = `p`.`id_codprodfinal`)));
+                    
+                    
+                    -- migracion_prueba.vw_aprobacion_g_r source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_aprobacion_g_r` AS
+                    select
+                        `migracion_prueba`.`dt_solicitud_g_r`.`id_solicitud_g_r` AS `id_solicitud_g_r`,
+                        `migracion_prueba`.`dt_solicitud_g_r`.`n_solicitud` AS `n_solicitud`,
+                        `migracion_prueba`.`dt_clientes`.`nom_empresa` AS `nom_empresa`,
+                        `migracion_prueba`.`dt_macro_proyecto`.`nombre_proyecto` AS `macro_proyecto`,
+                        `migracion_prueba`.`dt_proyecto_op`.`nombre_proyecto` AS `proyecto`,
+                        `migracion_prueba`.`dt_ordenes`.`ref_general` AS `nombre_op`,
+                        `migracion_prueba`.`dt_solicitud_g_r`.`nombre_g_r` AS `nombre_g_r`,
+                        `migracion_prueba`.`dt_solicitud_g_r`.`fecha_registro` AS `fecha_registro`,
+                        `migracion_prueba`.`dt_causas`.`descripcion` AS `causas_descripcion`,
+                        concat(`migracion_prueba`.`dt_usuarios`.`nombre_usuario`, ' ', `migracion_prueba`.`dt_usuarios`.`apellido_usuario`) AS `nombre_usuario`,
+                        (case
+                            when (`migracion_prueba`.`dt_solicitud_g_r`.`tipo_g_r` = 1) then 'Garantía'
+                            when (`migracion_prueba`.`dt_solicitud_g_r`.`tipo_g_r` = 0) then 'Reproceso'
+                            else 'n/a'
+                        end) AS `tipo_g_r`,
+                        `migracion_prueba`.`dt_solicitud_g_r`.`valor_g_r` AS `valor_g_r`,
+                        (case
+                            when (`migracion_prueba`.`dt_solicitud_g_r`.`estado` = 1) then 'En Proceso'
+                            when (`migracion_prueba`.`dt_solicitud_g_r`.`estado` = 2) then 'Rechazado'
+                            when (`migracion_prueba`.`dt_solicitud_g_r`.`estado` = 3) then 'Aprobado'
+                            else 'n/a'
+                        end) AS `estado_nom`,
+                        `migracion_prueba`.`dt_solicitud_g_r`.`estado` AS `estado`
+                    from
+                        (((((((`migracion_prueba`.`dt_solicitud_g_r`
+                    join `migracion_prueba`.`user` on
+                        ((`migracion_prueba`.`dt_solicitud_g_r`.`user_id` = `migracion_prueba`.`user`.`id`)))
+                    join `migracion_prueba`.`dt_usuarios` on
+                        ((`migracion_prueba`.`dt_usuarios`.`id_usuario` = `migracion_prueba`.`user`.`id_empleado`)))
+                    join `migracion_prueba`.`dt_causas` on
+                        ((`migracion_prueba`.`dt_causas`.`id_causas` = `migracion_prueba`.`dt_solicitud_g_r`.`id_causas`)))
+                    left join `migracion_prueba`.`dt_ordenes` on
+                        ((`migracion_prueba`.`dt_solicitud_g_r`.`id_ordenes` = `migracion_prueba`.`dt_ordenes`.`id_ordenes`)))
+                    left join `migracion_prueba`.`dt_clientes` on
+                        ((`migracion_prueba`.`dt_ordenes`.`id_cliente` = `migracion_prueba`.`dt_clientes`.`id_cliente`)))
+                    left join `migracion_prueba`.`dt_proyecto_op` on
+                        ((`migracion_prueba`.`dt_proyecto_op`.`id_proyecto_op` = `migracion_prueba`.`dt_ordenes`.`id_proyecto_op`)))
+                    left join `migracion_prueba`.`dt_macro_proyecto` on
+                        ((`migracion_prueba`.`dt_macro_proyecto`.`id_macro_proyecto` = `migracion_prueba`.`dt_proyecto_op`.`id_macro_proyecto`)))
+                    group by
+                        `migracion_prueba`.`dt_solicitud_g_r`.`n_solicitud`;
+                    
+                    
+                    -- migracion_prueba.vw_area_materia source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_area_materia` AS
+                    select
+                        `migracion_prueba`.`dt_area`.`id_area` AS `id_area`,
+                        `migracion_prueba`.`dt_area`.`nombre` AS `nombre`
+                    from
+                        `migracion_prueba`.`dt_area`
+                    where
+                        (`migracion_prueba`.`dt_area`.`id_area` in (11, 12, 13, 14, 15, 16, 17, 18, 19, 7));
+                    
+                    
+                    -- migracion_prueba.vw_big_data source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_big_data` AS
+                    select
+                        `o`.`id_ordenes` AS `id_ordenes`,
+                        `o`.`ref_general` AS `ref_general`,
+                        `cl`.`nom_empresa` AS `cliente`,
+                        `ma`.`nombre_proyecto` AS `macroproyecto`,
+                        `pr`.`nombre_proyecto` AS `proyecto`,
+                        `fo`.`fecha_ingreso` AS `fecha_ingreso`,
+                        `o`.`n_ordenes` AS `n_ordenes`,
+                        `o`.`item_op` AS `item_op`,
+                        `o`.`cantidad` AS `cantidad`,
+                        `o`.`cobro` AS `cobro`,
+                        `s`.`nombre_subcategoria` AS `nombre_subcategoria`,
+                        `o`.`referencia` AS `referencia`,
+                        `p`.`total_mano_obra` AS `presupuesto_mo`,
+                        `p`.`total_materia_prima` AS `presupuesto_pmp`,
+                        `p`.`total_terceros` AS `presupuesto_pter`,
+                        `p`.`total_transporte` AS `presupuesto_ptr`,
+                        `p`.`total_viaticos` AS `presupuesto_pvi`,
+                        `p`.`total_otros_directos` AS `presupuesto_pot`,
+                        round(sum((case when (`c`.`id_tipo_costo` = 4) then `c`.`valor_total` when ((`c`.`valor_total` = NULL) or (0 <> 1)) then (`c`.`valor_total` = 2) else (`c`.`valor_total` = 0) end)), 2) AS `costo_mo`,
+                        round(sum((case when (`c`.`id_tipo_costo` = 1) then `c`.`valor_total` when ((`c`.`valor_total` = NULL) or (0 <> 1)) then (`c`.`valor_total` = 2) else (`c`.`valor_total` = 0) end)), 2) AS `costo_mp`,
+                        round(sum((case when (`c`.`id_tipo_costo` = 8) then `c`.`valor_total` when ((`c`.`valor_total` = NULL) or (0 <> 1)) then (`c`.`valor_total` = 2) else (`c`.`valor_total` = 0) end)), 2) AS `costo_ter`,
+                        round(sum((case when (`c`.`id_tipo_costo` = 5) then `c`.`valor_total` when ((`c`.`valor_total` = NULL) or (0 <> 1)) then (`c`.`valor_total` = 2) else (`c`.`valor_total` = 0) end)), 2) AS `costo_tra`,
+                        round(sum((case when (`c`.`id_tipo_costo` = 9) then `c`.`valor_total` when ((`c`.`valor_total` = NULL) or (0 <> 1)) then (`c`.`valor_total` = 2) else (`c`.`valor_total` = 0) end)), 2) AS `costo_via`,
+                        round(sum((case when (`c`.`id_tipo_costo` in (6, 7, 2, 3)) then `c`.`valor_total` when ((`c`.`valor_total` = NULL) or (0 <> 1)) then (`c`.`valor_total` = 2) else (`c`.`valor_total` = 0) end)), 2) AS `costo_otros`
+                    from
+                        (((((((`migracion_prueba`.`dt_ordenes` `o`
+                    join `migracion_prueba`.`dt_clientes` `cl` on
+                        ((`o`.`id_cliente` = `cl`.`id_cliente`)))
+                    join `migracion_prueba`.`dt_proyecto_op` `pr` on
+                        ((`o`.`id_proyecto_op` = `pr`.`id_proyecto_op`)))
+                    join `migracion_prueba`.`dt_macro_proyecto` `ma` on
+                        ((`pr`.`id_macro_proyecto` = `ma`.`id_macro_proyecto`)))
+                    join `migracion_prueba`.`dt_fechas_op` `fo` on
+                        ((`o`.`id_ordenes` = `fo`.`id_ordenes`)))
+                    join `migracion_prueba`.`dt_subcategoria` `s` on
+                        ((`o`.`id_subcategoria` = `s`.`id_subcategoria`)))
+                    left join `migracion_prueba`.`dt_presupuesto_inicial` `p` on
+                        ((`o`.`id_ordenes` = `p`.`id_ordenes`)))
+                    left join `migracion_prueba`.`dt_costos` `c` on
+                        ((`o`.`id_ordenes` = `c`.`id_ordenes`)))
+                    group by
+                        `o`.`id_ordenes`;
+                    
+                    
+                    -- migracion_prueba.vw_big_data_compras source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_big_data_compras` AS
+                    select
+                        `c`.`id_ordenes` AS `id_ordenes`,
+                        `c`.`vr_total` AS `valor_total`,
+                        `co`.`id_tipo_costo` AS `id_tipo_costo`
+                    from
+                        (`migracion_prueba`.`dt_compras` `c`
+                    join `migracion_prueba`.`dt_costos` `co` on
+                        ((`c`.`id_costos` = `co`.`id_costo`)));
+                    
+                    
+                    -- migracion_prueba.vw_big_data_costos source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_big_data_costos` AS
+                    select
+                        `migracion_prueba`.`dt_costos`.`id_ordenes` AS `id_ordenes`,
+                        truncate(sum(`migracion_prueba`.`dt_costos`.`valor_total`), 2) AS `valor_total`,
+                        `migracion_prueba`.`dt_costos`.`id_tipo_costo` AS `id_tipo_costo`,
+                        `migracion_prueba`.`dt_tipo_costo`.`tipo` AS `tipo`
+                    from
+                        (`migracion_prueba`.`dt_costos`
+                    join `migracion_prueba`.`dt_tipo_costo` on
+                        ((`migracion_prueba`.`dt_tipo_costo`.`id_tipo_costo` = `migracion_prueba`.`dt_costos`.`id_tipo_costo`)))
+                    group by
+                        `migracion_prueba`.`dt_costos`.`id_tipo_costo`,
+                        `migracion_prueba`.`dt_costos`.`id_ordenes`;
+                    
+                    
+                    -- migracion_prueba.vw_big_data_sub_costos source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_big_data_sub_costos` AS
+                    select
+                        `migracion_prueba`.`dt_costos`.`id_costo` AS `id_costo`,
+                        (case
+                            when (`migracion_prueba`.`dt_costos`.`id_tipo_costo` = 1) then `migracion_prueba`.`dt_costos`.`valor_total`
+                            else 0
+                        end) AS `costos_mp`,
+                        (case
+                            when (`migracion_prueba`.`dt_costos`.`id_tipo_costo` = 4) then `migracion_prueba`.`dt_costos`.`valor_total`
+                            else 0
+                        end) AS `costos_mo`,
+                        (case
+                            when (`migracion_prueba`.`dt_costos`.`id_tipo_costo` = 5) then `migracion_prueba`.`dt_costos`.`valor_total`
+                            else 0
+                        end) AS `costos_trans`,
+                        (case
+                            when (`migracion_prueba`.`dt_costos`.`id_tipo_costo` = 8) then `migracion_prueba`.`dt_costos`.`valor_total`
+                            else 0
+                        end) AS `costos_ter`,
+                        (case
+                            when ((`migracion_prueba`.`dt_costos`.`id_tipo_costo` = 6)
+                            or (`migracion_prueba`.`dt_costos`.`id_tipo_costo` = 7)) then `migracion_prueba`.`dt_costos`.`valor_total`
+                            else 0
+                        end) AS `costos_otros`,
+                        (case
+                            when (`migracion_prueba`.`dt_costos`.`id_tipo_costo` = 9) then `migracion_prueba`.`dt_costos`.`valor_total`
+                            else 0
+                        end) AS `costos_via`,
+                        `migracion_prueba`.`dt_costos`.`id_tipo_costo` AS `id_tipo_costo`,
+                        `migracion_prueba`.`dt_costos`.`n_ordenes` AS `n_ordenes`,
+                        `migracion_prueba`.`dt_costos`.`id_ordenes` AS `id_ordenes`
+                    from
+                        `migracion_prueba`.`dt_costos`;
+                    
+                    
+                    -- migracion_prueba.vw_bigdata_costo_total source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_bigdata_costo_total` AS
+                    select
+                        `migracion_prueba`.`dt_costos`.`id_ordenes` AS `id_ordenes`,
+                        sum(`migracion_prueba`.`dt_costos`.`valor_total`) AS `valor_total`
+                    from
+                        `migracion_prueba`.`dt_costos`
+                    where
+                        (`migracion_prueba`.`dt_costos`.`id_inventario` is null)
+                    group by
+                        `migracion_prueba`.`dt_costos`.`id_ordenes`;
+                    
+                    
+                    -- migracion_prueba.vw_cabina_costo_total source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_cabina_costo_total` AS
+                    select
+                        sum(`migracion_prueba`.`dt_costos`.`valor_total`) AS `costo_total`,
+                        `migracion_prueba`.`dt_costos`.`id_ordenes` AS `id_ordenes`
+                    from
+                        `migracion_prueba`.`dt_costos`
+                    group by
+                        `migracion_prueba`.`dt_costos`.`id_ordenes`;
+                    
+                    
+                    -- migracion_prueba.vw_cabina_diseno source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_cabina_diseno` AS
+                    select
+                        `migracion_prueba`.`dt_diseno`.`id_ordenes` AS `id_ordenes`,
+                        `migracion_prueba`.`dt_diseno`.`id_disenolista` AS `id_disenolista`,
+                        (case
+                            `migracion_prueba`.`dt_diseno`.`grupo` when 1 then 'COMITE_TECNICO'
+                            when 2 then 'COSTOS'
+                            when 3 then 'TERCEROS_1'
+                            when 4 then 'TERCEROS_2'
+                            when 5 then 'TERCEROS_3'
+                            when 6 then 'METALMECANICA'
+                            when 7 then 'CNC'
+                            when 8 then 'MADERAS'
+                            when 9 then 'PLASTICOS'
+                            when 10 then 'PINTURA'
+                            when 11 then 'IMPRESION_DECORACION'
+                            when 12 then 'ENSAMBLE'
+                            when 13 then 'INSTALACION'
+                        end) AS `grupo`,
+                        `migracion_prueba`.`dt_diseno`.`archivo` AS `archivo`,
+                        `migracion_prueba`.`dt_diseno`.`foto` AS `foto`,
+                        `migracion_prueba`.`dt_diseno`.`fecha_inicio` AS `fecha_inicio`,
+                        `migracion_prueba`.`dt_diseno`.`fecha_final_cli` AS `fecha_final_cli`,
+                        `migracion_prueba`.`user`.`nombre_usuario` AS `nombre_usuario`,
+                        `migracion_prueba`.`dt_diseno`.`id_usuario` AS `id_usuario`,
+                        (case
+                            when (`migracion_prueba`.`dt_diseno`.`id_disenolista` is null) then 'NoAplica.jpg'
+                            else (case
+                                when ((`migracion_prueba`.`dt_diseno`.`grupo` = 2)
+                                and (`migracion_prueba`.`dt_diseno`.`creacion_gantt` = 1)) then 'Realizado.jpg'
+                                when ((`migracion_prueba`.`dt_diseno`.`archivo` is not null)
+                                and (`migracion_prueba`.`dt_diseno`.`archivo` <> '')
+                                and (`migracion_prueba`.`dt_diseno`.`foto` is not null)
+                                and (`migracion_prueba`.`dt_diseno`.`foto` <> '')) then 'Realizado.jpg'
+                                when (`migracion_prueba`.`dt_diseno`.`fecha_inicio` is null) then 'PendienteP.jpg'
+                                when (((cast(`migracion_prueba`.`dt_diseno`.`fecha_final` as datetime) + interval (0 + 30) minute) - now()) < 0) then 'NoRealizado.png'
+                                else 'Programado.jpg'
+                            end)
+                        end) AS `estado`
+                    from
+                        (`migracion_prueba`.`dt_diseno`
+                    left join `migracion_prueba`.`user` on
+                        ((`migracion_prueba`.`dt_diseno`.`id_usuario` = `migracion_prueba`.`user`.`id`)));
+                    
+                    
+                    -- migracion_prueba.vw_cabina_entregables source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_cabina_entregables` AS
+                    select
+                        `migracion_prueba`.`dt_entregables`.`id_ordenes` AS `id_ordenes`,
+                        (case
+                            `migracion_prueba`.`dt_entregables`.`id_check_list` when 15 then 'COMITE_INICIO'
+                            when 16 then 'COMITE_INICIO_L'
+                            when 8 then 'VISITA_TECNICA'
+                            when 17 then 'DOCUMENTACION'
+                            when 18 then 'DOCUMENTACION'
+                            when 19 then 'DOCUMENTACION'
+                            when 20 then 'DOCUMENTACION'
+                            when 21 then 'DOCUMENTACION'
+                            when 22 then 'DOCUMENTACION'
+                            when 23 then 'DOCUMENTACION'
+                            when 24 then 'DOCUMENTACION'
+                            when 25 then 'DOCUMENTACION'
+                            when 26 then 'FORMA_PAGO'
+                            when 27 then 'AVANCE'
+                            when 28 then 'AVANCE'
+                            when 29 then 'AVANCE'
+                            when 30 then 'AVANCE'
+                            when 31 then 'FORMA_PAGO'
+                            when 32 then 'FACTURADO_100'
+                            when 33 then 'RECAUDADO_100'
+                            when 34 then 'ARTE_GUIA_SUMINISTRADA_CLIENTE'
+                            when 35 then 'ARTE_FINAL_APROBADO_CLIENTE'
+                            when 36 then 'COLORES_ESTUDIO_CLIENTE'
+                            when 37 then 'COLORES_APROBADOS_CLIENTE'
+                            when 38 then 'MUESTRA_PROCESO_PRODUCCION'
+                            when 39 then 'MUESTRA_EVALUACION_CLIENTE'
+                            when 40 then 'MUESTRA_APROBADA_CLIENTE'
+                            when 41 then 'REQUISITOS_ENTREGA'
+                            when 42 then 'ENCUESTA'
+                            when 43 then 'REQUISITOS_ENTREGA'
+                            when 44 then 'REQUISITOS_ENTREGA'
+                            when 45 then 'REQUISITOS_ENTREGA'
+                            when 46 then 'REQUISITOS_ENTREGA'
+                            when 48 then 'COMITE_CIERRE'
+                            when 67 then 'REQUISITO_RETEGARANTIA'
+                        end) AS `grupo`,
+                        (case
+                            when (`migracion_prueba`.`dt_entregables`.`estado` = 0) then 'NoAplica.jpg'
+                            when (`migracion_prueba`.`dt_entregables`.`estado` = 1) then 'Realizado.jpg'
+                            when (((`migracion_prueba`.`dt_entregables`.`estado` is null)
+                            or (`migracion_prueba`.`dt_entregables`.`estado` = 2)
+                            or (`migracion_prueba`.`dt_entregables`.`estado` = ''))
+                            and ((`migracion_prueba`.`dt_entregables`.`fecha_inicio` is null)
+                            or (`migracion_prueba`.`dt_entregables`.`fecha_inicio` is null))) then 'PendienteP.jpg'
+                            when ((`migracion_prueba`.`dt_entregables`.`estado` = 2)
+                            and (((cast(`migracion_prueba`.`dt_entregables`.`fecha_inicio` as datetime) + interval 30 minute) - now()) < 0)) then 'NoRealizado.png'
+                            else 'Programado.jpg'
+                        end) AS `estado`,
+                        `migracion_prueba`.`dt_entregables`.`fecha_inicio` AS `fecha_inicio`,
+                        `migracion_prueba`.`user`.`nombre_usuario` AS `nombre_usuario`
+                    from
+                        (`migracion_prueba`.`dt_entregables`
+                    left join `migracion_prueba`.`user` on
+                        ((`migracion_prueba`.`dt_entregables`.`id_usuario` = `migracion_prueba`.`user`.`id`)));
+                    
+                    
+                    -- migracion_prueba.vw_cabina_materia_prima source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_cabina_materia_prima` AS
+                    select
+                        'MATERIA_PRIMA' AS `grupo`,
+                        (case
+                            when (`migracion_prueba`.`dt_compras`.`id_ordenes` is null) then 'NoAplica.jpg'
+                            when (`migracion_prueba`.`dt_compras`.`id_proveedores` = 750) then 'Realizado.jpg'
+                            when (`migracion_prueba`.`dt_rotacion`.`id_rotacion` is not null) then 'Realizado.jpg'
+                            when (`migracion_prueba`.`dt_compras`.`id_costos` is null) then 'PendienteP.jpg'
+                            when (((`migracion_prueba`.`dt_compras`.`fecha_compromiso` - curdate()) < 0)
+                            and (`migracion_prueba`.`dt_compras`.`id_proveedores` <> 750)) then 'NoRealizado.png'
+                            else 'NoAplica.jpg'
+                        end) AS `estado`,
+                        `migracion_prueba`.`dt_compras`.`fecha_compromiso` AS `fecha_inicio`,
+                        `migracion_prueba`.`dt_compras`.`id_ordenes` AS `id_ordenes`
+                    from
+                        (`migracion_prueba`.`dt_compras`
+                    left join `migracion_prueba`.`dt_rotacion` on
+                        ((`migracion_prueba`.`dt_compras`.`id_compras` = `migracion_prueba`.`dt_rotacion`.`id_compra`)))
+                    where
+                        ((`migracion_prueba`.`dt_compras`.`tipo_inv` = 1)
+                            and (`migracion_prueba`.`dt_compras`.`id_ordenes` is not null)
+                                and (`migracion_prueba`.`dt_compras`.`id_costos` is not null)
+                                    and (`migracion_prueba`.`dt_compras`.`estado` <> 2));
+                    
+                    
+                    -- migracion_prueba.vw_cabina_presupuesto_inicial source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_cabina_presupuesto_inicial` AS
+                    select
+                        (((((`migracion_prueba`.`dt_presupuesto_inicial`.`total_materia_prima` + `migracion_prueba`.`dt_presupuesto_inicial`.`total_mano_obra`) + `migracion_prueba`.`dt_presupuesto_inicial`.`total_transporte`) + `migracion_prueba`.`dt_presupuesto_inicial`.`total_terceros`) + `migracion_prueba`.`dt_presupuesto_inicial`.`total_viaticos`) + `migracion_prueba`.`dt_presupuesto_inicial`.`total_otros_directos`) AS `total_presupuesto`,
+                        `migracion_prueba`.`dt_presupuesto_inicial`.`id_ordenes` AS `id_ordenes`
+                    from
+                        `migracion_prueba`.`dt_presupuesto_inicial`
+                    group by
+                        `migracion_prueba`.`dt_presupuesto_inicial`.`id_ordenes`;
+                    
+                    
+                    -- migracion_prueba.vw_cabina_produccion source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_cabina_produccion` AS
+                    select
+                        `dc`.`n_ordenes` AS `n_ordenes`,
+                        `dc`.`id_ordenes` AS `id_ordenes`,
+                        `dc`.`cod_material` AS `cod_material`,
+                        `dc`.`nombre_costo` AS `nombre_costo`,
+                        `da`.`id_area` AS `id_area`,
+                        `da`.`id_clase_costo` AS `id_clase_costo`,
+                        `dtc`.`id_vendedor` AS `id_vendedor`,
+                        `dtc`.`fecha_inicio` AS `fecha_inicio`,
+                        `dtc`.`fecha_final` AS `fecha_final`,
+                        `dtc`.`fecha_retro` AS `fecha_retro`,
+                        (case
+                            when (`dtc`.`id_tarea_costo` is null) then 'PendienteP.jpg'
+                            when (`dtc`.`fecha_retro` is not null) then 'Realizado.jpg'
+                            else (case
+                                when (((cast(`dtc`.`fecha_inicio` as datetime) + interval ((`dtc`.`can_horas` * 60) + 30) minute) - now()) < 0) then 'NoRealizado.png'
+                                else 'Programado.jpg'
+                            end)
+                        end) AS `estado`,
+                        count(0) AS `cantidad_estado`
+                    from
+                        ((`migracion_prueba`.`dt_costos` `dc`
+                    join `migracion_prueba`.`dt_acabados` `da` on
+                        ((`dc`.`id_acabados` = `da`.`id_acabados`)))
+                    left join `migracion_prueba`.`dt_tareas_costo` `dtc` on
+                        ((`dc`.`id_costo` = `dtc`.`id_costo`)))
+                    where
+                        (`dc`.`id_tipo_costo` = 4)
+                    group by
+                        `dc`.`id_ordenes`,
+                        `da`.`id_area`,
+                        `da`.`id_clase_costo`,
+                        (case
+                            when (`dtc`.`id_tarea_costo` is null) then 'PendienteP.jpg'
+                            when (`dtc`.`fecha_retro` is not null) then 'Realizado.jpg'
+                            else (case
+                                when (((cast(`dtc`.`fecha_inicio` as datetime) + interval ((`dtc`.`can_horas` * 60) + 30) minute) - now()) < 0) then 'NoRealizado.png'
+                                else 'Programado.jpg'
+                            end)
+                        end);
+                    
+                    
+                    -- migracion_prueba.vw_cabina_requisicion source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_cabina_requisicion` AS
+                    select
+                        'REQUISICION' AS `grupo`,
+                        (case
+                            when ((`migracion_prueba`.`dt_remision`.`id_remision` is not null)
+                            and (`migracion_prueba`.`dt_remision`.`id_remision` <> '')) then 'Realizado.jpg'
+                            else 'Pendiente.jpg'
+                        end) AS `estado`,
+                        `migracion_prueba`.`dt_remision`.`fecha_creacion` AS `fecha_inicio`,
+                        `migracion_prueba`.`dt_remision`.`id_ordenes` AS `id_ordenes`
+                    from
+                        `migracion_prueba`.`dt_remision`;
+                    
+                    
+                    -- migracion_prueba.vw_cabina_terceros source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_cabina_terceros` AS
+                    select
+                        'TERCEROS' AS `grupo`,
+                        (case
+                            when (`migracion_prueba`.`dt_tareas_costo`.`id_tarea_costo` is null) then 'PendienteP.jpg'
+                            else (case
+                                when (`migracion_prueba`.`dt_compras`.`id_compras` is not null) then 'Realizado.jpg'
+                                when (((cast(`migracion_prueba`.`dt_tareas_costo`.`fecha_inicio` as datetime) + interval ((`migracion_prueba`.`dt_tareas_costo`.`can_horas` * 60) + 30) minute) - now()) < 0) then 'NoRealizado.png'
+                                else 'Programado.jpg'
+                            end)
+                        end) AS `estado`,
+                        `migracion_prueba`.`dt_tareas_costo`.`fecha_inicio` AS `fecha_inicio`,
+                        `migracion_prueba`.`user`.`nombre_usuario` AS `responsable`,
+                        `migracion_prueba`.`dt_tareas_costo`.`fecha_final` AS `fecha_final`,
+                        `migracion_prueba`.`dt_tareas_costo`.`id_ordenes` AS `id_ordenes`,
+                        `migracion_prueba`.`dt_tareas_costo`.`cod_material` AS `cod`
+                    from
+                        ((`migracion_prueba`.`dt_tareas_costo`
+                    left join `migracion_prueba`.`dt_compras` on
+                        ((`migracion_prueba`.`dt_tareas_costo`.`id_costo` = `migracion_prueba`.`dt_compras`.`id_costos`)))
+                    left join `migracion_prueba`.`user` on
+                        (((`migracion_prueba`.`dt_tareas_costo`.`id_vendedor` = `migracion_prueba`.`user`.`id`)
+                            and ((`migracion_prueba`.`dt_tareas_costo`.`cod_material` like 'TBR%')
+                                or (`migracion_prueba`.`dt_tareas_costo`.`cod_material` like 'TCP%')
+                                    or (`migracion_prueba`.`dt_tareas_costo`.`cod_material` like 'SUB%')
+                                        or (`migracion_prueba`.`dt_tareas_costo`.`cod_material` like 'TCL%')
+                                            or (`migracion_prueba`.`dt_tareas_costo`.`cod_material` like 'TCN%')
+                                                or (`migracion_prueba`.`dt_tareas_costo`.`cod_material` like 'TET%')))));
+                    
+                    
+                    -- migracion_prueba.vw_certicamara_factura source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_certicamara_factura` AS
+                    select
+                        `migracion_prueba`.`dt_factura`.`id_factura` AS `id_factura`,
+                        `migracion_prueba`.`dt_factura`.`puc_cuenta` AS `puc_cuenta`,
+                        `migracion_prueba`.`dt_factura`.`n_factura` AS `n_factura`,
+                        `migracion_prueba`.`dt_factura`.`cantidad` AS `cantidad`,
+                        `migracion_prueba`.`dt_factura`.`referencia` AS `referencia`,
+                        `migracion_prueba`.`dt_factura`.`n_ordenes` AS `n_ordenes`,
+                        `migracion_prueba`.`dt_factura`.`fecha_factura` AS `fecha_factura`,
+                        date_format(`migracion_prueba`.`dt_factura`.`fecha_creacion`, '%H:%I:%S') AS `hora`,
+                        `migracion_prueba`.`dt_factura`.`fecha_vencimiento` AS `fecha_vencimiento`,
+                        `migracion_prueba`.`dt_factura`.`valor_bruto` AS `valor_bruto`,
+                        `migracion_prueba`.`dt_factura`.`vr_total` AS `vr_total`,
+                        `migracion_prueba`.`dt_factura`.`vr_unidad` AS `vr_unidad`,
+                        `migracion_prueba`.`dt_factura`.`id_vendedor` AS `id_vendedor`,
+                        `migracion_prueba`.`dt_factura`.`iva` AS `iva`,
+                        `migracion_prueba`.`dt_clientes`.`id_regimen` AS `id_regimen`,
+                        `migracion_prueba`.`dt_clientes`.`nom_empresa` AS `nom_empresa`,
+                        `migracion_prueba`.`dt_clientes`.`nit` AS `nit`,
+                        `migracion_prueba`.`dt_clientes`.`dig_verificacion` AS `dig_verificacion`,
+                        `migracion_prueba`.`dt_clientes`.`telefono` AS `telefono`,
+                        `migracion_prueba`.`dt_clientes`.`email_empresa` AS `email_empresa`,
+                        `migracion_prueba`.`dt_clientes`.`direccion` AS `direccion`
+                    from
+                        (`migracion_prueba`.`dt_factura`
+                    join `migracion_prueba`.`dt_clientes` on
+                        ((`migracion_prueba`.`dt_factura`.`id_cliente` = `migracion_prueba`.`dt_clientes`.`id_cliente`)));
+                    
+                    
+                    -- migracion_prueba.vw_codigo_plantilla source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_codigo_plantilla` AS
+                    select
+                        `migracion_prueba`.`dt_codprodfinal`.`cod` AS `cod`,
+                        `migracion_prueba`.`dt_codprodfinal`.`nom_codigo` AS `nom_codigo`,
+                        `migracion_prueba`.`dt_plantilla`.`id_plantilla` AS `id_plantilla`,
+                        `migracion_prueba`.`dt_plantilla`.`id_codprodfinal` AS `id_codprodfinal`
+                    from
+                        (`migracion_prueba`.`dt_codprodfinal`
+                    join `migracion_prueba`.`dt_plantilla` on
+                        ((`migracion_prueba`.`dt_codprodfinal`.`id_codprodfinal` = `migracion_prueba`.`dt_plantilla`.`id_codprodfinal`)));
+                    
+                    
+                    -- migracion_prueba.vw_codigo_producto_almacen source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_codigo_producto_almacen` AS
+                    select
+                        `ia`.`id_inventarioxarea` AS `id_inventarioxarea`,
+                        `ia`.`codigo_prod` AS `codigo_prod`,
+                        `ia`.`stock` AS `stock`,
+                        concat_ws(' - ', convert(`ia`.`codigo_prod` using utf8mb3), `i`.`producto`) AS `producto`,
+                        `ia`.`id_area` AS `id_area`,
+                        `ia`.`id_inventario` AS `id_inventario`
+                    from
+                        (`migracion_prueba`.`dt_inventarioxarea` `ia`
+                    join `migracion_prueba`.`dt_inventario` `i` on
+                        ((`ia`.`id_inventario` = `i`.`id_inventario`)))
+                    where
+                        (`ia`.`stock` > 0);
+                    
+                    
+                    -- migracion_prueba.vw_codprodfinal_sin_plantilla source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_codprodfinal_sin_plantilla` AS
+                    select
+                        `migracion_prueba`.`dt_codprodfinal`.`id_codprodfinal` AS `id_codprodfinal`,
+                        `migracion_prueba`.`dt_codprodfinal`.`cod` AS `cod`,
+                        `migracion_prueba`.`dt_codprodfinal`.`id_categoria` AS `id_categoria`,
+                        `migracion_prueba`.`dt_codprodfinal`.`nom_codigo` AS `nom_codigo`,
+                        `migracion_prueba`.`dt_codprodfinal`.`tam_x` AS `tam_x`,
+                        `migracion_prueba`.`dt_codprodfinal`.`tam_y` AS `tam_y`,
+                        `migracion_prueba`.`dt_codprodfinal`.`tam_z` AS `tam_z`,
+                        `migracion_prueba`.`dt_codprodfinal`.`tam_l` AS `tam_l`,
+                        `migracion_prueba`.`dt_codprodfinal`.`id_cliente` AS `id_cliente`,
+                        `migracion_prueba`.`dt_codprodfinal`.`id_grupo_inventario` AS `id_grupo_inventario`,
+                        `migracion_prueba`.`dt_codprodfinal`.`iluminacion` AS `iluminacion`,
+                        `migracion_prueba`.`dt_codprodfinal`.`acabados` AS `acabados`,
+                        `migracion_prueba`.`dt_codprodfinal`.`decoracion` AS `decoracion`,
+                        `migracion_prueba`.`dt_codprodfinal`.`tipo_producto` AS `tipo_producto`,
+                        `migracion_prueba`.`dt_codprodfinal`.`marca` AS `marca`,
+                        `migracion_prueba`.`dt_codprodfinal`.`tipo_presupuesto` AS `tipo_presupuesto`,
+                        `migracion_prueba`.`dt_codprodfinal`.`nit` AS `nit`
+                    from
+                        `migracion_prueba`.`dt_codprodfinal`
+                    where
+                        `migracion_prueba`.`dt_codprodfinal`.`id_codprodfinal` in (
+                        select
+                            `migracion_prueba`.`dt_plantilla`.`id_codprodfinal`
+                        from
+                            `migracion_prueba`.`dt_plantilla`
+                        group by
+                            `migracion_prueba`.`dt_plantilla`.`id_codprodfinal`) is false
+                    order by
+                        `migracion_prueba`.`dt_codprodfinal`.`id_codprodfinal` desc;
+                    
+                    
+                    -- migracion_prueba.vw_comercial source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_comercial` AS
+                    select
+                        `migracion_prueba`.`user`.`id` AS `id`,
+                        `migracion_prueba`.`user`.`id_empleado` AS `id_empleado`,
+                        `migracion_prueba`.`user`.`username` AS `username`,
+                        concat(`migracion_prueba`.`dt_usuarios`.`nombre_usuario`, ' ', `migracion_prueba`.`dt_usuarios`.`apellido_usuario`) AS `nombre_usuario`
+                    from
+                        (`migracion_prueba`.`user`
+                    join `migracion_prueba`.`dt_usuarios` on
+                        ((`migracion_prueba`.`dt_usuarios`.`id_usuario` = `migracion_prueba`.`user`.`id_empleado`)))
+                    where
+                        ((`migracion_prueba`.`user`.`status` = 1)
+                            and (`migracion_prueba`.`dt_usuarios`.`id_cargo` in (24, 88, 78, 9)));
+                    
+                    
+                    -- migracion_prueba.vw_compras_home source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_compras_home` AS
+                    select
+                        `migracion_prueba`.`dt_costos`.`id_costo` AS `id_costo`,
+                        `migracion_prueba`.`dt_clientes`.`nom_empresa` AS `cliente`,
+                        `migracion_prueba`.`dt_macro_proyecto`.`nombre_proyecto` AS `macro_proyecto`,
+                        `migracion_prueba`.`dt_proyecto_op`.`nombre_proyecto` AS `nombre_proyecto`,
+                        `migracion_prueba`.`dt_ordenes`.`ref_general` AS `nombre_op`,
+                        `migracion_prueba`.`dt_ordenes`.`n_ordenes` AS `n_ordenes`,
+                        `migracion_prueba`.`dt_costos`.`id_ordenes` AS `id_ordenes`,
+                        `migracion_prueba`.`dt_ordenes`.`cod` AS `cod`,
+                        `migracion_prueba`.`dt_ordenes`.`item_op` AS `item_op`,
+                        `migracion_prueba`.`dt_grupoinventario`.`grupo` AS `familia`,
+                        `migracion_prueba`.`dt_proveedores`.`empresa` AS `proveedor`,
+                        `migracion_prueba`.`dt_fechas_op`.`fecha_ingreso` AS `fecha_ingreso`,
+                        `migracion_prueba`.`dt_fechas_op`.`fecha_produccion` AS `fecha_produccion`,
+                        `migracion_prueba`.`dt_costos`.`nombre_costo` AS `material`,
+                        `migracion_prueba`.`dt_costos`.`cod_material` AS `cod_material`,
+                        `migracion_prueba`.`dt_costos`.`comentarios` AS `comentarios`,
+                        `migracion_prueba`.`dt_costos`.`cant_sol` AS `cant_sol`,
+                        `migracion_prueba`.`dt_costos`.`valor_total` AS `valor_total`,
+                        `migracion_prueba`.`dt_costos`.`saldo_compra` AS `saldo_compra`,
+                        `migracion_prueba`.`dt_costos`.`valor_unit` AS `valor_unit`,
+                        `migracion_prueba`.`dt_costos`.`estado` AS `estado`,
+                        `migracion_prueba`.`dt_inventario`.`id_proveedor` AS `id_proveedor`,
+                        `migracion_prueba`.`dt_inventario`.`stock` AS `stock`,
+                        `migracion_prueba`.`dt_inventarioxarea`.`stock` AS `stock_alm`,
+                        `migracion_prueba`.`dt_costos`.`n_cotiza` AS `n_cotiza`,
+                        `migracion_prueba`.`dt_costos`.`id_inventario` AS `id_inventario`
+                    from
+                        ((((((((((`migracion_prueba`.`dt_costos`
+                    left join `migracion_prueba`.`dt_inventario` on
+                        ((`migracion_prueba`.`dt_costos`.`id_inventario` = `migracion_prueba`.`dt_inventario`.`id_inventario`)))
+                    left join `migracion_prueba`.`dt_inventarioxarea` on
+                        ((`migracion_prueba`.`dt_inventarioxarea`.`id_inventario` = `migracion_prueba`.`dt_inventario`.`id_inventario`)))
+                    left join `migracion_prueba`.`dt_ordenes` on
+                        ((`migracion_prueba`.`dt_ordenes`.`id_ordenes` = `migracion_prueba`.`dt_costos`.`id_ordenes`)))
+                    left join `migracion_prueba`.`dt_proyecto_op` on
+                        ((`migracion_prueba`.`dt_ordenes`.`id_proyecto_op` = `migracion_prueba`.`dt_proyecto_op`.`id_proyecto_op`)))
+                    left join `migracion_prueba`.`dt_macro_proyecto` on
+                        ((`migracion_prueba`.`dt_proyecto_op`.`id_macro_proyecto` = `migracion_prueba`.`dt_macro_proyecto`.`id_macro_proyecto`)))
+                    left join `migracion_prueba`.`dt_clientes` on
+                        ((`migracion_prueba`.`dt_macro_proyecto`.`id_cliente` = `migracion_prueba`.`dt_clientes`.`id_cliente`)))
+                    left join `migracion_prueba`.`dt_subgrupo` on
+                        ((`migracion_prueba`.`dt_subgrupo`.`id_subgrupo` = `migracion_prueba`.`dt_inventario`.`id_subgrupo`)))
+                    left join `migracion_prueba`.`dt_grupoinventario` on
+                        ((`migracion_prueba`.`dt_subgrupo`.`id_grupo_inventario` = `migracion_prueba`.`dt_grupoinventario`.`id_grupo_inventario`)))
+                    left join `migracion_prueba`.`dt_proveedores` on
+                        ((`migracion_prueba`.`dt_inventario`.`id_proveedor` = `migracion_prueba`.`dt_proveedores`.`id_proveedores`)))
+                    left join `migracion_prueba`.`dt_fechas_op` on
+                        ((`migracion_prueba`.`dt_fechas_op`.`id_ordenes` = `migracion_prueba`.`dt_ordenes`.`id_ordenes`)))
+                    where
+                        ((`migracion_prueba`.`dt_costos`.`id_tipo_costo` = 1)
+                            and (`migracion_prueba`.`dt_inventarioxarea`.`id_area` = 12)
+                                and (`migracion_prueba`.`dt_costos`.`cierre` = 0)
+                                    and (`migracion_prueba`.`dt_costos`.`estado` in (1, 4, 7))
+                                        and (`migracion_prueba`.`dt_ordenes`.`estado` in (1, 10, 12, 13))
+                                            and (year(`migracion_prueba`.`dt_fechas_op`.`fecha_ingreso`) >= 2017)
+                                                and (`migracion_prueba`.`dt_costos`.`cant_sol` > 0))
+                    group by
+                        `migracion_prueba`.`dt_costos`.`id_costo`,
+                        `migracion_prueba`.`dt_fechas_op`.`id_ordenes`
+                    order by
+                        `migracion_prueba`.`dt_costos`.`id_costo`,
+                        `migracion_prueba`.`dt_costos`.`nombre_costo`,
+                        `migracion_prueba`.`dt_costos`.`cod_material`;
+                    
+                    
+                    -- migracion_prueba.vw_compras_logistica source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_compras_logistica` AS
+                    select
+                        sum(`migracion_prueba`.`dt_compras`.`vr_total`) AS `vr_total`,
+                        `migracion_prueba`.`dt_tipo_pago`.`descripcion` AS `descripcion`,
+                        `migracion_prueba`.`dt_compras`.`fecha_compromiso` AS `fecha_compromiso`
+                    from
+                        ((`migracion_prueba`.`dt_compras`
+                    left join `migracion_prueba`.`dt_costos` on
+                        ((`migracion_prueba`.`dt_compras`.`id_costos` = `migracion_prueba`.`dt_costos`.`id_costo`)))
+                    left join `migracion_prueba`.`dt_tipo_pago` on
+                        ((`migracion_prueba`.`dt_compras`.`id_tipo_pago` = `migracion_prueba`.`dt_tipo_pago`.`id_tipo_pago`)))
+                    where
+                        ((`migracion_prueba`.`dt_compras`.`id_proveedores` <> 750)
+                            and (`migracion_prueba`.`dt_costos`.`id_tipo_costo` <> 1)
+                                and ((`migracion_prueba`.`dt_compras`.`detalle_oc` like '%ALQUILER%')
+                                    or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%FLETES%')
+                                        or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%fac%')))
+                    group by
+                        `migracion_prueba`.`dt_compras`.`id_tipo_pago`;
+                    
+                    
+                    -- migracion_prueba.vw_compras_mp source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_compras_mp` AS
+                    select
+                        sum(`migracion_prueba`.`dt_compras`.`vr_total`) AS `vr_total`,
+                        `migracion_prueba`.`dt_tipo_pago`.`descripcion` AS `descripcion`,
+                        `migracion_prueba`.`dt_compras`.`fecha_compromiso` AS `fecha_compromiso`
+                    from
+                        ((`migracion_prueba`.`dt_compras`
+                    left join `migracion_prueba`.`dt_costos` on
+                        ((`migracion_prueba`.`dt_compras`.`id_costos` = `migracion_prueba`.`dt_costos`.`id_costo`)))
+                    left join `migracion_prueba`.`dt_tipo_pago` on
+                        ((`migracion_prueba`.`dt_compras`.`id_tipo_pago` = `migracion_prueba`.`dt_tipo_pago`.`id_tipo_pago`)))
+                    where
+                        ((`migracion_prueba`.`dt_compras`.`id_proveedores` <> 750)
+                            and (`migracion_prueba`.`dt_costos`.`id_tipo_costo` = 1))
+                    group by
+                        `migracion_prueba`.`dt_compras`.`id_tipo_pago`;
+                    
+                    
+                    -- migracion_prueba.vw_compras_realizadas source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_compras_realizadas` AS
+                    select
+                        (case
+                            when (`migracion_prueba`.`dt_rotacion`.`factura_proveedor` is not null) then 'OK cont'
+                            when (`migracion_prueba`.`dt_rotacion`.`n_rotacion` is not null) then 'Entrada'
+                            when (`migracion_prueba`.`dt_rotacion`.`id_rotacion` is null) then 'Sin Entrada'
+                            else 'N/A'
+                        end) AS `estado`,
+                        (case
+                            when (`migracion_prueba`.`dt_costos`.`id_tipo_costo` = 1) then 'MP'
+                            when (`migracion_prueba`.`dt_costos`.`id_tipo_costo` in ('3', '9', '6', '7', '8')) then 'Terceros'
+                            else 'N/A'
+                        end) AS `tipo`,
+                        `migracion_prueba`.`dt_rotacion`.`n_rotacion` AS `n_rotacion`,
+                        `migracion_prueba`.`dt_rotacion`.`fecha` AS `fecha`,
+                        sum(`migracion_prueba`.`dt_compras`.`saldo_salida`) AS `cant`,
+                        sum(`migracion_prueba`.`dt_compras`.`vr_total`) AS `valort`,
+                        `migracion_prueba`.`dt_proveedores`.`empresa` AS `empresa`,
+                        `migracion_prueba`.`dt_costos`.`cod_material` AS `cod_material`,
+                        `migracion_prueba`.`dt_compras`.`detalle_oc` AS `detalle_oc`,
+                        `migracion_prueba`.`dt_compras`.`n_compra` AS `n_compra`,
+                        `migracion_prueba`.`dt_compras`.`fecha_oc` AS `fecha_oc`,
+                        `migracion_prueba`.`dt_clientes`.`nom_empresa` AS `nom_empresa`,
+                        `migracion_prueba`.`dt_ordenes`.`nombre_proyecto` AS `nombre_proyecto`,
+                        `migracion_prueba`.`dt_ordenes`.`n_ordenes` AS `n_ordenes`
+                    from
+                        (((((`migracion_prueba`.`dt_compras`
+                    left join `migracion_prueba`.`dt_costos` on
+                        ((`migracion_prueba`.`dt_compras`.`id_costos` = `migracion_prueba`.`dt_costos`.`id_costo`)))
+                    left join `migracion_prueba`.`dt_rotacion` on
+                        ((`migracion_prueba`.`dt_rotacion`.`id_compra` = `migracion_prueba`.`dt_compras`.`id_compras`)))
+                    left join `migracion_prueba`.`dt_proveedores` on
+                        ((`migracion_prueba`.`dt_compras`.`id_proveedores` = `migracion_prueba`.`dt_proveedores`.`id_proveedores`)))
+                    left join `migracion_prueba`.`dt_ordenes` on
+                        ((`migracion_prueba`.`dt_compras`.`id_ordenes` = `migracion_prueba`.`dt_ordenes`.`id_ordenes`)))
+                    left join `migracion_prueba`.`dt_clientes` on
+                        ((`migracion_prueba`.`dt_clientes`.`id_cliente` = `migracion_prueba`.`dt_ordenes`.`id_cliente`)))
+                    group by
+                        `migracion_prueba`.`dt_compras`.`n_compra`,
+                        `migracion_prueba`.`dt_costos`.`cod_material`
+                    order by
+                        `migracion_prueba`.`dt_compras`.`n_compra`,
+                        `migracion_prueba`.`dt_costos`.`cod_material`;
+                    
+                    
+                    -- migracion_prueba.vw_compras_saviv source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_compras_saviv` AS
+                    select
+                        sum(`migracion_prueba`.`dt_compras`.`vr_total`) AS `vr_total`,
+                        `migracion_prueba`.`dt_tipo_pago`.`descripcion` AS `descripcion`,
+                        `migracion_prueba`.`dt_compras`.`fecha_compromiso` AS `fecha_compromiso`
+                    from
+                        ((`migracion_prueba`.`dt_compras`
+                    left join `migracion_prueba`.`dt_costos` on
+                        ((`migracion_prueba`.`dt_compras`.`id_costos` = `migracion_prueba`.`dt_costos`.`id_costo`)))
+                    left join `migracion_prueba`.`dt_tipo_pago` on
+                        ((`migracion_prueba`.`dt_compras`.`id_tipo_pago` = `migracion_prueba`.`dt_tipo_pago`.`id_tipo_pago`)))
+                    where
+                        (`migracion_prueba`.`dt_compras`.`id_proveedores` = 750)
+                    group by
+                        `migracion_prueba`.`dt_compras`.`id_tipo_pago`;
+                    
+                    
+                    -- migracion_prueba.vw_compras_ter source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_compras_ter` AS
+                    select
+                        sum(`migracion_prueba`.`dt_compras`.`vr_total`) AS `valor_total`,
+                        `migracion_prueba`.`dt_tipo_pago`.`descripcion` AS `descripcion`,
+                        `migracion_prueba`.`dt_compras`.`fecha_oc` AS `fecha_oc`
+                    from
+                        ((`migracion_prueba`.`dt_compras`
+                    left join `migracion_prueba`.`dt_costos` on
+                        ((`migracion_prueba`.`dt_compras`.`id_costos` = `migracion_prueba`.`dt_costos`.`id_costo`)))
+                    left join `migracion_prueba`.`dt_tipo_pago` on
+                        ((`migracion_prueba`.`dt_compras`.`id_tipo_pago` = `migracion_prueba`.`dt_tipo_pago`.`id_tipo_pago`)))
+                    where
+                        ((`migracion_prueba`.`dt_compras`.`id_proveedores` <> 750)
+                            and (`migracion_prueba`.`dt_costos`.`id_tipo_costo` <> 1)
+                                and (not((`migracion_prueba`.`dt_compras`.`detalle_oc` like '%viatico%'))))
+                    group by
+                        `migracion_prueba`.`dt_compras`.`id_tipo_pago`;
+                    
+                    
+                    -- migracion_prueba.vw_compras_ter_p source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_compras_ter_p` AS
+                    select
+                        sum(`migracion_prueba`.`dt_compras`.`vr_total`) AS `vr_total`,
+                        `migracion_prueba`.`dt_tipo_pago`.`descripcion` AS `descripcion`,
+                        `migracion_prueba`.`dt_compras`.`fecha_compromiso` AS `fecha_compromiso`
+                    from
+                        ((`migracion_prueba`.`dt_compras`
+                    left join `migracion_prueba`.`dt_costos` on
+                        ((`migracion_prueba`.`dt_compras`.`id_costos` = `migracion_prueba`.`dt_costos`.`id_costo`)))
+                    left join `migracion_prueba`.`dt_tipo_pago` on
+                        ((`migracion_prueba`.`dt_compras`.`id_tipo_pago` = `migracion_prueba`.`dt_tipo_pago`.`id_tipo_pago`)))
+                    where
+                        ((`migracion_prueba`.`dt_compras`.`id_proveedores` <> 750)
+                            and (`migracion_prueba`.`dt_costos`.`id_tipo_costo` <> 1)
+                                and ((`migracion_prueba`.`dt_compras`.`detalle_oc` like '%01A%')
+                                    or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%01B%')
+                                        or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%01C%')
+                                            or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%01D2%')
+                                                or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%01E%')
+                                                    or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%01F%')
+                                                        or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%01I%')
+                                                            or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%01P1%')
+                                                                or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%01z%')
+                                                                    or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%021C%')
+                                                                        or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%02A%')
+                                                                            or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%02B%')
+                                                                                or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%02C%')
+                                                                                    or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%02D%')
+                                                                                        or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%02E%')
+                                                                                            or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%02F%')
+                                                                                                or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%02H%')
+                                                                                                    or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%02I%')
+                                                                                                        or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%03D%')
+                                                                                                            or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%05D%')
+                                                                                                                or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%06A%')
+                                                                                                                    or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%07B%')
+                                                                                                                        or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%07C%')
+                                                                                                                            or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%09A%')
+                                                                                                                                or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%09C%')
+                                                                                                                                    or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%09F%')
+                                                                                                                                        or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%09I%')
+                                                                                                                                            or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%09K%')
+                                                                                                                                                or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%09L%')
+                                                                                                                                                    or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%09M%')
+                                                                                                                                                        or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%09z%')
+                                                                                                                                                            or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%10F%')
+                                                                                                                                                                or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%12A%')
+                                                                                                                                                                    or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%12C%')
+                                                                                                                                                                        or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%12D%')
+                                                                                                                                                                            or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%12N%')
+                                                                                                                                                                                or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%12P%')
+                                                                                                                                                                                    or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%12z%')
+                                                                                                                                                                                        or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%14ZD%')
+                                                                                                                                                                                            or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%14ZE%')
+                                                                                                                                                                                                or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%16C%')
+                                                                                                                                                                                                    or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%17A%')
+                                                                                                                                                                                                        or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%17AC%')
+                                                                                                                                                                                                            or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%17GE%')
+                                                                                                                                                                                                                or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%17GK%')
+                                                                                                                                                                                                                    or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%22H6%')
+                                                                                                                                                                                                                        or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%22M5%')
+                                                                                                                                                                                                                            or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%2da%')
+                                                                                                                                                                                                                                or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%6Z%')
+                                                                                                                                                                                                                                    or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%SUSTRATOS%')
+                                                                                                                                                                                                                                        or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%ENSAMBLE%')
+                                                                                                                                                                                                                                            or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%IMPRESION%')
+                                                                                                                                                                                                                                                or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%DECORACION%')
+                                                                                                                                                                                                                                                    or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%METALMECANICA%')
+                                                                                                                                                                                                                                                        or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%PINTURA%')))
+                    group by
+                        `migracion_prueba`.`dt_compras`.`id_tipo_pago`;
+                    
+                    
+                    -- migracion_prueba.vw_compras_transporte source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_compras_transporte` AS
+                    select
+                        sum(`migracion_prueba`.`dt_compras`.`vr_total`) AS `vr_total`,
+                        `migracion_prueba`.`dt_tipo_pago`.`descripcion` AS `descripcion`,
+                        `migracion_prueba`.`dt_compras`.`fecha_compromiso` AS `fecha_compromiso`
+                    from
+                        ((`migracion_prueba`.`dt_compras`
+                    left join `migracion_prueba`.`dt_costos` on
+                        ((`migracion_prueba`.`dt_compras`.`id_costos` = `migracion_prueba`.`dt_costos`.`id_costo`)))
+                    left join `migracion_prueba`.`dt_tipo_pago` on
+                        ((`migracion_prueba`.`dt_compras`.`id_tipo_pago` = `migracion_prueba`.`dt_tipo_pago`.`id_tipo_pago`)))
+                    where
+                        ((`migracion_prueba`.`dt_compras`.`id_proveedores` <> 750)
+                            and (`migracion_prueba`.`dt_costos`.`id_tipo_costo` <> 1)
+                                and ((`migracion_prueba`.`dt_compras`.`detalle_oc` like '%viatico%')
+                                    or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%transporte%')))
+                    group by
+                        `migracion_prueba`.`dt_compras`.`id_tipo_pago`;
+                    
+                    
+                    -- migracion_prueba.vw_compras_x_hacer source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_compras_x_hacer` AS
+                    select
+                        `migracion_prueba`.`dt_costos`.`nombre_costo` AS `nombre_costo`,
+                        `migracion_prueba`.`dt_costos`.`cod_material` AS `cod_material`,
+                        sum(`migracion_prueba`.`dt_costos`.`valor_total`) AS `total`,
+                        `migracion_prueba`.`dt_inventario`.`stock` AS `stock`,
+                        sum(`migracion_prueba`.`dt_costos`.`cant_sol`) AS `totalc`,
+                        (case
+                            when (`migracion_prueba`.`dt_costos`.`id_tipo_costo` = 1) then 'MP'
+                            when (`migracion_prueba`.`dt_costos`.`id_tipo_costo` in (3, 9, 6, 7, 8)) then 'Terc'
+                            else 'N/A'
+                        end) AS `tipo`,
+                        `migracion_prueba`.`dt_costos`.`n_ordenes` AS `n_ordenes`,
+                        `migracion_prueba`.`dt_grupoinventario`.`grupo` AS `grupo`,
+                        `migracion_prueba`.`dt_subgrupo`.`subgrupo` AS `subgrupo`,
+                        `migracion_prueba`.`dt_clientes`.`nom_empresa` AS `nom_empresa`,
+                        `migracion_prueba`.`dt_ordenes`.`nombre_proyecto` AS `nombre_proyecto`,
+                        `migracion_prueba`.`dt_fechas_op`.`fecha_ingreso` AS `fecha_ingreso`
+                    from
+                        ((((((`migracion_prueba`.`dt_costos`
+                    join `migracion_prueba`.`dt_inventario` on
+                        ((`migracion_prueba`.`dt_costos`.`id_inventario` = `migracion_prueba`.`dt_inventario`.`id_inventario`)))
+                    join `migracion_prueba`.`dt_subgrupo` on
+                        ((`migracion_prueba`.`dt_subgrupo`.`id_subgrupo` = `migracion_prueba`.`dt_inventario`.`id_subgrupo`)))
+                    join `migracion_prueba`.`dt_grupoinventario` on
+                        ((`migracion_prueba`.`dt_grupoinventario`.`id_grupo_inventario` = `migracion_prueba`.`dt_subgrupo`.`id_subgrupo`)))
+                    left join `migracion_prueba`.`dt_ordenes` on
+                        ((`migracion_prueba`.`dt_ordenes`.`id_ordenes` = `migracion_prueba`.`dt_costos`.`id_ordenes`)))
+                    left join `migracion_prueba`.`dt_clientes` on
+                        ((`migracion_prueba`.`dt_clientes`.`id_cliente` = `migracion_prueba`.`dt_ordenes`.`id_cliente`)))
+                    left join `migracion_prueba`.`dt_fechas_op` on
+                        ((`migracion_prueba`.`dt_fechas_op`.`id_ordenes` = `migracion_prueba`.`dt_ordenes`.`id_ordenes`)))
+                    where
+                        ((`migracion_prueba`.`dt_costos`.`id_tipo_costo` = 1)
+                            and (`migracion_prueba`.`dt_costos`.`estado` in (1, 4, 7))
+                                and (`migracion_prueba`.`dt_costos`.`n_ordenes` <> 0)
+                                    and (`migracion_prueba`.`dt_ordenes`.`estado` in (1, 10, 12, 13))
+                                        and (`migracion_prueba`.`dt_ordenes`.`conciliado` <> 1)
+                                            and (`migracion_prueba`.`dt_costos`.`cant_sol` > 0)
+                                                and (`migracion_prueba`.`dt_costos`.`cierre` = 0))
+                    group by
+                        `migracion_prueba`.`dt_costos`.`cod_material`,
+                        `migracion_prueba`.`dt_ordenes`.`n_ordenes`
+                    order by
+                        `migracion_prueba`.`dt_costos`.`nombre_costo`;
+                    
+                    
+                    -- migracion_prueba.vw_coordinador source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_coordinador` AS
+                    select
+                        `migracion_prueba`.`user`.`id` AS `id`,
+                        `migracion_prueba`.`user`.`id_empleado` AS `id_empleado`,
+                        `migracion_prueba`.`user`.`username` AS `username`,
+                        concat(`migracion_prueba`.`dt_usuarios`.`nombre_usuario`, ' ', `migracion_prueba`.`dt_usuarios`.`apellido_usuario`) AS `nombre_usuario`
+                    from
+                        (`migracion_prueba`.`user`
+                    join `migracion_prueba`.`dt_usuarios` on
+                        ((`migracion_prueba`.`dt_usuarios`.`id_usuario` = `migracion_prueba`.`user`.`id_empleado`)))
+                    where
+                        ((`migracion_prueba`.`user`.`status` = 1)
+                            and (`migracion_prueba`.`dt_usuarios`.`id_cargo` in (5, 9, 7, 74)));
+                    
+                    
+                    -- migracion_prueba.vw_detalle_compra_logistica source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_detalle_compra_logistica` AS
+                    select
+                        `migracion_prueba`.`dt_proveedores`.`empresa` AS `empresa`,
+                        `migracion_prueba`.`dt_compras`.`fecha_oc` AS `fecha_oc`,
+                        `migracion_prueba`.`dt_compras`.`n_compra` AS `n_compra`,
+                        `migracion_prueba`.`dt_compras`.`detalle_oc` AS `detalle_oc`,
+                        `migracion_prueba`.`dt_compras`.`saldo_salida` AS `saldo_salida`,
+                        `migracion_prueba`.`dt_compras`.`vr_unidad` AS `vr_unidad`,
+                        `migracion_prueba`.`dt_compras`.`vr_total` AS `vr_total`
+                    from
+                        ((`migracion_prueba`.`dt_compras`
+                    join `migracion_prueba`.`dt_proveedores` on
+                        ((`migracion_prueba`.`dt_compras`.`id_proveedores` = `migracion_prueba`.`dt_proveedores`.`id_proveedores`)))
+                    left join `migracion_prueba`.`dt_costos` on
+                        ((`migracion_prueba`.`dt_compras`.`id_costos` = `migracion_prueba`.`dt_costos`.`id_costo`)))
+                    where
+                        ((`migracion_prueba`.`dt_costos`.`id_tipo_costo` <> 1)
+                            and (`migracion_prueba`.`dt_compras`.`id_proveedores` <> 750)
+                                and ((`migracion_prueba`.`dt_compras`.`detalle_oc` like '%ALQUILER%')
+                                    or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%FLETES%')
+                                        or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%fac%')))
+                    order by
+                        `migracion_prueba`.`dt_compras`.`vr_total` desc;
+                    
+                    
+                    -- migracion_prueba.vw_detalle_compra_mp source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_detalle_compra_mp` AS
+                    select
+                        `migracion_prueba`.`dt_proveedores`.`empresa` AS `empresa`,
+                        `migracion_prueba`.`dt_compras`.`fecha_oc` AS `fecha_oc`,
+                        `migracion_prueba`.`dt_compras`.`n_compra` AS `n_compra`,
+                        `migracion_prueba`.`dt_compras`.`detalle_oc` AS `detalle_oc`,
+                        `migracion_prueba`.`dt_compras`.`saldo_salida` AS `saldo_salida`,
+                        `migracion_prueba`.`dt_compras`.`vr_unidad` AS `vr_unidad`,
+                        `migracion_prueba`.`dt_compras`.`vr_total` AS `vr_total`
+                    from
+                        ((`migracion_prueba`.`dt_compras`
+                    join `migracion_prueba`.`dt_proveedores` on
+                        ((`migracion_prueba`.`dt_compras`.`id_proveedores` = `migracion_prueba`.`dt_proveedores`.`id_proveedores`)))
+                    left join `migracion_prueba`.`dt_costos` on
+                        ((`migracion_prueba`.`dt_compras`.`id_costos` = `migracion_prueba`.`dt_costos`.`id_costo`)))
+                    where
+                        ((`migracion_prueba`.`dt_costos`.`id_tipo_costo` = 1)
+                            and (`migracion_prueba`.`dt_compras`.`id_proveedores` <> 750));
+                    
+                    
+                    -- migracion_prueba.vw_detalle_compra_saviv source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_detalle_compra_saviv` AS
+                    select
+                        `migracion_prueba`.`dt_proveedores`.`empresa` AS `empresa`,
+                        `migracion_prueba`.`dt_compras`.`fecha_oc` AS `fecha_oc`,
+                        `migracion_prueba`.`dt_compras`.`n_compra` AS `n_compra`,
+                        `migracion_prueba`.`dt_compras`.`detalle_oc` AS `detalle_oc`,
+                        `migracion_prueba`.`dt_compras`.`saldo_salida` AS `saldo_salida`,
+                        `migracion_prueba`.`dt_compras`.`vr_unidad` AS `vr_unidad`,
+                        `migracion_prueba`.`dt_compras`.`vr_total` AS `vr_total`
+                    from
+                        (`migracion_prueba`.`dt_compras`
+                    join `migracion_prueba`.`dt_proveedores` on
+                        ((`migracion_prueba`.`dt_compras`.`id_proveedores` = `migracion_prueba`.`dt_proveedores`.`id_proveedores`)))
+                    where
+                        (`migracion_prueba`.`dt_compras`.`id_proveedores` = 750)
+                    order by
+                        `migracion_prueba`.`dt_compras`.`vr_total` desc;
+                    
+                    
+                    -- migracion_prueba.vw_detalle_compra_ter_com source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_detalle_compra_ter_com` AS
+                    select
+                        `migracion_prueba`.`dt_proveedores`.`empresa` AS `empresa`,
+                        `migracion_prueba`.`dt_compras`.`fecha_oc` AS `fecha_oc`,
+                        `migracion_prueba`.`dt_compras`.`n_compra` AS `n_compra`,
+                        `migracion_prueba`.`dt_compras`.`detalle_oc` AS `detalle_oc`,
+                        `migracion_prueba`.`dt_compras`.`saldo_salida` AS `saldo_salida`,
+                        `migracion_prueba`.`dt_compras`.`vr_unidad` AS `vr_unidad`,
+                        `migracion_prueba`.`dt_compras`.`vr_total` AS `vr_total`
+                    from
+                        ((`migracion_prueba`.`dt_compras`
+                    join `migracion_prueba`.`dt_proveedores` on
+                        ((`migracion_prueba`.`dt_compras`.`id_proveedores` = `migracion_prueba`.`dt_proveedores`.`id_proveedores`)))
+                    left join `migracion_prueba`.`dt_costos` on
+                        ((`migracion_prueba`.`dt_compras`.`id_costos` = `migracion_prueba`.`dt_costos`.`id_costo`)))
+                    where
+                        ((`migracion_prueba`.`dt_costos`.`id_tipo_costo` <> 1)
+                            and (`migracion_prueba`.`dt_compras`.`id_proveedores` <> 750)
+                                and ((`migracion_prueba`.`dt_compras`.`detalle_oc` like '%LASER%')
+                                    or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%POLIZA%')
+                                        or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%PERMISO%')
+                                            or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%PUNZONADO%')
+                                                or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%VIDRIO%')
+                                                    or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%BRAILE%')
+                                                        or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%ROLADO%')))
+                    order by
+                        `migracion_prueba`.`dt_compras`.`vr_total` desc;
+                    
+                    
+                    -- migracion_prueba.vw_detalle_compra_ter_pro source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_detalle_compra_ter_pro` AS
+                    select
+                        `migracion_prueba`.`dt_proveedores`.`empresa` AS `empresa`,
+                        `migracion_prueba`.`dt_compras`.`fecha_oc` AS `fecha_oc`,
+                        `migracion_prueba`.`dt_compras`.`n_compra` AS `n_compra`,
+                        `migracion_prueba`.`dt_compras`.`detalle_oc` AS `detalle_oc`,
+                        `migracion_prueba`.`dt_compras`.`saldo_salida` AS `saldo_salida`,
+                        `migracion_prueba`.`dt_compras`.`vr_unidad` AS `vr_unidad`,
+                        `migracion_prueba`.`dt_compras`.`vr_total` AS `vr_total`
+                    from
+                        ((`migracion_prueba`.`dt_compras`
+                    join `migracion_prueba`.`dt_proveedores` on
+                        ((`migracion_prueba`.`dt_compras`.`id_proveedores` = `migracion_prueba`.`dt_proveedores`.`id_proveedores`)))
+                    left join `migracion_prueba`.`dt_costos` on
+                        ((`migracion_prueba`.`dt_compras`.`id_costos` = `migracion_prueba`.`dt_costos`.`id_costo`)))
+                    where
+                        ((`migracion_prueba`.`dt_costos`.`id_tipo_costo` <> 1)
+                            and (`migracion_prueba`.`dt_compras`.`id_proveedores` <> 750)
+                                and ((`migracion_prueba`.`dt_compras`.`detalle_oc` like '%01A%')
+                                    or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%01B%')
+                                        or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%01C%')
+                                            or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%01D2%')
+                                                or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%01E%')
+                                                    or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%01F%')
+                                                        or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%01I%')
+                                                            or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%01P1%')
+                                                                or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%01z%')
+                                                                    or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%021C%')
+                                                                        or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%02A%')
+                                                                            or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%02B%')
+                                                                                or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%02C%')
+                                                                                    or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%02D%')
+                                                                                        or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%02E%')
+                                                                                            or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%02F%')
+                                                                                                or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%02H%')
+                                                                                                    or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%02I%')
+                                                                                                        or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%03D%')
+                                                                                                            or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%05D%')
+                                                                                                                or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%06A%')
+                                                                                                                    or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%07B%')
+                                                                                                                        or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%07C%')
+                                                                                                                            or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%09A%')
+                                                                                                                                or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%09C%')
+                                                                                                                                    or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%09F%')
+                                                                                                                                        or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%09I%')
+                                                                                                                                            or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%09K%')
+                                                                                                                                                or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%09L%')
+                                                                                                                                                    or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%09M%')
+                                                                                                                                                        or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%09z%')
+                                                                                                                                                            or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%10F%')
+                                                                                                                                                                or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%12A%')
+                                                                                                                                                                    or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%12C%')
+                                                                                                                                                                        or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%12D%')
+                                                                                                                                                                            or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%12N%')
+                                                                                                                                                                                or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%12P%')
+                                                                                                                                                                                    or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%12z%')
+                                                                                                                                                                                        or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%14ZD%')
+                                                                                                                                                                                            or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%14ZE%')
+                                                                                                                                                                                                or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%16C%')
+                                                                                                                                                                                                    or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%17A%')
+                                                                                                                                                                                                        or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%17AC%')
+                                                                                                                                                                                                            or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%17GE%')
+                                                                                                                                                                                                                or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%17GK%')
+                                                                                                                                                                                                                    or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%22H6%')
+                                                                                                                                                                                                                        or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%22M5%')
+                                                                                                                                                                                                                            or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%2da%')
+                                                                                                                                                                                                                                or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%6Z%')
+                                                                                                                                                                                                                                    or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%SUSTRATOS%')
+                                                                                                                                                                                                                                        or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%ENSAMBLE%')
+                                                                                                                                                                                                                                            or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%IMPRESION%')
+                                                                                                                                                                                                                                                or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%DECORACION%')
+                                                                                                                                                                                                                                                    or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%METALMECANICA%')
+                                                                                                                                                                                                                                                        or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%PINTURA%')))
+                    order by
+                        `migracion_prueba`.`dt_compras`.`vr_total` desc;
+                    
+                    
+                    -- migracion_prueba.vw_detalle_compra_transporte source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_detalle_compra_transporte` AS
+                    select
+                        `migracion_prueba`.`dt_proveedores`.`empresa` AS `empresa`,
+                        `migracion_prueba`.`dt_compras`.`fecha_oc` AS `fecha_oc`,
+                        `migracion_prueba`.`dt_compras`.`n_compra` AS `n_compra`,
+                        `migracion_prueba`.`dt_compras`.`detalle_oc` AS `detalle_oc`,
+                        `migracion_prueba`.`dt_compras`.`saldo_salida` AS `saldo_salida`,
+                        `migracion_prueba`.`dt_compras`.`vr_unidad` AS `vr_unidad`,
+                        `migracion_prueba`.`dt_compras`.`vr_total` AS `vr_total`
+                    from
+                        ((`migracion_prueba`.`dt_compras`
+                    join `migracion_prueba`.`dt_proveedores` on
+                        ((`migracion_prueba`.`dt_compras`.`id_proveedores` = `migracion_prueba`.`dt_proveedores`.`id_proveedores`)))
+                    left join `migracion_prueba`.`dt_costos` on
+                        ((`migracion_prueba`.`dt_compras`.`id_costos` = `migracion_prueba`.`dt_costos`.`id_costo`)))
+                    where
+                        ((`migracion_prueba`.`dt_costos`.`id_tipo_costo` <> 1)
+                            and (`migracion_prueba`.`dt_compras`.`id_proveedores` <> 750)
+                                and ((`migracion_prueba`.`dt_compras`.`detalle_oc` like '%viatico%')
+                                    or (`migracion_prueba`.`dt_compras`.`detalle_oc` like '%transporte%')))
+                    order by
+                        `migracion_prueba`.`dt_compras`.`vr_total` desc;
+                    
+                    
+                    -- migracion_prueba.vw_documento_factura source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_documento_factura` AS
+                    select
+                        `migracion_prueba`.`dt_clientes`.`nom_empresa` AS `nom_empresa`,
+                        `migracion_prueba`.`dt_clientes`.`nit` AS `nit`,
+                        `migracion_prueba`.`dt_clientes`.`dig_verificacion` AS `dig_verificacion`,
+                        `migracion_prueba`.`dt_factura`.`id_factura` AS `id_factura`,
+                        `migracion_prueba`.`dt_factura`.`n_factura` AS `n_factura`,
+                        `migracion_prueba`.`dt_factura`.`observaciones` AS `observaciones`,
+                        `migracion_prueba`.`dt_clientes`.`direccion` AS `direccion`,
+                        `migracion_prueba`.`dt_geografia`.`nombre` AS `nombre`,
+                        `migracion_prueba`.`dt_clientes`.`telefono` AS `telefono`,
+                        `migracion_prueba`.`dt_factura`.`fecha_factura` AS `fecha_factura`,
+                        `migracion_prueba`.`dt_factura`.`fecha_vencimiento` AS `fecha_vencimiento`,
+                        `migracion_prueba`.`dt_forma_pago`.`descripcion` AS `descripcion`,
+                        `migracion_prueba`.`dt_factura`.`n_ordenes` AS `n_ordenes`,
+                        `migracion_prueba`.`dt_factura`.`cantidad` AS `cantidad`,
+                        `migracion_prueba`.`dt_factura`.`referencia` AS `referencia`,
+                        `migracion_prueba`.`dt_factura`.`vr_unidad` AS `vr_unidad`,
+                        `migracion_prueba`.`dt_factura`.`vr_total` AS `vr_total`,
+                        `migracion_prueba`.`dt_factura`.`valor_bruto` AS `valor_bruto`,
+                        `migracion_prueba`.`dt_factura`.`iva` AS `iva`,
+                        `migracion_prueba`.`dt_factura`.`anticipo` AS `anticipo`,
+                        `migracion_prueba`.`dt_factura`.`r_fuente` AS `r_fuente`,
+                        `migracion_prueba`.`dt_factura`.`r_iva` AS `r_iva`,
+                        `migracion_prueba`.`dt_factura`.`r_ica` AS `r_ica`
+                    from
+                        (((`migracion_prueba`.`dt_factura`
+                    join `migracion_prueba`.`dt_clientes` on
+                        ((`migracion_prueba`.`dt_factura`.`id_cliente` = `migracion_prueba`.`dt_clientes`.`id_cliente`)))
+                    left join `migracion_prueba`.`dt_geografia` on
+                        ((`migracion_prueba`.`dt_clientes`.`id_geografia` = `migracion_prueba`.`dt_geografia`.`id_geografia`)))
+                    left join `migracion_prueba`.`dt_forma_pago` on
+                        ((`migracion_prueba`.`dt_factura`.`id_forma_pago` = `migracion_prueba`.`dt_forma_pago`.`id_forma_pago`)))
+                    order by
+                        `migracion_prueba`.`dt_factura`.`n_factura`,
+                        `migracion_prueba`.`dt_factura`.`id_factura`;
+                    
+                    
+                    -- migracion_prueba.vw_entradas_alm source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_entradas_alm` AS
+                    select
+                        `r`.`id_rotacion` AS `id_rotacion`,
+                        `r`.`id_tipo_rotacion` AS `id_tipo_rotacion`,
+                        `r`.`n_rotacion` AS `n_rotacion`,
+                        `c`.`n_compra` AS `n_compra`,
+                        `r`.`factura` AS `factura`,
+                        `r`.`n_remision_prov` AS `n_remision_prov`,
+                        `c`.`n_ordenes` AS `n_ordenes`,
+                        `i`.`producto` AS `producto`,
+                        `r`.`estado` AS `estado`,
+                        format(sum(`r`.`cantidad`), 2) AS `cantidad`
+                    from
+                        ((`migracion_prueba`.`dt_rotacion` `r`
+                    left join `migracion_prueba`.`dt_compras` `c` on
+                        ((`r`.`id_compra` = `c`.`id_compras`)))
+                    join `migracion_prueba`.`dt_inventario` `i` on
+                        ((`r`.`cod_prod` = `i`.`codigo_prod`)))
+                    where
+                        (`r`.`id_tipo_rotacion` in (9, 25, 26))
+                    group by
+                        `c`.`n_ordenes`,
+                        `r`.`n_rotacion`
+                    order by
+                        `r`.`n_rotacion` desc;
+                    
+                    
+                    
+                    
+                    
+                    -- migracion_prueba.vw_existencias_almacen source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_existencias_almacen` AS
+                    select
+                        `ia`.`id_inventarioxarea` AS `id_inventarioxarea`,
+                        `ia`.`stock` AS `stock`,
+                        `m`.`medida` AS `medida`,
+                        `i`.`codigo_prod` AS `codigo_prod`,
+                        `i`.`producto` AS `producto`,
+                        `i`.`valor_total` AS `valor_total`,
+                        `i`.`tiempo_compra` AS `tiempo_compra`
+                    from
+                        ((`migracion_prueba`.`dt_inventario` `i`
+                    join `migracion_prueba`.`dt_medida` `m` on
+                        ((`i`.`id_medida` = `m`.`id_medida`)))
+                    join `migracion_prueba`.`dt_inventarioxarea` `ia` on
+                        ((`ia`.`id_inventario` = `i`.`id_inventario`)))
+                    where
+                        ((`ia`.`id_area` = 12)
+                            and (`i`.`kardex_estado` <> 0)
+                                and (`ia`.`stock` > '0'))
+                    order by
+                        `i`.`producto`;
+                    
+                    
+                    -- migracion_prueba.vw_facturacion_clientes source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_facturacion_clientes` AS
+                    select
+                        `migracion_prueba`.`dt_factura`.`id_factura` AS `id_factura`,
+                        `migracion_prueba`.`dt_factura`.`n_factura` AS `n_factura`,
+                        `migracion_prueba`.`dt_factura`.`fecha_factura` AS `fecha_factura`,
+                        `migracion_prueba`.`dt_factura`.`fecha_vencimiento` AS `fecha_vencimiento`,
+                        `migracion_prueba`.`dt_factura`.`puc_cuenta` AS `puc_cuenta`,
+                        `migracion_prueba`.`dt_clientes`.`nom_empresa` AS `nom_empresa`,
+                        `migracion_prueba`.`dt_factura`.`letra` AS `letra`,
+                        `migracion_prueba`.`dt_factura`.`letra_cta` AS `letra_cta`,
+                        sum(`migracion_prueba`.`dt_factura`.`vr_total`) AS `vr_total`,
+                        sum(`migracion_prueba`.`dt_factura`.`iva`) AS `iva`,
+                        sum(`migracion_prueba`.`dt_factura`.`r_fuente`) AS `r_fuente`,
+                        sum(`migracion_prueba`.`dt_factura`.`r_iva`) AS `r_iva`,
+                        sum(`migracion_prueba`.`dt_factura`.`r_ica`) AS `r_ica`
+                    from
+                        (`migracion_prueba`.`dt_factura`
+                    join `migracion_prueba`.`dt_clientes` on
+                        ((`migracion_prueba`.`dt_clientes`.`id_cliente` = `migracion_prueba`.`dt_factura`.`id_cliente`)))
+                    group by
+                        `migracion_prueba`.`dt_factura`.`n_factura`;
+                    
+                    
+                    -- migracion_prueba.vw_facturas_provedores source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_facturas_provedores` AS
+                    select
+                        `migracion_prueba`.`dt_rotacion`.`id_rotacion` AS `id_rotacion`,
+                        `migracion_prueba`.`dt_factura_proveedor`.`id_factura_proveedor` AS `id_factura_proveedor`,
+                        `migracion_prueba`.`dt_proveedores`.`nit` AS `nit`,
+                        `migracion_prueba`.`dt_rotacion`.`cons_contable` AS `cons_contable`,
+                        `migracion_prueba`.`dt_rotacion`.`letra` AS `letra`,
+                        `migracion_prueba`.`dt_rotacion`.`letra_cta` AS `letra_cta`,
+                        `migracion_prueba`.`dt_factura_proveedor`.`factura` AS `factura`,
+                        `migracion_prueba`.`dt_factura_proveedor`.`n_ordenes` AS `n_ordenes`,
+                        `migracion_prueba`.`dt_proveedores`.`empresa` AS `empresa`,
+                        `migracion_prueba`.`dt_factura_proveedor`.`puc_prodrt` AS `puc_prodrt`,
+                        `migracion_prueba`.`dt_factura_proveedor`.`puc_ivart` AS `puc_ivart`,
+                        `migracion_prueba`.`dt_factura_proveedor`.`puc_rtftert` AS `puc_rtftert`,
+                        `migracion_prueba`.`dt_factura_proveedor`.`puc_rtivart` AS `puc_rtivart`,
+                        `migracion_prueba`.`dt_factura_proveedor`.`puc_rticart` AS `puc_rticart`,
+                        sum(`migracion_prueba`.`dt_factura_proveedor`.`valor`) AS `valor`,
+                        sum(`migracion_prueba`.`dt_factura_proveedor`.`iva_rt`) AS `iva_rt`,
+                        sum(`migracion_prueba`.`dt_factura_proveedor`.`rtfte_rt`) AS `rtfte_rt`,
+                        sum(`migracion_prueba`.`dt_factura_proveedor`.`rtiva_rt`) AS `rtiva_rt`,
+                        `migracion_prueba`.`dt_factura_proveedor`.`fecha_factura` AS `fecha_factura`,
+                        `migracion_prueba`.`dt_factura_proveedor`.`fecha_vencimiento` AS `fecha_vencimiento`,
+                        `migracion_prueba`.`dt_compras`.`detalle_oc` AS `detalle_oc`,
+                        sum(`migracion_prueba`.`dt_rotacion`.`vr_total`) AS `vr_total`,
+                        `migracion_prueba`.`dt_compras`.`puc_id` AS `puc_id`,
+                        `migracion_prueba`.`dt_factura_proveedor`.`fecha_creacion` AS `fecha_creacion`
+                    from
+                        (((`migracion_prueba`.`dt_rotacion`
+                    join `migracion_prueba`.`dt_factura_proveedor` on
+                        ((`migracion_prueba`.`dt_rotacion`.`factura_proveedor` = `migracion_prueba`.`dt_factura_proveedor`.`factura`)))
+                    join `migracion_prueba`.`dt_compras` on
+                        ((`migracion_prueba`.`dt_compras`.`id_compras` = `migracion_prueba`.`dt_rotacion`.`id_compra`)))
+                    join `migracion_prueba`.`dt_proveedores` on
+                        ((`migracion_prueba`.`dt_compras`.`id_proveedores` = `migracion_prueba`.`dt_proveedores`.`id_proveedores`)))
+                    where
+                        (`migracion_prueba`.`dt_factura_proveedor`.`estado` <> 2)
+                    group by
+                        `migracion_prueba`.`dt_factura_proveedor`.`id_factura_proveedor`,
+                        `migracion_prueba`.`dt_compras`.`detalle_oc`
+                    order by
+                        `migracion_prueba`.`dt_rotacion`.`cons_contable`,
+                        `migracion_prueba`.`dt_rotacion`.`fecha_legalizacion`;
+                    
+                    
+                    -- migracion_prueba.vw_gantt_g_r source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_gantt_g_r` AS
+                    select
+                        `migracion_prueba`.`dt_actividades`.`actividad` AS `actividad`,
+                        `migracion_prueba`.`dt_actividades`.`fecha_inicio` AS `fecha_inicio`,
+                        `migracion_prueba`.`dt_actividades`.`fecha_fin` AS `fecha_fin`,
+                        `migracion_prueba`.`dt_actividades`.`orden` AS `orden`,
+                        `migracion_prueba`.`dt_actividades`.`id_comite_g_r` AS `id_comite_g_r`,
+                        (case
+                            when (`migracion_prueba`.`dt_actividades`.`tipo` = 1) then 'FORMA'
+                            when (`migracion_prueba`.`dt_actividades`.`tipo` = 2) then 'FONDO'
+                            else 'N/A'
+                        end) AS `tipo`,
+                        concat(`migracion_prueba`.`dt_usuarios`.`nombre_usuario`, ' ', `migracion_prueba`.`dt_usuarios`.`apellido_usuario`) AS `nombre_usuario`
+                    from
+                        ((`migracion_prueba`.`dt_actividades`
+                    join `migracion_prueba`.`user` on
+                        ((`migracion_prueba`.`dt_actividades`.`responsable` = `migracion_prueba`.`user`.`id`)))
+                    join `migracion_prueba`.`dt_usuarios` on
+                        ((`migracion_prueba`.`user`.`id_empleado` = `migracion_prueba`.`dt_usuarios`.`id_usuario`)))
+                    order by
+                        `migracion_prueba`.`dt_actividades`.`tipo`,
+                        `migracion_prueba`.`dt_actividades`.`fecha_inicio`;
+                    
+                    
+                    -- migracion_prueba.vw_gantt_g_r_f source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_gantt_g_r_f` AS
+                    select
+                        `migracion_prueba`.`dt_actividades_f`.`actividad` AS `actividad`,
+                        `migracion_prueba`.`dt_actividades_f`.`fecha_inicio` AS `fecha_inicio`,
+                        `migracion_prueba`.`dt_actividades_f`.`fecha_fin` AS `fecha_fin`,
+                        `migracion_prueba`.`dt_actividades_f`.`orden` AS `orden`,
+                        `migracion_prueba`.`dt_actividades_f`.`id_comite_g_r_f` AS `id_comite_g_r`,
+                        (case
+                            when (`migracion_prueba`.`dt_actividades_f`.`tipo` = 1) then 'FORMA'
+                            when (`migracion_prueba`.`dt_actividades_f`.`tipo` = 2) then 'FONDO'
+                            else 'N/A'
+                        end) AS `tipo`,
+                        concat(`migracion_prueba`.`dt_usuarios`.`nombre_usuario`, ' ', `migracion_prueba`.`dt_usuarios`.`apellido_usuario`) AS `nombre_usuario`
+                    from
+                        ((`migracion_prueba`.`dt_actividades_f`
+                    join `migracion_prueba`.`user` on
+                        ((`migracion_prueba`.`dt_actividades_f`.`responsable` = `migracion_prueba`.`user`.`id`)))
+                    join `migracion_prueba`.`dt_usuarios` on
+                        ((`migracion_prueba`.`user`.`id_empleado` = `migracion_prueba`.`dt_usuarios`.`id_usuario`)))
+                    order by
+                        `migracion_prueba`.`dt_actividades_f`.`tipo`,
+                        `migracion_prueba`.`dt_actividades_f`.`fecha_inicio`;
+                    
+                    
+                    -- migracion_prueba.vw_historico_ft source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_historico_ft` AS
+                    select
+                        `migracion_prueba`.`dt_historico_ft`.`id_historico_ft` AS `id_historico_ft`,
+                        `migracion_prueba`.`dt_programacion_diseno`.`cod` AS `cod`,
+                        `migracion_prueba`.`dt_estructura_p_diseno`.`grupo` AS `grupo`,
+                        `migracion_prueba`.`dt_historico_ft`.`tipo` AS `tipo`,
+                        `migracion_prueba`.`dt_programacion_diseno`.`n_programacion` AS `n_programacion`,
+                        (case
+                            when (`migracion_prueba`.`dt_historico_ft`.`tipo` = 1) then 'Foto'
+                            when (`migracion_prueba`.`dt_historico_ft`.`tipo` = 2) then 'Archivo'
+                            else 'N/A'
+                        end) AS `tipo_nombre`,
+                        `migracion_prueba`.`dt_historico_ft`.`fecha_registro` AS `fecha_registro`,
+                        `migracion_prueba`.`dt_historico_ft`.`ruta` AS `ruta`,
+                        `migracion_prueba`.`dt_historico_ft`.`recurso` AS `recurso`,
+                        `migracion_prueba`.`dt_historico_ft`.`observaciones` AS `observaciones`,
+                        `migracion_prueba`.`user`.`nombre_usuario` AS `nombre_usuario`
+                    from
+                        (((`migracion_prueba`.`dt_estructura_p_diseno`
+                    join `migracion_prueba`.`dt_programacion_diseno` on
+                        ((`migracion_prueba`.`dt_estructura_p_diseno`.`id_programacion_diseno` = `migracion_prueba`.`dt_programacion_diseno`.`id_programacion_diseno`)))
+                    join `migracion_prueba`.`dt_historico_ft` on
+                        ((`migracion_prueba`.`dt_historico_ft`.`id_estructura_p_diseno` = `migracion_prueba`.`dt_estructura_p_diseno`.`id_estructura_p_diseno`)))
+                    join `migracion_prueba`.`user` on
+                        ((`migracion_prueba`.`dt_historico_ft`.`id_user` = `migracion_prueba`.`user`.`id`)));
+                    
+                    
+                    -- migracion_prueba.vw_home_materiales source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_home_materiales` AS
+                    select
+                        `c`.`id_costo` AS `id_costo`,
+                        `c`.`n_ordenes` AS `n_ordenes`,
+                        `g`.`grupo` AS `grupo`,
+                        `c`.`cod_material` AS `cod_material`,
+                        `c`.`nombre_costo` AS `nombre_costo`,
+                        `c`.`cant_sol` AS `cant_sol`,
+                        `i`.`id_inventario` AS `id_inventario`,
+                        `o`.`id_ordenes` AS `id_ordenes`,
+                        `o`.`id_proyecto_op` AS `id_proyecto_op`,
+                        `p`.`id_macro_proyecto` AS `id_macro_proyecto`
+                    from
+                        ((((`migracion_prueba`.`dt_costos` `c`
+                    join `migracion_prueba`.`dt_inventario` `i` on
+                        ((`c`.`cod_material` = `i`.`codigo_prod`)))
+                    join `migracion_prueba`.`dt_grupoinventario` `g` on
+                        ((`i`.`id_subgrupo` = `g`.`id_grupo_inventario`)))
+                    join `migracion_prueba`.`dt_ordenes` `o` on
+                        ((`o`.`id_ordenes` = `c`.`id_ordenes`)))
+                    join `migracion_prueba`.`dt_proyecto_op` `p` on
+                        ((`o`.`id_proyecto_op` = `p`.`id_proyecto_op`)))
+                    where
+                        ((`c`.`id_tipo_costo` = 1)
+                            and (`c`.`estado` <> 0))
+                    group by
+                        `c`.`id_costo`
+                    order by
+                        `c`.`nombre_costo`;
+                    
+                    
+                    -- migracion_prueba.vw_informe_codproducto source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_informe_codproducto` AS
+                    select
+                        `migracion_prueba`.`dt_codprodfinal`.`id_codprodfinal` AS `id_codprodfinal`,
+                        `migracion_prueba`.`dt_codprodfinal`.`cod` AS `cod`,
+                        `migracion_prueba`.`dt_categoria`.`nombre_categoria` AS `nombre_categoria`,
+                        `migracion_prueba`.`dt_codprodfinal`.`nom_codigo` AS `nom_codigo`,
+                        `migracion_prueba`.`dt_codprodfinal`.`tam_x` AS `tam_x`,
+                        `migracion_prueba`.`dt_codprodfinal`.`tam_y` AS `tam_y`,
+                        `migracion_prueba`.`dt_codprodfinal`.`tam_z` AS `tam_z`,
+                        `migracion_prueba`.`dt_codprodfinal`.`tam_l` AS `tam_l`,
+                        (case
+                            when (`migracion_prueba`.`dt_codprodfinal`.`tipo_producto` = 1) then 'A'
+                            when (`migracion_prueba`.`dt_codprodfinal`.`tipo_producto` = 2) then 'B'
+                            when (`migracion_prueba`.`dt_codprodfinal`.`tipo_producto` = 3) then 'C'
+                            else 'N/A'
+                        end) AS `tipo_producto`,
+                        (case
+                            when (`migracion_prueba`.`dt_codprodfinal`.`tipo_presupuesto` = 0) then 'Cantidad'
+                            when (`migracion_prueba`.`dt_codprodfinal`.`tipo_presupuesto` = 1) then 'Metro Cuadrado'
+                            when (`migracion_prueba`.`dt_codprodfinal`.`tipo_presupuesto` = 2) then 'Metro Lineal'
+                            when (`migracion_prueba`.`dt_codprodfinal`.`tipo_presupuesto` = 3) then 'Metro Cúbico'
+                            else 'N/A'
+                        end) AS `tipo_presupuesto`,
+                        `migracion_prueba`.`dt_clientes`.`nom_empresa` AS `nom_empresa`
+                    from
+                        ((`migracion_prueba`.`dt_codprodfinal`
+                    join `migracion_prueba`.`dt_categoria` on
+                        ((`migracion_prueba`.`dt_codprodfinal`.`id_categoria` = `migracion_prueba`.`dt_codprodfinal`.`id_categoria`)))
+                    join `migracion_prueba`.`dt_clientes` on
+                        ((`migracion_prueba`.`dt_clientes`.`id_cliente` = `migracion_prueba`.`dt_codprodfinal`.`id_cliente`)));
+                    
+                    
+                    -- migracion_prueba.vw_informe_factura source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_informe_factura` AS
+                    select
+                        `migracion_prueba`.`dt_factura`.`fecha_creacion` AS `fecha_creacion`,
+                        `migracion_prueba`.`dt_factura`.`n_factura` AS `n_factura`,
+                        `migracion_prueba`.`dt_clientes`.`nom_empresa` AS `nom_empresa`,
+                        `migracion_prueba`.`dt_clientes`.`nit` AS `nit`,
+                        `migracion_prueba`.`dt_clientes`.`dig_verificacion` AS `dig_verificacion`,
+                        `migracion_prueba`.`user`.`nombre_usuario` AS `nombre_usuario`,
+                        `migracion_prueba`.`dt_factura`.`n_ordenes` AS `n_ordenes`,
+                        `migracion_prueba`.`dt_factura`.`cantidad` AS `cantidad`,
+                        `migracion_prueba`.`dt_factura`.`valor_bruto` AS `valor_bruto`,
+                        sum(`migracion_prueba`.`dt_factura`.`iva`) AS `iva`,
+                        sum(`migracion_prueba`.`dt_factura`.`r_fuente`) AS `r_fuente`,
+                        sum(`migracion_prueba`.`dt_factura`.`r_ica`) AS `r_ica`,
+                        sum(`migracion_prueba`.`dt_factura`.`r_iva`) AS `r_iva`,
+                        sum(`migracion_prueba`.`dt_factura`.`descuento`) AS `descuento`,
+                        sum(`migracion_prueba`.`dt_factura`.`anticipo`) AS `anticipo`
+                    from
+                        ((`migracion_prueba`.`dt_factura`
+                    join `migracion_prueba`.`dt_clientes` on
+                        ((`migracion_prueba`.`dt_factura`.`id_cliente` = `migracion_prueba`.`dt_clientes`.`id_cliente`)))
+                    join `migracion_prueba`.`user` on
+                        ((`migracion_prueba`.`dt_factura`.`id_vendedor` = `migracion_prueba`.`user`.`id`)))
+                    group by
+                        `migracion_prueba`.`dt_factura`.`n_factura`;
+                    
+                    
+                    -- migracion_prueba.vw_informe_general_cabina source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_informe_general_cabina` AS
+                    select
+                        `migracion_prueba`.`dt_ordenes`.`id_ordenes` AS `id_ordenes`,
+                        `migracion_prueba`.`dt_ordenes`.`n_ordenes` AS `n_ordenes`,
+                        `migracion_prueba`.`dt_ordenes`.`referencia` AS `referencia`,
+                        `migracion_prueba`.`dt_ordenes`.`cod` AS `cod`,
+                        `migracion_prueba`.`dt_ordenes`.`item_op` AS `item_op`,
+                        `migracion_prueba`.`dt_ordenes`.`id_codprodfinal` AS `id_codprodfinal`,
+                        `migracion_prueba`.`dt_ordenes`.`id_categoria` AS `id_categoria`,
+                        `migracion_prueba`.`dt_ordenes`.`id_subcategoria` AS `id_subcategoria`,
+                        `migracion_prueba`.`dt_ordenes`.`cobro` AS `cobro`,
+                        `migracion_prueba`.`dt_ordenes`.`archivo` AS `archivo`,
+                        `migracion_prueba`.`dt_ordenes`.`cantidad` AS `cantidad`,
+                        `migracion_prueba`.`dt_proyecto_op`.`nombre_proyecto` AS `nombre_proyecto`,
+                        `migracion_prueba`.`dt_macro_proyecto`.`nombre_proyecto` AS `macro_proyecto`,
+                        `migracion_prueba`.`dt_ordenes`.`ref_general` AS `nombre_op`,
+                        `migracion_prueba`.`dt_clientes`.`nom_empresa` AS `nom_empresa`,
+                        date_format(`migracion_prueba`.`dt_fechas_op`.`fecha_registro`, '%d - %b - %Y') AS `fecha_registro`,
+                        date_format(`migracion_prueba`.`dt_fechas_op`.`fecha_ft`, '%d - %b - %Y') AS `fecha_ft`,
+                        date_format(`migracion_prueba`.`dt_fechas_op`.`fecha_gantt`, '%d - %b - %Y') AS `fecha_gantt`,
+                        date_format(`migracion_prueba`.`dt_fechas_op`.`fecha_costos`, '%d - %b - %Y') AS `fecha_costos`,
+                        date_format(`migracion_prueba`.`dt_fechas_op`.`fecha_produccion`, '%d - %b - %Y') AS `fecha_produccion`,
+                        date_format(`migracion_prueba`.`dt_fechas_op`.`fecha_contractual`, '%d - %b - %Y') AS `fecha_contractual`,
+                        date_format(`migracion_prueba`.`dt_fechas_op`.`fecha_trans_inst`, '%d - %b - %Y') AS `fecha_trans_inst`,
+                        date_format(`migracion_prueba`.`dt_fechas_op`.`fecha_instalacion`, '%d - %b - %Y') AS `fecha_instalacion`,
+                        date_format(`migracion_prueba`.`dt_fechas_op`.`fecha_finstalacion`, '%d - %b - %Y') AS `fecha_finstalacion`,
+                        date_format(`migracion_prueba`.`dt_fechas_op`.`fecha_aprobacion_admi`, '%d - %b - %Y') AS `fecha_aprobacion_admi`,
+                        `migracion_prueba`.`user`.`nombre_usuario` AS `nombre_usuario`,
+                        `migracion_prueba`.`dt_ordenes`.`estado` AS `estado_op`,
+                        `migracion_prueba`.`dt_ordenes`.`v_total` AS `v_total`,
+                        `migracion_prueba`.`dt_costos`.`cierre` AS `cierre`
+                    from
+                        ((((((`migracion_prueba`.`dt_ordenes`
+                    join `migracion_prueba`.`dt_clientes` on
+                        ((`migracion_prueba`.`dt_clientes`.`id_cliente` = `migracion_prueba`.`dt_ordenes`.`id_cliente`)))
+                    left join `migracion_prueba`.`dt_proyecto_op` on
+                        ((`migracion_prueba`.`dt_proyecto_op`.`id_proyecto_op` = `migracion_prueba`.`dt_ordenes`.`id_proyecto_op`)))
+                    left join `migracion_prueba`.`dt_macro_proyecto` on
+                        ((`migracion_prueba`.`dt_macro_proyecto`.`id_macro_proyecto` = `migracion_prueba`.`dt_proyecto_op`.`id_macro_proyecto`)))
+                    left join `migracion_prueba`.`dt_fechas_op` on
+                        ((`migracion_prueba`.`dt_fechas_op`.`id_ordenes` = `migracion_prueba`.`dt_ordenes`.`id_ordenes`)))
+                    left join `migracion_prueba`.`user` on
+                        ((`migracion_prueba`.`user`.`id` = `migracion_prueba`.`dt_ordenes`.`id_coordinador`)))
+                    left join `migracion_prueba`.`dt_costos` on
+                        ((`migracion_prueba`.`dt_costos`.`id_ordenes` = `migracion_prueba`.`dt_ordenes`.`id_ordenes`)));
+                    
+                    
+                    -- migracion_prueba.vw_informe_presupuesto source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_informe_presupuesto` AS
+                    select
+                        `migracion_prueba`.`dt_presupuesto_inicial`.`id_presupuesto_inicial` AS `id_presupuesto_inicial`,
+                        `migracion_prueba`.`dt_presupuesto_inicial`.`n_ordenes` AS `n_ordenes`,
+                        `migracion_prueba`.`dt_ordenes`.`referencia` AS `referencia`,
+                        `migracion_prueba`.`dt_ordenes`.`item_op` AS `item_op`,
+                        `migracion_prueba`.`dt_ordenes`.`localizacion` AS `localizacion`,
+                        `migracion_prueba`.`dt_ordenes`.`cantidad` AS `cantidad`,
+                        `migracion_prueba`.`dt_macro_proyecto`.`nombre_proyecto` AS `macro_proyecto`,
+                        `migracion_prueba`.`dt_proyecto_op`.`nombre_proyecto` AS `nombre_proyecto`,
+                        `migracion_prueba`.`dt_ordenes`.`ref_general` AS `nombre_op`,
+                        `migracion_prueba`.`dt_fechas_op`.`fecha_ingreso` AS `fecha_ingreso`,
+                        (case
+                            when ((`migracion_prueba`.`dt_proyecto_op`.`id_proyecto_op` is null)
+                            or (((((`migracion_prueba`.`dt_presupuesto_inicial`.`total_materia_prima` + `migracion_prueba`.`dt_presupuesto_inicial`.`total_mano_obra`) + `migracion_prueba`.`dt_presupuesto_inicial`.`total_terceros`) + `migracion_prueba`.`dt_presupuesto_inicial`.`total_viaticos`) + `migracion_prueba`.`dt_presupuesto_inicial`.`total_otros_directos`) <= 0)) then 'Pendiente'
+                            else 'OK'
+                        end) AS `estado`,
+                        `migracion_prueba`.`dt_presupuesto_inicial`.`fecha_creacion` AS `fecha_creacion`,
+                        `migracion_prueba`.`dt_presupuesto_inicial`.`total_materia_prima` AS `total_materia_prima`,
+                        `migracion_prueba`.`dt_presupuesto_inicial`.`total_mano_obra` AS `total_mano_obra`,
+                        `migracion_prueba`.`dt_presupuesto_inicial`.`total_transporte` AS `total_transporte`,
+                        `migracion_prueba`.`dt_presupuesto_inicial`.`total_terceros` AS `total_terceros`,
+                        `migracion_prueba`.`dt_presupuesto_inicial`.`total_viaticos` AS `total_viaticos`,
+                        `migracion_prueba`.`dt_presupuesto_inicial`.`total_otros_directos` AS `total_otros_directos`,
+                        `migracion_prueba`.`dt_presupuesto_inicial`.`total_materia_prima_p` AS `total_materia_prima_p`,
+                        `migracion_prueba`.`dt_presupuesto_inicial`.`total_mano_obra_p` AS `total_mano_obra_p`,
+                        `migracion_prueba`.`dt_presupuesto_inicial`.`total_transporte_p` AS `total_transporte_p`,
+                        `migracion_prueba`.`dt_presupuesto_inicial`.`total_terceros_p` AS `total_terceros_p`,
+                        `migracion_prueba`.`dt_presupuesto_inicial`.`total_viaticos_p` AS `total_viaticos_p`,
+                        `migracion_prueba`.`dt_presupuesto_inicial`.`total_otros_directos_p` AS `total_otros_directos_p`,
+                        `migracion_prueba`.`dt_presupuesto_inicial`.`estado` AS `estado_ppto`
+                    from
+                        ((((`migracion_prueba`.`dt_presupuesto_inicial`
+                    left join `migracion_prueba`.`dt_ordenes` on
+                        ((`migracion_prueba`.`dt_presupuesto_inicial`.`id_ordenes` = `migracion_prueba`.`dt_ordenes`.`id_ordenes`)))
+                    left join `migracion_prueba`.`dt_fechas_op` on
+                        ((`migracion_prueba`.`dt_fechas_op`.`id_ordenes` = `migracion_prueba`.`dt_ordenes`.`id_ordenes`)))
+                    left join `migracion_prueba`.`dt_proyecto_op` on
+                        ((`migracion_prueba`.`dt_proyecto_op`.`id_proyecto_op` = `migracion_prueba`.`dt_ordenes`.`id_proyecto_op`)))
+                    left join `migracion_prueba`.`dt_macro_proyecto` on
+                        ((`migracion_prueba`.`dt_macro_proyecto`.`id_macro_proyecto` = `migracion_prueba`.`dt_proyecto_op`.`id_macro_proyecto`)));
+                    
+                    
+                    -- migracion_prueba.vw_informe_produccion source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_informe_produccion` AS
+                    select
+                        `c`.`n_ordenes` AS `OP`,
+                        `c`.`cod_material` AS `Codigo Material`,
+                        `c`.`nombre_costo` AS `Material`,
+                        round(sum(`c`.`cant_sol`), 3) AS `Cantidad Costeada`,
+                        sum((case when (`r`.`id_tipo_rotacion` = 25) then `r`.`cantidad` else (`r`.`cantidad` = 0) end)) AS `Entregado_por_Almacen`,
+                        sum((case when (`r`.`id_tipo_rotacion` = 26) then `r`.`cantidad` else (`r`.`cantidad` = 0) end)) AS `DescargadoporOP`,
+                        (round(sum(`c`.`cant_sol`), 3) - sum((case when (`r`.`id_tipo_rotacion` = 26) then `r`.`cantidad` else (`r`.`cantidad` = 0) end))) AS `Saldo`
+                    from
+                        (`migracion_prueba`.`dt_costos` `c`
+                    left join `migracion_prueba`.`dt_rotacion` `r` on
+                        ((`c`.`id_costo` = `r`.`id_costo`)));
+                    
+                    
+                    -- migracion_prueba.vw_informe_produccion3 source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_informe_produccion3` AS
+                    select
+                        `c`.`n_ordenes` AS `op`,
+                        `c`.`cod_material` AS `codigo_material`,
+                        `c`.`nombre_costo` AS `Material`,
+                        round(sum(`c`.`cant_sol`), 3) AS `cantidad_costeada`,
+                        sum((case when (`r`.`id_tipo_rotacion` = 25) then `r`.`cantidad` else (`r`.`cantidad` = 0) end)) AS `entregado_por_almacen`,
+                        sum((case when (`r`.`id_tipo_rotacion` = 26) then `r`.`cantidad` else (`r`.`cantidad` = 0) end)) AS `descargado_por_op`,
+                        (round(sum(`c`.`cant_sol`), 3) - sum((case when (`r`.`id_tipo_rotacion` = 26) then `r`.`cantidad` else (`r`.`cantidad` = 0) end))) AS `saldo`
+                    from
+                        (`migracion_prueba`.`dt_costos` `c`
+                    left join `migracion_prueba`.`dt_rotacion` `r` on
+                        ((`c`.`id_costo` = `r`.`id_costo`)))
+                    where
+                        (`c`.`id_tipo_costo` = 1)
+                    group by
+                        `c`.`nombre_costo`;
+                    
+                    
+                    -- migracion_prueba.vw_legalizacion_acabados source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_legalizacion_acabados` AS
+                    select
+                        `dc`.`id_costo` AS `id_costo`,
+                        `do`.`id_cliente` AS `id_cliente`,
+                        `cl`.`nom_empresa` AS `cliente`,
+                        `mc`.`nombre_proyecto` AS `macro_proyecto`,
+                        `dpo`.`id_proyecto_op` AS `id_proyecto_op`,
+                        `dpo`.`nombre_proyecto` AS `nombre_proyecto`,
+                        `tc`.`tipo` AS `tipo_costo`,
+                        `do`.`ref_general` AS `nombre_op`,
+                        `do`.`n_ordenes` AS `n_ordenes`,
+                        `do`.`estado` AS `estado`,
+                        `do`.`id_ordenes` AS `id_ordenes`,
+                        `dc`.`nombre_costo` AS `nombre_costo`,
+                        `dc`.`id_clase_costo` AS `id_clase_costo`,
+                        `dc`.`cant_sol` AS `cant_sol`,
+                        `dc`.`id_tipo_costo` AS `id_tipo_costo`,
+                        `dc`.`valor_total` AS `valor_total`,
+                        `dc`.`comentarios` AS `comentarios`,
+                        `dc`.`saldo_compra` AS `saldo_compra`,
+                        `dc`.`valor_unit` AS `valor_unit`,
+                        `dc`.`vr_unid` AS `vr_unid`,
+                        `do`.`item_op` AS `item_op`,
+                        `fc`.`fecha_ingreso` AS `fecha_ingreso`,
+                        `fc`.`fecha_produccion` AS `fecha_produccion`,
+                        `dc`.`cierre` AS `cierre`
+                    from
+                        ((((((`migracion_prueba`.`dt_costos` `dc`
+                    left join `migracion_prueba`.`dt_ordenes` `do` on
+                        ((`dc`.`id_ordenes` = `do`.`id_ordenes`)))
+                    join `migracion_prueba`.`dt_proyecto_op` `dpo` on
+                        ((`do`.`id_proyecto_op` = `dpo`.`id_proyecto_op`)))
+                    join `migracion_prueba`.`dt_macro_proyecto` `mc` on
+                        ((`dpo`.`id_macro_proyecto` = `mc`.`id_macro_proyecto`)))
+                    join `migracion_prueba`.`dt_tipo_costo` `tc` on
+                        ((`dc`.`id_tipo_costo` = `tc`.`id_tipo_costo`)))
+                    join `migracion_prueba`.`dt_clientes` `cl` on
+                        ((`cl`.`id_cliente` = `do`.`id_cliente`)))
+                    left join `migracion_prueba`.`dt_fechas_op` `fc` on
+                        ((`fc`.`id_ordenes` = `do`.`id_ordenes`)))
+                    where
+                        ((`dc`.`id_tipo_costo` <> 1)
+                            and (`dc`.`saldo_compra` > 0)
+                                and (year(`dc`.`fecha_ingreso`) in (2022, 2023, 2024)))
+                    group by
+                        `dc`.`id_costo`;
+                    
+                    
+                    -- migracion_prueba.vw_materia_prima_area source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_materia_prima_area` AS
+                    select
+                        `migracion_prueba`.`dt_inventarioxarea`.`codigo_prod` AS `codigo_prod`,
+                        `migracion_prueba`.`dt_inventario`.`producto` AS `producto`,
+                        `migracion_prueba`.`dt_inventarioxarea`.`stock` AS `stock`,
+                        `migracion_prueba`.`dt_inventarioxarea`.`id_area` AS `id_area`,
+                        `migracion_prueba`.`dt_area`.`nombre` AS `nombre`
+                    from
+                        ((`migracion_prueba`.`dt_inventarioxarea`
+                    join `migracion_prueba`.`dt_inventario` on
+                        ((`migracion_prueba`.`dt_inventarioxarea`.`codigo_prod` = `migracion_prueba`.`dt_inventario`.`codigo_prod`)))
+                    join `migracion_prueba`.`dt_area` on
+                        ((`migracion_prueba`.`dt_inventarioxarea`.`id_area` = `migracion_prueba`.`dt_area`.`id_area`)));
+                    
+                    
+                    -- migracion_prueba.vw_materiales_item source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_materiales_item` AS
+                    select
+                        `migracion_prueba`.`dt_ordenes`.`referencia` AS `referencia`,
+                        `migracion_prueba`.`dt_ordenes`.`cantidad` AS `cantidad_op`,
+                        `migracion_prueba`.`dt_ordenes`.`n_ordenes` AS `n_ordenes`,
+                        `migracion_prueba`.`dt_ordenes`.`item_op` AS `item_op`,
+                        `migracion_prueba`.`dt_costos`.`id_ordenes` AS `id_ordenes`,
+                        `migracion_prueba`.`dt_costos`.`cod_material` AS `cod_material`,
+                        `migracion_prueba`.`dt_costos`.`nombre_costo` AS `nombre_costo`,
+                        truncate(sum(`migracion_prueba`.`dt_costos`.`cant_sol`), 2) AS `cantidad`
+                    from
+                        (`migracion_prueba`.`dt_costos`
+                    join `migracion_prueba`.`dt_ordenes` on
+                        ((`migracion_prueba`.`dt_costos`.`id_ordenes` = `migracion_prueba`.`dt_ordenes`.`id_ordenes`)))
+                    where
+                        (`migracion_prueba`.`dt_costos`.`id_tipo_costo` = 1)
+                    group by
+                        `migracion_prueba`.`dt_costos`.`id_ordenes`,
+                        `migracion_prueba`.`dt_costos`.`cod_material`
+                    order by
+                        `migracion_prueba`.`dt_costos`.`id_ordenes`,
+                        `migracion_prueba`.`dt_costos`.`nombre_costo`;
+                    
+                    
+                    -- migracion_prueba.vw_materiales_op source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_materiales_op` AS
+                    select
+                        `migracion_prueba`.`dt_ordenes`.`ref_general` AS `ref_general`,
+                        `migracion_prueba`.`dt_costos`.`n_ordenes` AS `n_ordenes`,
+                        `migracion_prueba`.`dt_costos`.`cod_material` AS `cod_material`,
+                        `migracion_prueba`.`dt_costos`.`nombre_costo` AS `nombre_costo`,
+                        truncate(sum(`migracion_prueba`.`dt_costos`.`cant_sol`), 2) AS `cantidad`
+                    from
+                        (`migracion_prueba`.`dt_costos`
+                    join `migracion_prueba`.`dt_ordenes` on
+                        ((`migracion_prueba`.`dt_costos`.`id_ordenes` = `migracion_prueba`.`dt_ordenes`.`id_ordenes`)))
+                    where
+                        (`migracion_prueba`.`dt_costos`.`id_tipo_costo` = 1)
+                    group by
+                        `migracion_prueba`.`dt_costos`.`cod_material`,
+                        `migracion_prueba`.`dt_costos`.`n_ordenes`
+                    order by
+                        `migracion_prueba`.`dt_costos`.`nombre_costo`;
+                    
+                    
+                    -- migracion_prueba.vw_movimientos_x_mp source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_movimientos_x_mp` AS
+                    select
+                        `migracion_prueba`.`dt_rotacion`.`cod_prod` AS `cod_prod`,
+                        `migracion_prueba`.`dt_rotacion`.`n_rotacion` AS `n_rotacion`,
+                        `migracion_prueba`.`dt_compras`.`n_compra` AS `n_compra`,
+                        `migracion_prueba`.`dt_rotacion`.`factura_proveedor` AS `factura_proveedor`,
+                        `migracion_prueba`.`dt_rotacion`.`id_tipo_rotacion` AS `id_tipo_rotacion`,
+                        (case
+                            when (`migracion_prueba`.`dt_rotacion`.`id_tipo_rotacion` = 1) then 'ENTRADA'
+                            when (`migracion_prueba`.`dt_rotacion`.`id_tipo_rotacion` = 2) then 'REPOSICION'
+                            when (`migracion_prueba`.`dt_rotacion`.`id_tipo_rotacion` = 3) then 'SALIDA'
+                            when (`migracion_prueba`.`dt_rotacion`.`id_tipo_rotacion` = 4) then 'ENTRADA PROPIEDAD CLIENTE'
+                            when (`migracion_prueba`.`dt_rotacion`.`id_tipo_rotacion` = 5) then 'REPOSICION PROPIEDAD CLIENTE'
+                            when (`migracion_prueba`.`dt_rotacion`.`id_tipo_rotacion` = 6) then 'SALIDA PROPIEDAD CLIENTE'
+                            when (`migracion_prueba`.`dt_rotacion`.`id_tipo_rotacion` = 7) then 'TRASLADO X OP AL AREA'
+                            when (`migracion_prueba`.`dt_rotacion`.`id_tipo_rotacion` = 8) then 'ENTRADA ACTIVO FIJO'
+                            when (`migracion_prueba`.`dt_rotacion`.`id_tipo_rotacion` = 9) then 'ENTRADA CON OC'
+                            when (`migracion_prueba`.`dt_rotacion`.`id_tipo_rotacion` = 10) then 'SALIDA ACTIVO FIJO'
+                            when (`migracion_prueba`.`dt_rotacion`.`id_tipo_rotacion` = 11) then 'BAJAS ACTIVO FIJO'
+                            when (`migracion_prueba`.`dt_rotacion`.`id_tipo_rotacion` = 12) then 'REPOSICION ACTIVO FIJO'
+                            when (`migracion_prueba`.`dt_rotacion`.`id_tipo_rotacion` = 13) then 'ORDEN DE SERVICIO'
+                            when (`migracion_prueba`.`dt_rotacion`.`id_tipo_rotacion` = 14) then 'ENTRADA AJUSTE INVENTARIO'
+                            when (`migracion_prueba`.`dt_rotacion`.`id_tipo_rotacion` = 15) then 'SALIDA AJUSTE INVENTARIO'
+                            when (`migracion_prueba`.`dt_rotacion`.`id_tipo_rotacion` = 16) then 'DEVOLUCION MATERIAL OK'
+                            when (`migracion_prueba`.`dt_rotacion`.`id_tipo_rotacion` = 17) then 'DEVOLUCION MATERIAL DEFECTUOSO'
+                            when (`migracion_prueba`.`dt_rotacion`.`id_tipo_rotacion` = 19) then 'SALIDA X Nota Cr&eacute;dito'
+                            when (`migracion_prueba`.`dt_rotacion`.`id_tipo_rotacion` = 20) then 'SALIDA OTRAS BODEGAS'
+                            when (`migracion_prueba`.`dt_rotacion`.`id_tipo_rotacion` = 21) then 'ENTRADA OTRAS BODEGAS'
+                            when (`migracion_prueba`.`dt_rotacion`.`id_tipo_rotacion` = 22) then 'ENTRADA X CONVERSION'
+                            when (`migracion_prueba`.`dt_rotacion`.`id_tipo_rotacion` = 23) then 'SALIDA CONVERSION'
+                            when (`migracion_prueba`.`dt_rotacion`.`id_tipo_rotacion` = 24) then 'ENTRADA CON OC X CONVERSOR'
+                            when (`migracion_prueba`.`dt_rotacion`.`id_tipo_rotacion` = 25) then 'ENTRADA X OP AL AREA'
+                            when (`migracion_prueba`.`dt_rotacion`.`id_tipo_rotacion` = 26) then 'SALIDA X OP DEL AREA'
+                            else 'N/A'
+                        end) AS `tipo`,
+                        (case
+                            when (`migracion_prueba`.`dt_rotacion`.`id_tipo_rotacion` = 1) then 1
+                            when (`migracion_prueba`.`dt_rotacion`.`id_tipo_rotacion` = 2) then 1
+                            when (`migracion_prueba`.`dt_rotacion`.`id_tipo_rotacion` = 3) then 2
+                            when (`migracion_prueba`.`dt_rotacion`.`id_tipo_rotacion` = 4) then 1
+                            when (`migracion_prueba`.`dt_rotacion`.`id_tipo_rotacion` = 5) then 1
+                            when (`migracion_prueba`.`dt_rotacion`.`id_tipo_rotacion` = 6) then 2
+                            when (`migracion_prueba`.`dt_rotacion`.`id_tipo_rotacion` = 7) then 2
+                            when (`migracion_prueba`.`dt_rotacion`.`id_tipo_rotacion` = 8) then 1
+                            when (`migracion_prueba`.`dt_rotacion`.`id_tipo_rotacion` = 9) then 1
+                            when (`migracion_prueba`.`dt_rotacion`.`id_tipo_rotacion` = 10) then 2
+                            when (`migracion_prueba`.`dt_rotacion`.`id_tipo_rotacion` = 11) then 2
+                            when (`migracion_prueba`.`dt_rotacion`.`id_tipo_rotacion` = 12) then 1
+                            when (`migracion_prueba`.`dt_rotacion`.`id_tipo_rotacion` = 13) then 2
+                            when (`migracion_prueba`.`dt_rotacion`.`id_tipo_rotacion` = 14) then 1
+                            when (`migracion_prueba`.`dt_rotacion`.`id_tipo_rotacion` = 15) then 2
+                            when (`migracion_prueba`.`dt_rotacion`.`id_tipo_rotacion` = 16) then 1
+                            when (`migracion_prueba`.`dt_rotacion`.`id_tipo_rotacion` = 17) then 2
+                            when (`migracion_prueba`.`dt_rotacion`.`id_tipo_rotacion` = 19) then 2
+                            when (`migracion_prueba`.`dt_rotacion`.`id_tipo_rotacion` = 20) then 2
+                            when (`migracion_prueba`.`dt_rotacion`.`id_tipo_rotacion` = 21) then 1
+                            when (`migracion_prueba`.`dt_rotacion`.`id_tipo_rotacion` = 22) then 1
+                            when (`migracion_prueba`.`dt_rotacion`.`id_tipo_rotacion` = 23) then 1
+                            when (`migracion_prueba`.`dt_rotacion`.`id_tipo_rotacion` = 24) then 2
+                            when (`migracion_prueba`.`dt_rotacion`.`id_tipo_rotacion` = 25) then 1
+                            when (`migracion_prueba`.`dt_rotacion`.`id_tipo_rotacion` = 26) then 2
+                            else '0'
+                        end) AS `tipo_en`,
+                        `migracion_prueba`.`dt_area`.`nombre` AS `nombre`,
+                        `migracion_prueba`.`dt_rotacion`.`fecha` AS `fecha`,
+                        `migracion_prueba`.`dt_proveedores`.`empresa` AS `empresa`,
+                        `migracion_prueba`.`dt_rotacion`.`n_ordenes` AS `n_ordenes`,
+                        '' AS `rm`,
+                        `migracion_prueba`.`dt_rotacion`.`cantidad` AS `cantidad`,
+                        `migracion_prueba`.`dt_rotacion`.`vr_unidad` AS `vr_unidad`
+                    from
+                        (((`migracion_prueba`.`dt_rotacion`
+                    left join `migracion_prueba`.`dt_compras` on
+                        ((`migracion_prueba`.`dt_rotacion`.`id_compra` = `migracion_prueba`.`dt_compras`.`id_compras`)))
+                    left join `migracion_prueba`.`dt_proveedores` on
+                        ((`migracion_prueba`.`dt_compras`.`id_proveedores` = `migracion_prueba`.`dt_proveedores`.`id_proveedores`)))
+                    left join `migracion_prueba`.`dt_area` on
+                        ((`migracion_prueba`.`dt_rotacion`.`id_area` = `migracion_prueba`.`dt_area`.`id_area`)))
+                    where
+                        (`migracion_prueba`.`dt_rotacion`.`id_tipo_rotacion` not in (2, 7))
+                    order by
+                        `migracion_prueba`.`dt_rotacion`.`fecha` desc,
+                        `migracion_prueba`.`dt_rotacion`.`n_rotacion` desc;
+                    
+                    
+                    -- migracion_prueba.vw_new_ops_ter source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_new_ops_ter` AS
+                    select
+                        `migracion_prueba`.`dt_costos`.`valor_total` AS `valor_total`,
+                        `migracion_prueba`.`dt_fechas_op`.`fecha_ingreso` AS `fecha_ingreso`
+                    from
+                        ((`migracion_prueba`.`dt_ordenes`
+                    left join `migracion_prueba`.`dt_costos` on
+                        ((`migracion_prueba`.`dt_costos`.`id_ordenes` = `migracion_prueba`.`dt_ordenes`.`id_ordenes`)))
+                    left join `migracion_prueba`.`dt_fechas_op` on
+                        ((`migracion_prueba`.`dt_fechas_op`.`id_ordenes` = `migracion_prueba`.`dt_ordenes`.`id_ordenes`)))
+                    where
+                        (`migracion_prueba`.`dt_costos`.`id_tipo_costo` in (3, 9, 6, 7, 8));
+                    
+                    
+                    -- migracion_prueba.vw_orden_servicio source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_orden_servicio` AS
+                    select
+                        `migracion_prueba`.`dt_compras`.`n_ordenes` AS `n_ordenes`,
+                        sum(`migracion_prueba`.`dt_compras`.`saldo_salida`) AS `cantidad`,
+                        `migracion_prueba`.`dt_proveedores`.`empresa` AS `empresa`,
+                        `migracion_prueba`.`dt_clientes`.`nom_empresa` AS `nom_empresa`,
+                        `migracion_prueba`.`dt_compras`.`consecutivo` AS `consecutivo`,
+                        `migracion_prueba`.`dt_ordenes`.`referencia` AS `referencia`,
+                        `migracion_prueba`.`dt_compras`.`n_compra` AS `n_compra`,
+                        `migracion_prueba`.`dt_area`.`nombre` AS `area_entrega`,
+                        `migracion_prueba`.`dt_compras`.`fecha_inicio` AS `fecha_inicio`,
+                        `da`.`nombre` AS `area_realiza`,
+                        `migracion_prueba`.`dt_compras`.`fecha_compromiso` AS `fecha_compromiso`,
+                        `migracion_prueba`.`dt_compras`.`observaciones_os` AS `observaciones_os`,
+                        sum(`migracion_prueba`.`dt_compras`.`vr_total`) AS `presupuesto`
+                    from
+                        (((((`migracion_prueba`.`dt_compras`
+                    join `migracion_prueba`.`dt_proveedores` on
+                        ((`migracion_prueba`.`dt_proveedores`.`id_proveedores` = `migracion_prueba`.`dt_compras`.`id_proveedores`)))
+                    left join `migracion_prueba`.`dt_ordenes` on
+                        ((`migracion_prueba`.`dt_ordenes`.`id_ordenes` = `migracion_prueba`.`dt_compras`.`id_ordenes`)))
+                    left join `migracion_prueba`.`dt_clientes` on
+                        ((`migracion_prueba`.`dt_ordenes`.`id_cliente` = `migracion_prueba`.`dt_clientes`.`id_cliente`)))
+                    left join `migracion_prueba`.`dt_area` on
+                        ((`migracion_prueba`.`dt_area`.`id_area` = `migracion_prueba`.`dt_compras`.`area_entrega`)))
+                    left join `migracion_prueba`.`dt_area` `da` on
+                        ((`da`.`id_area` = `migracion_prueba`.`dt_compras`.`area_realiza`)))
+                    group by
+                        `migracion_prueba`.`dt_compras`.`n_compra`;
+                    
+                    
+                    -- migracion_prueba.vw_ordenes_gb source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_ordenes_gb` AS
+                    select
+                        `migracion_prueba`.`dt_ordenes`.`n_ordenes` AS `n_ordenes`,
+                        concat(`migracion_prueba`.`dt_ordenes`.`n_ordenes`, ' - ', `migracion_prueba`.`dt_ordenes`.`ref_general`) AS `ref_general`
+                    from
+                        `migracion_prueba`.`dt_ordenes`
+                    where
+                        (`migracion_prueba`.`dt_ordenes`.`estado` <> 11)
+                    group by
+                        `migracion_prueba`.`dt_ordenes`.`n_ordenes`
+                    order by
+                        `migracion_prueba`.`dt_ordenes`.`n_ordenes`;
+                    
+                    
+                    -- migracion_prueba.vw_pen_c_new_ops_ter source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_pen_c_new_ops_ter` AS
+                    select
+                        `migracion_prueba`.`dt_costos`.`valor_total` AS `valor_total`,
+                        `migracion_prueba`.`dt_fechas_op`.`fecha_ingreso` AS `fecha_ingreso`
+                    from
+                        ((`migracion_prueba`.`dt_ordenes`
+                    left join `migracion_prueba`.`dt_costos` on
+                        ((`migracion_prueba`.`dt_costos`.`id_ordenes` = `migracion_prueba`.`dt_ordenes`.`id_ordenes`)))
+                    left join `migracion_prueba`.`dt_fechas_op` on
+                        ((`migracion_prueba`.`dt_fechas_op`.`id_ordenes` = `migracion_prueba`.`dt_ordenes`.`id_ordenes`)))
+                    where
+                        ((`migracion_prueba`.`dt_costos`.`id_tipo_costo` in (3, 9, 6, 7, 8))
+                            and (`migracion_prueba`.`dt_costos`.`estado` in (1, 4, 7))
+                                and (`migracion_prueba`.`dt_costos`.`n_ordenes` <> 0)
+                                    and (`migracion_prueba`.`dt_ordenes`.`estado` in (1, 10, 12, 13))
+                                        and (`migracion_prueba`.`dt_ordenes`.`conciliado` <> 1)
+                                            and (`migracion_prueba`.`dt_costos`.`cant_sol` > 0)
+                                                and (`migracion_prueba`.`dt_costos`.`cierre` = 0));
+                    
+                    
+                    -- migracion_prueba.vw_precio_lista_materiales source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_precio_lista_materiales` AS
+                    select
+                        `migracion_prueba`.`dt_inventario`.`id_inventario` AS `id_inventario`,
+                        `migracion_prueba`.`dt_inventario`.`codigo_prod` AS `codigo_prod`,
+                        `migracion_prueba`.`dt_inventario`.`producto` AS `producto`,
+                        `migracion_prueba`.`dt_inventario`.`valor_unidad_compra` AS `valor_unidad_compra`,
+                        `migracion_prueba`.`dt_inventario`.`lista_precio` AS `lista_precio`
+                    from
+                        `migracion_prueba`.`dt_inventario`
+                    where
+                        (`migracion_prueba`.`dt_inventario`.`estado` = 1)
+                    order by
+                        `migracion_prueba`.`dt_inventario`.`producto`;
+                    
+                    
+                    -- migracion_prueba.vw_presupuesto_programada source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_presupuesto_programada` AS
+                    select
+                        `c`.`id_ordenes` AS `id_ordenes`,
+                        `c`.`id_tipo_costo` AS `id_tipo_costo`,
+                        sum(`c`.`valor_total`) AS `valor_total`
+                    from
+                        (`migracion_prueba`.`dt_tareas_costo` `tc`
+                    join `migracion_prueba`.`dt_costos` `c` on
+                        ((`tc`.`id_costos` = `c`.`id_costos`)))
+                    group by
+                        `tc`.`id_ordenes`;
+                    
+                    
+                    -- migracion_prueba.vw_programacion_diseno source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_programacion_diseno` AS
+                    select
+                        `migracion_prueba`.`dt_programacion_diseno`.`id_codprodfinal` AS `id_codprodfinal`,
+                        `migracion_prueba`.`dt_programacion_diseno`.`id_programacion_diseno` AS `id_programacion_diseno`,
+                        `migracion_prueba`.`dt_programacion_diseno`.`cod` AS `cod`,
+                        `migracion_prueba`.`dt_programacion_diseno`.`n_programacion` AS `n_programacion`,
+                        `migracion_prueba`.`dt_ordenes`.`n_ordenes` AS `n_ordenes`,
+                        `migracion_prueba`.`dt_ordenes`.`item_op` AS `item_op`,
+                        `migracion_prueba`.`dt_ordenes`.`nombre_proyecto` AS `nombre_proyecto`,
+                        `migracion_prueba`.`dt_historico_diseno`.`tipo` AS `tipo`,
+                        `migracion_prueba`.`dt_historico_diseno`.`fecha_registro` AS `fecha_registro`,
+                        `migracion_prueba`.`dt_historico_diseno`.`observacion` AS `observacion`,
+                        `migracion_prueba`.`user`.`nombre_usuario` AS `nombre_usuario`,
+                        `migracion_prueba`.`dt_historico_diseno`.`id_historico_diseno` AS `id_historico_diseno`
+                    from
+                        ((((`migracion_prueba`.`dt_programacion_diseno`
+                    left join `migracion_prueba`.`dt_historico_diseno` on
+                        ((`migracion_prueba`.`dt_historico_diseno`.`id_programacion_diseno` = `migracion_prueba`.`dt_programacion_diseno`.`id_programacion_diseno`)))
+                    left join `migracion_prueba`.`dt_programacion_diseno_dt_ordenes` on
+                        ((`migracion_prueba`.`dt_programacion_diseno`.`id_programacion_diseno` = `migracion_prueba`.`dt_programacion_diseno_dt_ordenes`.`id_programacion_diseno`)))
+                    left join `migracion_prueba`.`dt_ordenes` on
+                        ((`migracion_prueba`.`dt_ordenes`.`id_ordenes` = `migracion_prueba`.`dt_programacion_diseno_dt_ordenes`.`dt_ordenes_id_ordenes`)))
+                    left join `migracion_prueba`.`user` on
+                        ((`migracion_prueba`.`dt_historico_diseno`.`id_user` = `migracion_prueba`.`user`.`id`)))
+                    where
+                        (`migracion_prueba`.`dt_programacion_diseno`.`estado` = 1);
+                    
+                    
+                    -- migracion_prueba.vw_proveedores source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_proveedores` AS
+                    select
+                        `migracion_prueba`.`dt_proveedores`.`nit` AS `nit`,
+                        `migracion_prueba`.`dt_proveedores`.`id_proveedores` AS `id_proveedores`,
+                        `migracion_prueba`.`dt_proveedores`.`empresa` AS `empresa`
+                    from
+                        `migracion_prueba`.`dt_proveedores`
+                    order by
+                        `migracion_prueba`.`dt_proveedores`.`empresa`;
+                    
+                    
+                    -- migracion_prueba.vw_proyectos_clientes source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_proyectos_clientes` AS
+                    select
+                        `g`.`nombre` AS `nombre_ciudad`,
+                        `u`.`nombre_usuario` AS `nombre_usuario`,
+                        `mp`.`nombre_proyecto` AS `nombre_macro_proyecto`,
+                        `p`.`id_proyecto_op` AS `id_proyecto_op`,
+                        `p`.`nombre_proyecto` AS `nombre_proyecto`,
+                        `p`.`fecha` AS `fecha`,
+                        `p`.`estado` AS `estado`,
+                        `p`.`obs_proyecto` AS `obs_proyecto`,
+                        `p`.`id_user` AS `id_user`,
+                        `p`.`id_macro_proyecto` AS `id_macro_proyecto`,
+                        `c`.`nom_empresa` AS `nom_empresa`
+                    from
+                        ((((`migracion_prueba`.`dt_proyecto_op` `p`
+                    left join `migracion_prueba`.`dt_macro_proyecto` `mp` on
+                        ((`p`.`id_macro_proyecto` = `mp`.`id_macro_proyecto`)))
+                    left join `migracion_prueba`.`dt_clientes` `c` on
+                        ((`mp`.`id_cliente` = `c`.`id_cliente`)))
+                    left join `migracion_prueba`.`user` `u` on
+                        ((`p`.`id_user` = `u`.`id`)))
+                    left join `migracion_prueba`.`dt_geografia` `g` on
+                        ((`p`.`id_geografia` = `g`.`id_geografia`)));
+                    
+                    
+                    -- migracion_prueba.vw_prueba_home source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_prueba_home` AS
+                    select
+                        `migracion_prueba`.`dt_factura`.`id_factura` AS `id_factura`,
+                        `migracion_prueba`.`dt_factura`.`n_factura` AS `n_factura`,
+                        `migracion_prueba`.`dt_factura`.`n_ordenes` AS `n_ordenes`,
+                        `migracion_prueba`.`dt_factura`.`id_usuario` AS `id_usuario`,
+                        `migracion_prueba`.`dt_factura`.`id_usuario_act` AS `id_usuario_act`,
+                        `migracion_prueba`.`dt_factura`.`id_vendedor` AS `id_vendedor`,
+                        `migracion_prueba`.`dt_factura`.`id_cliente` AS `id_cliente`,
+                        `migracion_prueba`.`dt_factura`.`valor_venta` AS `valor_venta`,
+                        `migracion_prueba`.`dt_factura`.`valor` AS `valor`,
+                        `migracion_prueba`.`dt_factura`.`fecha_creacion` AS `fecha_creacion`,
+                        `migracion_prueba`.`dt_factura`.`fecha_actualizacion` AS `fecha_actualizacion`,
+                        `migracion_prueba`.`dt_factura`.`fecha_factura` AS `fecha_factura`,
+                        `migracion_prueba`.`dt_factura`.`fecha_vencimiento` AS `fecha_vencimiento`,
+                        `migracion_prueba`.`dt_factura`.`fecha_recaudo` AS `fecha_recaudo`,
+                        `migracion_prueba`.`dt_factura`.`cotizacion` AS `cotizacion`,
+                        `migracion_prueba`.`dt_factura`.`id_forma_pago` AS `id_forma_pago`,
+                        `migracion_prueba`.`dt_factura`.`concepto` AS `concepto`,
+                        `migracion_prueba`.`dt_factura`.`estado` AS `estado`,
+                        `migracion_prueba`.`dt_factura`.`plazo` AS `plazo`,
+                        `migracion_prueba`.`dt_factura`.`iva` AS `iva`,
+                        `migracion_prueba`.`dt_factura`.`r_fuente` AS `r_fuente`,
+                        `migracion_prueba`.`dt_factura`.`r_iva` AS `r_iva`,
+                        `migracion_prueba`.`dt_factura`.`r_ica` AS `r_ica`,
+                        `migracion_prueba`.`dt_factura`.`nota_credito` AS `nota_credito`,
+                        `migracion_prueba`.`dt_factura`.`puc_cuenta` AS `puc_cuenta`,
+                        `migracion_prueba`.`dt_factura`.`cta_iva` AS `cta_iva`,
+                        `migracion_prueba`.`dt_factura`.`cta_rfte` AS `cta_rfte`,
+                        `migracion_prueba`.`dt_factura`.`cta_rtiva` AS `cta_rtiva`,
+                        `migracion_prueba`.`dt_factura`.`cta_rtica` AS `cta_rtica`,
+                        `migracion_prueba`.`dt_factura`.`comision` AS `comision`,
+                        `migracion_prueba`.`dt_factura`.`anticipo` AS `anticipo`,
+                        `migracion_prueba`.`dt_factura`.`cta_anticipo` AS `cta_anticipo`,
+                        `migracion_prueba`.`dt_factura`.`rc_anticipo` AS `rc_anticipo`,
+                        `migracion_prueba`.`dt_factura`.`contacto_factura` AS `contacto_factura`,
+                        `migracion_prueba`.`dt_factura`.`aplica_vt` AS `aplica_vt`,
+                        `migracion_prueba`.`dt_factura`.`estado_traza` AS `estado_traza`,
+                        `migracion_prueba`.`dt_factura`.`ano_indicador` AS `ano_indicador`,
+                        `migracion_prueba`.`dt_factura`.`estado_an` AS `estado_an`,
+                        `migracion_prueba`.`dt_factura`.`observaciones` AS `observaciones`,
+                        `migracion_prueba`.`dt_factura`.`items` AS `items`,
+                        `migracion_prueba`.`dt_factura`.`valor_bruto` AS `valor_bruto`,
+                        `migracion_prueba`.`dt_factura`.`orden_compra` AS `orden_compra`,
+                        `migracion_prueba`.`dt_factura`.`cantidad` AS `cantidad`,
+                        `migracion_prueba`.`dt_factura`.`codigo` AS `codigo`,
+                        `migracion_prueba`.`dt_factura`.`referencia` AS `referencia`,
+                        `migracion_prueba`.`dt_factura`.`id_codigo_categoria` AS `id_codigo_categoria`,
+                        `migracion_prueba`.`dt_factura`.`vr_unidad` AS `vr_unidad`,
+                        `migracion_prueba`.`dt_factura`.`descuento` AS `descuento`,
+                        `migracion_prueba`.`dt_factura`.`vr_total` AS `vr_total`,
+                        `migracion_prueba`.`dt_factura`.`id_puc_oc` AS `id_puc_oc`,
+                        `migracion_prueba`.`dt_factura`.`abonos` AS `abonos`,
+                        `migracion_prueba`.`dt_factura`.`saldo` AS `saldo`,
+                        `migracion_prueba`.`dt_factura`.`letra` AS `letra`,
+                        `migracion_prueba`.`dt_factura`.`letra_cta` AS `letra_cta`,
+                        `migracion_prueba`.`dt_factura`.`puc_contra` AS `puc_contra`,
+                        `migracion_prueba`.`dt_factura`.`anuladas` AS `anuladas`,
+                        `migracion_prueba`.`dt_factura`.`id_remision` AS `id_remision`,
+                        `migracion_prueba`.`dt_factura`.`nit` AS `nit`
+                    from
+                        `migracion_prueba`.`dt_factura`
+                    where
+                        ((month(`migracion_prueba`.`dt_factura`.`fecha_factura`) = '06')
+                            and (year(`migracion_prueba`.`dt_factura`.`fecha_factura`) = '2021'))
+                    group by
+                        `migracion_prueba`.`dt_factura`.`n_factura`
+                    order by
+                        `migracion_prueba`.`dt_factura`.`n_factura`;
+                    
+                    
+                    -- migracion_prueba.vw_referencias_proveedor source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_referencias_proveedor` AS
+                    select
+                        `migracion_prueba`.`dt_proveedores`.`empresa` AS `empresa`,
+                        `migracion_prueba`.`dt_proveeref`.`id_proveeref` AS `id_proveeref`,
+                        `migracion_prueba`.`dt_proveeref`.`id_proveedores` AS `id_proveedores`,
+                        `migracion_prueba`.`dt_inventario`.`id_inventario` AS `id_inventario`,
+                        `migracion_prueba`.`dt_inventario`.`producto` AS `producto`,
+                        `migracion_prueba`.`dt_inventario`.`codigo_prod` AS `codigo_prod`,
+                        `migracion_prueba`.`dt_proveeref`.`ref_color` AS `ref_color`,
+                        `migracion_prueba`.`dt_proveeref`.`cod_color` AS `cod_color`
+                    from
+                        ((`migracion_prueba`.`dt_proveeref`
+                    left join `migracion_prueba`.`dt_proveedores` on
+                        ((`migracion_prueba`.`dt_proveeref`.`id_proveedores` = `migracion_prueba`.`dt_proveedores`.`id_proveedores`)))
+                    left join `migracion_prueba`.`dt_inventario` on
+                        ((`migracion_prueba`.`dt_proveeref`.`id_inventario` = `migracion_prueba`.`dt_inventario`.`id_inventario`)));
+                    
+                    
+                    -- migracion_prueba.vw_rotacion_materiales source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_rotacion_materiales` AS
+                    select
+                        `dc`.`id_costo` AS `id_costo`,
+                        `dc`.`id_ordenes` AS `id_ordenes`,
+                        `dc`.`n_ordenes` AS `n_ordenes`,
+                        `dc`.`cod_material` AS `cod_material`,
+                        `dc`.`comentarios` AS `comentarios`,
+                        `dc`.`nombre_costo` AS `nombre_costo`,
+                        `di`.`stock` AS `stock`,
+                        `dc`.`cant_sol` AS `cant_sol`,
+                        round(sum((case when (`dr`.`id_tipo_rotacion` = 9) then `dr`.`cantidad` else (`dr`.`cantidad` = 0) end)), 2) AS `cantidad_entradas`,
+                        round(sum((case when ((`dr`.`id_tipo_rotacion` = 25) and (`dr`.`estado` = 7)) then `dr`.`cantidad` else (`dr`.`cantidad` = 0) end)), 2) AS `traslado_a_producción_sin_aceptar`,
+                        round(sum((case when ((`dr`.`id_tipo_rotacion` = 25) and (`dr`.`estado` = 1)) then `dr`.`cantidad` else (`dr`.`cantidad` = 0) end)), 2) AS `traslado_a_producción_aceptado`,
+                        round(sum((case when ((`dr`.`id_tipo_rotacion` = 26) and (`dr`.`estado` = 1)) then `dr`.`cantidad` else (`dr`.`cantidad` = 0) end)), 2) AS `salidas_de_producción`
+                    from
+                        ((`migracion_prueba`.`dt_costos` `dc`
+                    left join `migracion_prueba`.`dt_inventarioxarea` `di` on
+                        (((`dc`.`id_inventario` = `di`.`id_inventario`)
+                            and (`di`.`id_area` = 12))))
+                    left join `migracion_prueba`.`dt_rotacion` `dr` on
+                        (((`dc`.`id_costo` = `dr`.`id_costo`)
+                            and (`dr`.`id_tipo_rotacion` in (9, 25, 26))
+                                and (`dr`.`estado` <> 2))))
+                    where
+                        (`dc`.`id_tipo_costo` = 1)
+                    group by
+                        `dc`.`id_costo`
+                    order by
+                        `dc`.`id_ordenes`,
+                        `dc`.`nombre_costo`;
+                    
+                    
+                    -- migracion_prueba.vw_salidas_sin_op source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_salidas_sin_op` AS
+                    select
+                        `ia`.`id_inventarioxarea` AS `id_inventarioxarea`,
+                        `ia`.`stock` AS `stock`,
+                        `ia`.`codigo_prod` AS `codigo_prod`,
+                        `i`.`producto` AS `producto`,
+                        `m`.`medida` AS `medida`,
+                        `i`.`id_inventario` AS `id_inventario`,
+                        `ia`.`id_area` AS `id_area`,
+                        `a`.`nombre` AS `nombre`,
+                        concat_ws(' - ', convert(`ia`.`codigo_prod` using utf8mb3), `i`.`producto`) AS `nombre_y_codigo`
+                    from
+                        (((`migracion_prueba`.`dt_inventarioxarea` `ia`
+                    join `migracion_prueba`.`dt_inventario` `i` on
+                        ((`ia`.`id_inventario` = `i`.`id_inventario`)))
+                    join `migracion_prueba`.`dt_medida` `m` on
+                        ((`m`.`id_medida` = `i`.`id_medida`)))
+                    join `migracion_prueba`.`dt_area` `a` on
+                        ((`ia`.`id_area` = `a`.`id_area`)))
+                    where
+                        (`ia`.`stock` > 0);
+                    
+                    
+                    -- migracion_prueba.vw_sub_compras source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_sub_compras` AS
+                    select
+                        `migracion_prueba`.`dt_compras`.`id_ordenes` AS `id_ordenes`,
+                        (case
+                            when (`migracion_prueba`.`dt_costos`.`id_tipo_costo` = 1) then `migracion_prueba`.`dt_compras`.`vr_total`
+                            else 0
+                        end) AS `compras_mp`,
+                        (case
+                            when (`migracion_prueba`.`dt_costos`.`id_tipo_costo` = 4) then `migracion_prueba`.`dt_compras`.`vr_total`
+                            else 0
+                        end) AS `compras_mo`,
+                        (case
+                            when (`migracion_prueba`.`dt_costos`.`id_tipo_costo` = 5) then `migracion_prueba`.`dt_compras`.`vr_total`
+                            else 0
+                        end) AS `compras_trans`,
+                        (case
+                            when (`migracion_prueba`.`dt_costos`.`id_tipo_costo` = 8) then `migracion_prueba`.`dt_compras`.`vr_total`
+                            else 0
+                        end) AS `compras_ter`,
+                        (case
+                            when ((`migracion_prueba`.`dt_costos`.`id_tipo_costo` = 6)
+                            or (`migracion_prueba`.`dt_costos`.`id_tipo_costo` = 7)) then `migracion_prueba`.`dt_compras`.`vr_total`
+                            else 0
+                        end) AS `compras_otros`,
+                        (case
+                            when (`migracion_prueba`.`dt_costos`.`id_tipo_costo` = 9) then `migracion_prueba`.`dt_compras`.`vr_total`
+                            else 0
+                        end) AS `compras_via`,
+                        `migracion_prueba`.`dt_costos`.`id_tipo_costo` AS `id_tipo_costo`,
+                        `migracion_prueba`.`dt_compras`.`n_ordenes` AS `n_ordenes`
+                    from
+                        (`migracion_prueba`.`dt_compras`
+                    left join `migracion_prueba`.`dt_costos` on
+                        ((`migracion_prueba`.`dt_compras`.`id_costos` = `migracion_prueba`.`dt_costos`.`id_costo`)));
+                    
+                    
+                    -- migracion_prueba.vw_sub_existencia_area source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_sub_existencia_area` AS
+                    select
+                        `migracion_prueba`.`dt_inventarioxarea`.`id_inventarioxarea` AS `id_inventarioxarea`,
+                        `migracion_prueba`.`dt_inventarioxarea`.`codigo_prod` AS `codigo_prod`,
+                        `migracion_prueba`.`dt_inventarioxarea`.`id_inventario` AS `id_inventario`,
+                        `migracion_prueba`.`dt_inventario`.`producto` AS `producto`,
+                        `migracion_prueba`.`dt_area`.`id_area` AS `id_area`,
+                        `migracion_prueba`.`dt_area`.`nombre` AS `nombre`,
+                        `migracion_prueba`.`dt_inventarioxarea`.`stock` AS `stock`,
+                        `migracion_prueba`.`dt_inventario`.`valor_unidad` AS `valor_unidad`,
+                        (`migracion_prueba`.`dt_inventarioxarea`.`stock` * `migracion_prueba`.`dt_inventario`.`valor_unidad`) AS `valor_total`,
+                        (case
+                            `migracion_prueba`.`dt_inventarioxarea`.`id_area` when '7' then `migracion_prueba`.`dt_inventarioxarea`.`stock`
+                            else '0'
+                        end) AS `stock_instalacion`,
+                        (case
+                            `migracion_prueba`.`dt_inventarioxarea`.`id_area` when '7' then (`migracion_prueba`.`dt_inventario`.`valor_unidad` * `migracion_prueba`.`dt_inventarioxarea`.`stock`)
+                            else '0'
+                        end) AS `valor_instalacion`,
+                        (case
+                            `migracion_prueba`.`dt_inventarioxarea`.`id_area` when '12' then `migracion_prueba`.`dt_inventarioxarea`.`stock`
+                            else '0'
+                        end) AS `stock_almacen`,
+                        (case
+                            `migracion_prueba`.`dt_inventarioxarea`.`id_area` when '12' then (`migracion_prueba`.`dt_inventario`.`valor_unidad` * `migracion_prueba`.`dt_inventarioxarea`.`stock`)
+                            else '0'
+                        end) AS `valor_almacen`,
+                        (case
+                            `migracion_prueba`.`dt_inventarioxarea`.`id_area` when '13' then `migracion_prueba`.`dt_inventarioxarea`.`stock`
+                            else '0'
+                        end) AS `stock_metalmecanica`,
+                        (case
+                            `migracion_prueba`.`dt_inventarioxarea`.`id_area` when '13' then (`migracion_prueba`.`dt_inventario`.`valor_unidad` * `migracion_prueba`.`dt_inventarioxarea`.`stock`)
+                            else '0'
+                        end) AS `valor_metalmecanica`,
+                        (case
+                            `migracion_prueba`.`dt_inventarioxarea`.`id_area` when '14' then `migracion_prueba`.`dt_inventarioxarea`.`stock`
+                            else '0'
+                        end) AS `stock_pintura`,
+                        (case
+                            `migracion_prueba`.`dt_inventarioxarea`.`id_area` when '14' then (`migracion_prueba`.`dt_inventario`.`valor_unidad` * `migracion_prueba`.`dt_inventarioxarea`.`stock`)
+                            else '0'
+                        end) AS `valor_pintura`,
+                        (case
+                            `migracion_prueba`.`dt_inventarioxarea`.`id_area` when '15' then `migracion_prueba`.`dt_inventarioxarea`.`stock`
+                            else '0'
+                        end) AS `stock_sustratos`,
+                        (case
+                            `migracion_prueba`.`dt_inventarioxarea`.`id_area` when '15' then (`migracion_prueba`.`dt_inventario`.`valor_unidad` * `migracion_prueba`.`dt_inventarioxarea`.`stock`)
+                            else '0'
+                        end) AS `valor_sustratos`,
+                        (case
+                            `migracion_prueba`.`dt_inventarioxarea`.`id_area` when '16' then `migracion_prueba`.`dt_inventarioxarea`.`stock`
+                            else '0'
+                        end) AS `stock_ensamble`,
+                        (case
+                            `migracion_prueba`.`dt_inventarioxarea`.`id_area` when '16' then (`migracion_prueba`.`dt_inventario`.`valor_unidad` * `migracion_prueba`.`dt_inventarioxarea`.`stock`)
+                            else '0'
+                        end) AS `valor_ensamble`,
+                        (case
+                            `migracion_prueba`.`dt_inventarioxarea`.`id_area` when '17' then `migracion_prueba`.`dt_inventarioxarea`.`stock`
+                            else '0'
+                        end) AS `stock_impresion`,
+                        (case
+                            `migracion_prueba`.`dt_inventarioxarea`.`id_area` when '17' then (`migracion_prueba`.`dt_inventario`.`valor_unidad` * `migracion_prueba`.`dt_inventarioxarea`.`stock`)
+                            else '0'
+                        end) AS `valor_impresion`,
+                        (case
+                            `migracion_prueba`.`dt_inventarioxarea`.`id_area` when '18' then `migracion_prueba`.`dt_inventarioxarea`.`stock`
+                            else '0'
+                        end) AS `stock_decoracion`,
+                        (case
+                            `migracion_prueba`.`dt_inventarioxarea`.`id_area` when '18' then (`migracion_prueba`.`dt_inventario`.`valor_unidad` * `migracion_prueba`.`dt_inventarioxarea`.`stock`)
+                            else '0'
+                        end) AS `valor_decoracion`,
+                        (case
+                            `migracion_prueba`.`dt_inventarioxarea`.`id_area` when '19' then `migracion_prueba`.`dt_inventarioxarea`.`stock`
+                            else '0'
+                        end) AS `stock_despachos`,
+                        (case
+                            `migracion_prueba`.`dt_inventarioxarea`.`id_area` when '19' then (`migracion_prueba`.`dt_inventario`.`valor_unidad` * `migracion_prueba`.`dt_inventarioxarea`.`stock`)
+                            else '0'
+                        end) AS `valor_despachos`
+                    from
+                        ((`migracion_prueba`.`dt_inventarioxarea`
+                    left join `migracion_prueba`.`dt_inventario` on
+                        ((`migracion_prueba`.`dt_inventarioxarea`.`id_inventario` = `migracion_prueba`.`dt_inventario`.`id_inventario`)))
+                    left join `migracion_prueba`.`dt_area` on
+                        ((`migracion_prueba`.`dt_area`.`id_area` = `migracion_prueba`.`dt_inventarioxarea`.`id_area`)))
+                    where
+                        (`migracion_prueba`.`dt_inventarioxarea`.`id_area` in (10, 12, 18, 19, 16, 17, 7, 13, 14, 15))
+                    order by
+                        `migracion_prueba`.`dt_inventario`.`producto`,
+                        `migracion_prueba`.`dt_area`.`nombre`;
+                    
+                    
+                    -- migracion_prueba.vw_sub_informe_pedidos source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_sub_informe_pedidos` AS
+                    select
+                        `migracion_prueba`.`dt_ordenes`.`n_ordenes` AS `n_ordenes`,
+                        `migracion_prueba`.`dt_fechas_op`.`fecha_ingreso` AS `fecha_ingreso`,
+                        `migracion_prueba`.`dt_clientes`.`nom_empresa` AS `nom_empresa`,
+                        `migracion_prueba`.`dt_macro_proyecto`.`nombre_proyecto` AS `macro_proyecto`,
+                        `migracion_prueba`.`dt_proyecto_op`.`nombre_proyecto` AS `nombre_proyecto`,
+                        `migracion_prueba`.`dt_ordenes`.`nombre_proyecto` AS `nombre_op`,
+                        concat(`migracion_prueba`.`dt_usuarios`.`nombre_usuario`, ' ', `migracion_prueba`.`dt_usuarios`.`apellido_usuario`) AS `nombre_usuario`,
+                        `migracion_prueba`.`dt_ordenes`.`cantidad` AS `cantidad`,
+                        `migracion_prueba`.`dt_subcategoria`.`nombre_subcategoria` AS `nombre_subcategoria`,
+                        (case
+                            when (`migracion_prueba`.`dt_ordenes`.`cobro` = 1) then `migracion_prueba`.`dt_ordenes`.`v_total`
+                            else 0
+                        end) AS `vCobro`,
+                        (case
+                            when (`migracion_prueba`.`dt_ordenes`.`cobro` = 0) then `migracion_prueba`.`dt_ordenes`.`v_total`
+                            else 0
+                        end) AS `vnoCobro`,
+                        `migracion_prueba`.`dt_ordenes`.`v_total` AS `v_total`
+                    from
+                        (((((((`migracion_prueba`.`dt_ordenes`
+                    join `migracion_prueba`.`dt_clientes` on
+                        ((`migracion_prueba`.`dt_clientes`.`id_cliente` = `migracion_prueba`.`dt_ordenes`.`id_cliente`)))
+                    left join `migracion_prueba`.`dt_fechas_op` on
+                        ((`migracion_prueba`.`dt_ordenes`.`id_ordenes` = `migracion_prueba`.`dt_fechas_op`.`id_ordenes`)))
+                    left join `migracion_prueba`.`dt_proyecto_op` on
+                        ((`migracion_prueba`.`dt_proyecto_op`.`id_proyecto_op` = `migracion_prueba`.`dt_ordenes`.`id_proyecto_op`)))
+                    left join `migracion_prueba`.`dt_macro_proyecto` on
+                        ((`migracion_prueba`.`dt_macro_proyecto`.`id_macro_proyecto` = `migracion_prueba`.`dt_proyecto_op`.`id_macro_proyecto`)))
+                    left join `migracion_prueba`.`user` on
+                        ((`migracion_prueba`.`dt_ordenes`.`id_coordinador` = `migracion_prueba`.`user`.`id`)))
+                    left join `migracion_prueba`.`dt_usuarios` on
+                        ((`migracion_prueba`.`dt_usuarios`.`id_usuario` = `migracion_prueba`.`user`.`id_empleado`)))
+                    left join `migracion_prueba`.`dt_subcategoria` on
+                        ((`migracion_prueba`.`dt_ordenes`.`id_subcategoria` = `migracion_prueba`.`dt_subcategoria`.`id_subcategoria`)));
+                    
+                    
+                    -- migracion_prueba.vw_sub_tareas source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_sub_tareas` AS
+                    select
+                        `migracion_prueba`.`dt_costos`.`id_ordenes` AS `id_ordenes`,
+                        `migracion_prueba`.`dt_costos`.`valor_total` AS `valor_programado`
+                    from
+                        ((`migracion_prueba`.`dt_tareas_costo`
+                    left join `migracion_prueba`.`dt_costos` on
+                        ((`migracion_prueba`.`dt_tareas_costo`.`id_costo` = `migracion_prueba`.`dt_costos`.`id_costo`)))
+                    left join `migracion_prueba`.`dt_compras` on
+                        ((`migracion_prueba`.`dt_tareas_costo`.`id_costo` = `migracion_prueba`.`dt_compras`.`id_costos`)))
+                    where
+                        (`migracion_prueba`.`dt_compras`.`id_compras` is null);
+                    
+                    
+                    -- migracion_prueba.vw_tareas_agenda1 source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_tareas_agenda1` AS
+                    select
+                        `a`.`nombre` AS `nombre_area`,
+                        `u`.`nombre_usuario` AS `nombre_vendedor`,
+                        `o`.`referencia` AS `referencia`,
+                        `o`.`cod` AS `cod`,
+                        `t`.`id_tarea_costo` AS `id_tarea_costo`,
+                        `t`.`id_vendedor` AS `id_vendedor`,
+                        `t`.`id_usuario` AS `id_usuario`,
+                        `t`.`id_costo` AS `id_costo`,
+                        `t`.`n_ordenes` AS `n_ordenes`,
+                        `t`.`id_ordenes` AS `id_ordenes`,
+                        `t`.`can_horas` AS `can_horas`,
+                        `t`.`fecha_inicio` AS `fecha_inicio`,
+                        `t`.`cod_material` AS `cod_material`,
+                        `t`.`nombre_costo` AS `nombre_costo`,
+                        `t`.`id_area` AS `id_area`,
+                        `t`.`recurso` AS `recurso`,
+                        `t`.`fecha_inicio_real` AS `fecha_inicio_real`,
+                        `t`.`fecha_final` AS `fecha_final`,
+                        `t`.`observaciones` AS `observaciones`,
+                        `t`.`fecha_pro` AS `fecha_pro`,
+                        `t`.`fecha_retro` AS `fecha_retro`,
+                        `t`.`id_costos` AS `id_costos`,
+                        `t`.`id_tareas` AS `id_tareas`,
+                        `t`.`id_orden` AS `id_orden`
+                    from
+                        (((`migracion_prueba`.`dt_tareas_costo` `t`
+                    join `migracion_prueba`.`dt_area` `a` on
+                        ((`t`.`id_area` = `a`.`id_area`)))
+                    join `migracion_prueba`.`user` `u` on
+                        ((`t`.`id_vendedor` = `u`.`id`)))
+                    join `migracion_prueba`.`dt_ordenes` `o` on
+                        ((`t`.`id_ordenes` = `o`.`id_ordenes`)));
+                    
+                    
+                    -- migracion_prueba.vw_terceros_home source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_terceros_home` AS
+                    select
+                        distinct `migracion_prueba`.`dt_costos`.`id_costo` AS `id_costo`,
+                        `migracion_prueba`.`dt_clientes`.`nom_empresa` AS `cliente`,
+                        `migracion_prueba`.`dt_macro_proyecto`.`nombre_proyecto` AS `macro_proyecto`,
+                        `migracion_prueba`.`dt_proyecto_op`.`nombre_proyecto` AS `nombre_proyecto`,
+                        `migracion_prueba`.`dt_ordenes`.`ref_general` AS `nombre_op`,
+                        `migracion_prueba`.`dt_costos`.`n_ordenes` AS `n_ordenes`,
+                        `migracion_prueba`.`dt_costos`.`id_ordenes` AS `id_ordenes`,
+                        `migracion_prueba`.`dt_costos`.`nombre_costo` AS `nombre_costo`,
+                        `migracion_prueba`.`dt_costos`.`cant_sol` AS `cant_sol`,
+                        `migracion_prueba`.`dt_costos`.`id_clase_costo` AS `id_clase_costo`,
+                        `migracion_prueba`.`dt_tipo_costo`.`tipo` AS `tipo_costo`,
+                        `migracion_prueba`.`dt_costos`.`id_tipo_costo` AS `id_tipo_costo`,
+                        `migracion_prueba`.`dt_costos`.`valor_total` AS `valor_total`,
+                        `migracion_prueba`.`dt_costos`.`comentarios` AS `comentarios`,
+                        `migracion_prueba`.`dt_fechas_op`.`fecha_ingreso` AS `fecha_real`,
+                        `migracion_prueba`.`dt_costos`.`saldo_compra` AS `saldo_compra`,
+                        `migracion_prueba`.`dt_costos`.`vr_unid` AS `vr_unid`,
+                        `migracion_prueba`.`dt_costos`.`valor_unit` AS `valor_unit`,
+                        `migracion_prueba`.`dt_costos`.`estado` AS `estado`,
+                        `migracion_prueba`.`dt_ordenes`.`cod` AS `cod`,
+                        `migracion_prueba`.`dt_ordenes`.`item_op` AS `item_op`,
+                        `migracion_prueba`.`dt_fechas_op`.`fecha_ingreso` AS `fecha_ingreso`,
+                        `migracion_prueba`.`dt_fechas_op`.`fecha_produccion` AS `fecha_produccion`
+                    from
+                        ((((((`migracion_prueba`.`dt_costos`
+                    join `migracion_prueba`.`dt_ordenes` on
+                        ((`migracion_prueba`.`dt_ordenes`.`id_ordenes` = `migracion_prueba`.`dt_costos`.`id_ordenes`)))
+                    join `migracion_prueba`.`dt_proyecto_op` on
+                        ((`migracion_prueba`.`dt_ordenes`.`id_proyecto_op` = `migracion_prueba`.`dt_proyecto_op`.`id_proyecto_op`)))
+                    join `migracion_prueba`.`dt_macro_proyecto` on
+                        ((`migracion_prueba`.`dt_proyecto_op`.`id_macro_proyecto` = `migracion_prueba`.`dt_macro_proyecto`.`id_macro_proyecto`)))
+                    join `migracion_prueba`.`dt_clientes` on
+                        ((`migracion_prueba`.`dt_macro_proyecto`.`id_cliente` = `migracion_prueba`.`dt_clientes`.`id_cliente`)))
+                    join `migracion_prueba`.`dt_tipo_costo` on
+                        ((`migracion_prueba`.`dt_tipo_costo`.`id_tipo_costo` = `migracion_prueba`.`dt_costos`.`id_tipo_costo`)))
+                    left join `migracion_prueba`.`dt_fechas_op` on
+                        ((`migracion_prueba`.`dt_fechas_op`.`id_ordenes` = `migracion_prueba`.`dt_ordenes`.`id_ordenes`)))
+                    where
+                        ((`migracion_prueba`.`dt_costos`.`cierre` = 0)
+                            and (`migracion_prueba`.`dt_costos`.`id_tipo_costo` in (8, 9, 5, 6, 3, 7))
+                                and (`migracion_prueba`.`dt_costos`.`estado` in (1, 8, 4))
+                                    and (`migracion_prueba`.`dt_ordenes`.`estado` in (1, 10, 12, 13)))
+                    group by
+                        `migracion_prueba`.`dt_costos`.`id_costo`,
+                        `migracion_prueba`.`dt_fechas_op`.`id_ordenes`
+                    order by
+                        `migracion_prueba`.`dt_costos`.`id_costo` desc;
+                    
+                    
+                    -- migracion_prueba.vw_total_compra_mp source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_total_compra_mp` AS
+                    select
+                        sum(`migracion_prueba`.`dt_compras`.`vr_total`) AS `vr_total`,
+                        `migracion_prueba`.`dt_compras`.`fecha_oc` AS `fecha_oc`
+                    from
+                        ((`migracion_prueba`.`dt_compras`
+                    join `migracion_prueba`.`dt_proveedores` on
+                        ((`migracion_prueba`.`dt_compras`.`id_proveedores` = `migracion_prueba`.`dt_proveedores`.`id_proveedores`)))
+                    left join `migracion_prueba`.`dt_costos` on
+                        ((`migracion_prueba`.`dt_compras`.`id_costos` = `migracion_prueba`.`dt_costos`.`id_costo`)))
+                    where
+                        ((`migracion_prueba`.`dt_costos`.`id_tipo_costo` = 1)
+                            and (`migracion_prueba`.`dt_compras`.`id_proveedores` <> 750));
+                    
+                    
+                    -- migracion_prueba.vw_total_ops_new source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_total_ops_new` AS
+                    select
+                        `migracion_prueba`.`dt_costos`.`valor_total` AS `total`,
+                        cast(`migracion_prueba`.`dt_fechas_op`.`fecha_ingreso` as date) AS `fecha_ingreso`
+                    from
+                        ((`migracion_prueba`.`dt_ordenes`
+                    join `migracion_prueba`.`dt_costos` on
+                        ((`migracion_prueba`.`dt_ordenes`.`id_ordenes` = `migracion_prueba`.`dt_costos`.`id_ordenes`)))
+                    left join `migracion_prueba`.`dt_fechas_op` on
+                        ((`migracion_prueba`.`dt_ordenes`.`id_ordenes` = `migracion_prueba`.`dt_fechas_op`.`id_ordenes`)))
+                    where
+                        (`migracion_prueba`.`dt_costos`.`id_tipo_costo` = 1)
+                    order by
+                        `migracion_prueba`.`dt_fechas_op`.`fecha_ingreso` desc;
+                    
+                    
+                    -- migracion_prueba.vw_total_ops_pen_c source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_total_ops_pen_c` AS
+                    select
+                        `migracion_prueba`.`dt_costos`.`valor_total` AS `total`,
+                        cast(`migracion_prueba`.`dt_fechas_op`.`fecha_ingreso` as date) AS `fecha_ingreso`
+                    from
+                        ((`migracion_prueba`.`dt_ordenes`
+                    join `migracion_prueba`.`dt_costos` on
+                        ((`migracion_prueba`.`dt_ordenes`.`id_ordenes` = `migracion_prueba`.`dt_costos`.`id_ordenes`)))
+                    left join `migracion_prueba`.`dt_fechas_op` on
+                        ((`migracion_prueba`.`dt_ordenes`.`id_ordenes` = `migracion_prueba`.`dt_fechas_op`.`id_ordenes`)))
+                    where
+                        ((`migracion_prueba`.`dt_costos`.`id_tipo_costo` = 1)
+                            and (`migracion_prueba`.`dt_costos`.`estado` in (1, 4, 7))
+                                and (`migracion_prueba`.`dt_costos`.`n_ordenes` <> 0)
+                                    and (`migracion_prueba`.`dt_ordenes`.`estado` in (1, 10, 12, 13))
+                                        and (`migracion_prueba`.`dt_ordenes`.`conciliado` <> 1)
+                                            and (`migracion_prueba`.`dt_costos`.`cant_sol` > 0)
+                                                and (`migracion_prueba`.`dt_costos`.`cierre` = 0));
+                    
+                    
+                    -- migracion_prueba.vw_user_activos source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_user_activos` AS
+                    select
+                        `migracion_prueba`.`user`.`id` AS `id`,
+                        `migracion_prueba`.`user`.`id_empleado` AS `id_empleado`,
+                        `migracion_prueba`.`user`.`username` AS `username`,
+                        concat(`migracion_prueba`.`dt_usuarios`.`nombre_usuario`, ' ', `migracion_prueba`.`dt_usuarios`.`apellido_usuario`) AS `nombre_usuario`
+                    from
+                        (`migracion_prueba`.`user`
+                    join `migracion_prueba`.`dt_usuarios` on
+                        ((`migracion_prueba`.`dt_usuarios`.`id_usuario` = `migracion_prueba`.`user`.`id_empleado`)))
+                    where
+                        (`migracion_prueba`.`user`.`status` = 1);
+                    
+                    
+                    -- migracion_prueba.vw_user_costos source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_user_costos` AS
+                    select
+                        `migracion_prueba`.`user`.`id` AS `id`,
+                        `migracion_prueba`.`user`.`id_empleado` AS `id_empleado`,
+                        `migracion_prueba`.`user`.`username` AS `username`,
+                        concat(`migracion_prueba`.`dt_usuarios`.`nombre_usuario`, ' ', `migracion_prueba`.`dt_usuarios`.`apellido_usuario`) AS `nombre_usuario`
+                    from
+                        (`migracion_prueba`.`user`
+                    join `migracion_prueba`.`dt_usuarios` on
+                        ((`migracion_prueba`.`dt_usuarios`.`id_usuario` = `migracion_prueba`.`user`.`id_empleado`)))
+                    where
+                        (`migracion_prueba`.`user`.`status` = 1);
+                    
+                    
+                    -- migracion_prueba.vw_user_diseno source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_user_diseno` AS
+                    select
+                        `migracion_prueba`.`user`.`id` AS `id`,
+                        `migracion_prueba`.`user`.`id_empleado` AS `id_empleado`,
+                        `migracion_prueba`.`user`.`username` AS `username`,
+                        concat(`migracion_prueba`.`dt_usuarios`.`nombre_usuario`, ' ', `migracion_prueba`.`dt_usuarios`.`apellido_usuario`) AS `nombre_usuario`
+                    from
+                        (`migracion_prueba`.`user`
+                    join `migracion_prueba`.`dt_usuarios` on
+                        ((`migracion_prueba`.`dt_usuarios`.`id_usuario` = `migracion_prueba`.`user`.`id_empleado`)))
+                    where
+                        (`migracion_prueba`.`user`.`status` = 1);
+                    
+                    
+                    -- migracion_prueba.vw_valores_compras source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_valores_compras` AS
+                    select
+                        `migracion_prueba`.`dt_costos`.`id_costo` AS `id_costo`,
+                        `migracion_prueba`.`dt_ordenes`.`conciliado` AS `conciliado`,
+                        `migracion_prueba`.`dt_ordenes`.`n_ordenes` AS `n_ordenes`,
+                        `migracion_prueba`.`dt_fechas_op`.`fecha_ingreso` AS `fecha_ingreso`,
+                        `migracion_prueba`.`dt_costos`.`nombre_costo` AS `nombre_costo`,
+                        `migracion_prueba`.`dt_costos`.`cod_material` AS `cod_material`,
+                        `migracion_prueba`.`dt_costos`.`cant_sol` AS `cant_sol`,
+                        `migracion_prueba`.`dt_costos`.`valor_unit` AS `valor_unit`,
+                        `migracion_prueba`.`dt_costos`.`valor_total` AS `valor_total`
+                    from
+                        ((`migracion_prueba`.`dt_costos`
+                    left join `migracion_prueba`.`dt_ordenes` on
+                        ((`migracion_prueba`.`dt_costos`.`id_ordenes` = `migracion_prueba`.`dt_ordenes`.`id_ordenes`)))
+                    left join `migracion_prueba`.`dt_fechas_op` on
+                        ((`migracion_prueba`.`dt_ordenes`.`id_ordenes` = `migracion_prueba`.`dt_fechas_op`.`id_ordenes`)))
+                    where
+                        ((`migracion_prueba`.`dt_costos`.`id_tipo_costo` = 1)
+                            and (`migracion_prueba`.`dt_costos`.`estado` in ('1', '4', '7'))
+                                and (`migracion_prueba`.`dt_costos`.`n_ordenes` <> 0)
+                                    and (`migracion_prueba`.`dt_ordenes`.`estado` in ('1', '10', '12', '13'))
+                                        and (`migracion_prueba`.`dt_costos`.`cant_sol` > 0)
+                                            and (`migracion_prueba`.`dt_costos`.`cierre` = 0))
+                    group by
+                        `migracion_prueba`.`dt_costos`.`id_costo`
+                    order by
+                        `migracion_prueba`.`dt_costos`.`valor_total` desc;
+                        
+                    -- migracion_prueba.vw_existencia_area source
+                    
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_existencia_area` AS
+                    select
+                        `migracion_prueba`.`vw`.`id_inventarioxarea` AS `id_inventarioxarea`,
+                        `migracion_prueba`.`vw`.`codigo_prod` AS `codigo_prod`,
+                        `migracion_prueba`.`vw`.`producto` AS `producto`,
+                        `migracion_prueba`.`vw`.`id_inventario` AS `id_inventario`,
+                        `migracion_prueba`.`vw`.`id_area` AS `id_area`,
+                        `migracion_prueba`.`vw`.`nombre` AS `nombre`,
+                        truncate(sum(`migracion_prueba`.`vw`.`stock`), 2) AS `stock_total`,
+                        truncate(sum(`migracion_prueba`.`vw`.`valor_total`), 2) AS `valor_total`,
+                        sum(`migracion_prueba`.`vw`.`stock_instalacion`) AS `stock_instalacion`,
+                        truncate(sum(`migracion_prueba`.`vw`.`valor_instalacion`), 2) AS `valor_instalacion`,
+                        sum(`migracion_prueba`.`vw`.`stock_almacen`) AS `stock_almacen`,
+                        truncate(sum(`migracion_prueba`.`vw`.`valor_almacen`), 2) AS `valor_almacen`,
+                        sum(`migracion_prueba`.`vw`.`stock_metalmecanica`) AS `stock_metalmecanica`,
+                        truncate(sum(`migracion_prueba`.`vw`.`valor_metalmecanica`), 2) AS `valor_metalmecanica`,
+                        sum(`migracion_prueba`.`vw`.`stock_pintura`) AS `stock_pintura`,
+                        truncate(sum(`migracion_prueba`.`vw`.`valor_pintura`), 2) AS `valor_pintura`,
+                        sum(`migracion_prueba`.`vw`.`stock_sustratos`) AS `stock_sustratos`,
+                        truncate(sum(`migracion_prueba`.`vw`.`valor_sustratos`), 2) AS `valor_sustratos`,
+                        sum(`migracion_prueba`.`vw`.`stock_ensamble`) AS `stock_ensamble`,
+                        truncate(sum(`migracion_prueba`.`vw`.`valor_ensamble`), 2) AS `valor_ensamble`,
+                        sum(`migracion_prueba`.`vw`.`stock_impresion`) AS `stock_impresion`,
+                        truncate(sum(`migracion_prueba`.`vw`.`valor_impresion`), 2) AS `valor_impresion`,
+                        sum(`migracion_prueba`.`vw`.`stock_decoracion`) AS `stock_decoracion`,
+                        truncate(sum(`migracion_prueba`.`vw`.`valor_decoracion`), 2) AS `valor_decoracion`,
+                        sum(`migracion_prueba`.`vw`.`stock_despachos`) AS `stock_despachos`,
+                        truncate(sum(`migracion_prueba`.`vw`.`valor_despachos`), 2) AS `valor_despachos`
+                    from
+                        `migracion_prueba`.`vw_sub_existencia_area` `vw`
+                    group by
+                        `migracion_prueba`.`vw`.`codigo_prod`;   
+                ");
+
+            }catch(PDOException $e){
+                echo "Hubo un error en la creación de las vistas bd ".$e->getMessage();exit;
+            }
+
+            return "Se ha completado la creación de vistas bd ";
+
+        }
+
     }
 
 ?>

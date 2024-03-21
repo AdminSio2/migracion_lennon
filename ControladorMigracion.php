@@ -1923,6 +1923,8 @@
 
                 try{ 
 
+                    $nombre_costo = ControladorFuncionesAuxiliares::formateaString($registro_dt_costos->nom_costo);
+
                     $id_ordenes = array_key_exists($registro_dt_costos->nDoc,$array_ordenes) && array_key_exists($registro_dt_costos->op_item,$array_ordenes[$registro_dt_costos->nDoc])?$array_ordenes[$registro_dt_costos->nDoc][$registro_dt_costos->op_item]['id_ordenes']:null;
 
                     if($id_ordenes == null){
@@ -1950,7 +1952,7 @@
                         'id_tipo_costo' => $registro_dt_costos->tipo_costo,
                         'id_clase_costo' => $registro_dt_costos->clase_costo,
                         'cod_material' => $registro_dt_costos->cod_material,
-                        'nombre_costo' => $registro_dt_costos->nom_costo,
+                        'nombre_costo' => $nombre_costo,
                         'id_acabados' => array_key_exists($registro_dt_costos->cod_material,$array_acabados)?$array_acabados[$registro_dt_costos->cod_material]:null,
                         'id_inventario' => array_key_exists($registro_dt_costos->cod_material,$array_materiales)?$array_materiales[$registro_dt_costos->cod_material]['id_inventario']:null,
                         'id_usuario' => array_key_exists(rtrim($registro_dt_costos->responsable),$array_usuarios)?$array_usuarios[rtrim($registro_dt_costos->responsable)]:null,
@@ -2746,6 +2748,14 @@
                 from dt_compras dc 
             ");
 
+            $consulta_compras_item_op_borrado = $conexion_sio1->query("
+                SELECT ids_despiece  
+                FROM dt_compras
+                WHERE ids_despiece NOT IN (SELECT id_costo FROM dt_costos) and ids_despiece != 0
+            ");
+
+            $array_compras_item_op_borrado = $consulta_compras_item_op_borrado->fetchAll(PDO::FETCH_COLUMN); //var_dump($array_compras_item_op_borrado);exit;
+
 
             $conexion_migracion_prueba->exec("
                 CREATE TABLE `dt_compras` (
@@ -2831,6 +2841,8 @@
 
                     $elaboro_oc = rtrim($registro_compras->elaboro_oc);
 
+                    $detalle_oc = ControladorFuncionesAuxiliares::formateaString($registro_compras->detalle_oc);
+
                     $id_proveedores = array_key_exists($registro_compras->proveedor,$array_proveedores)?$array_proveedores[$registro_compras->proveedor]:null;
 
                     $n_ordenes = array_key_exists($registro_compras->ids_despiece,$array_costos)?$array_costos[$registro_compras->ids_despiece]['n_ordenes']:null;
@@ -2838,6 +2850,17 @@
                     $id_usuario = array_key_exists($elaboro_oc,$array_usuarios)?$array_usuarios[$elaboro_oc]:null;
                     $id_tipo_pago = array_key_exists($registro_compras->formaPago,$array_tipo_pago)?$array_tipo_pago[$registro_compras->formaPago]:null;
                     $area_entrega = array_key_exists($registro_compras->Compromiso,$array_areas)?$array_areas[$registro_compras->Compromiso]:null;
+
+                    if($registro_compras->ids_despiece == 0){
+                        $id_costos = null;
+                        $id_costo_alternativo = null;
+                    }elseif(in_array($registro_compras->ids_despiece,$array_compras_item_op_borrado)){
+                        $id_costos = null;
+                        $id_costo_alternativo = $registro_compras->ids_despiece;
+                    }else{
+                        $id_costos = $registro_compras->ids_despiece;
+                        $id_costo_alternativo = null;
+                    }
                  
 
                     //Algun genio dejo este nombre al contrario en 327160 registros 
@@ -2855,11 +2878,11 @@
                         INSERT INTO dt_compras(id_compras,item_oc,id_proveedores,n_compra,fecha_oc,fecha_compromiso,fecha_aprobacion,n_ordenes,
                         id_ordenes,id_costos,cant_sol,saldo_salida,cod_producto,detalle_oc,vr_unidad,vr_total,puc_id,puc_prod,puc_contra,
                         iva_oc,puc_iva,rtfte_oc,puc_rtfte,rtiva_oc,puc_rtiva,rtica_oc,puc_rtica,dto_fin,observa_oc,aprobo_oc,estado,id_usuario,
-                        id_tipo_pago,tipo_inv,fecha_inicio,area_realiza,area_entrega,cantidad,observaciones_os,consecutivo,nit,n_actualizaciones) VALUES(:id_compras,:item_oc,:id_proveedores,:n_compra,:fecha_oc,:fecha_compromiso,
+                        id_tipo_pago,tipo_inv,fecha_inicio,area_realiza,area_entrega,cantidad,observaciones_os,consecutivo,nit,n_actualizaciones,id_costo) VALUES(:id_compras,:item_oc,:id_proveedores,:n_compra,:fecha_oc,:fecha_compromiso,
                         :fecha_aprobacion,:n_ordenes,:id_ordenes,:id_costos,:cant_sol,:saldo_salida,:cod_producto,:detalle_oc,:vr_unidad,
                         :vr_total,:puc_id,:puc_prod,:puc_contra,:iva_oc,:puc_iva,:rtfte_oc,:puc_rtfte,:rtiva_oc,:puc_rtiva,:rtica_oc,:puc_rtica,
                         :dto_fin,:observa_oc,:aprobo_oc,:estado,:id_usuario,:id_tipo_pago,:tipo_inv,:fecha_inicio,:area_realiza,:area_entrega,
-                        :cantidad,:observaciones_os,:consecutivo,:nit,:n_actualizaciones)
+                        :cantidad,:observaciones_os,:consecutivo,:nit,:n_actualizaciones,:id_costo)
                     ");
 
                     $insert_registro->execute([
@@ -2872,11 +2895,11 @@
                         'fecha_aprobacion' => $registro_compras->fechaAprobo,
                         'n_ordenes' => $n_ordenes,
                         'id_ordenes' => $id_ordenes,
-                        'id_costos' => $registro_compras->ids_despiece,
+                        'id_costos' => $id_costos,
                         'cant_sol' => $registro_compras->cantidad_sol,
                         'saldo_salida' => $registro_compras->saldo_salida,
                         'cod_producto' => $registro_compras->cod_producto,
-                        'detalle_oc' => $registro_compras->detalle_oc,
+                        'detalle_oc' => $detalle_oc,
                         'vr_unidad' => $registro_compras->vUnidad_prod,
                         'vr_total' => $registro_compras->vTotal_prod,
                         'puc_id' => $registro_compras->puc_id,
@@ -2904,7 +2927,8 @@
                         'observaciones_os' => $registro_compras->descripcionT,
                         'consecutivo' => $registro_compras->contratosP,
                         'nit' => $registro_compras->nit_provee,
-                        'n_actualizaciones' => $registro_compras->version
+                        'n_actualizaciones' => $registro_compras->version,
+                        'id_costo' => $id_costo_alternativo
                     ]);
 
                 }catch(PDOException $e){
@@ -2925,6 +2949,18 @@
                 ALTER TABLE dt_compras
                 MODIFY id_compras INT AUTO_INCREMENT PRIMARY KEY
             ");
+            
+            try{
+                $conexion_migracion_prueba->exec("
+                    update dt_compras set id_costo = id_costos
+                    WHERE id_costos NOT IN (SELECT id_costo FROM dt_costos) and id_costos != 0;
+                    
+                    update dt_compras set id_costos = null
+                    WHERE id_costos NOT IN (SELECT id_costo FROM dt_costos) and id_costos != 0;
+                ");
+            }catch(PDOException $e){
+                echo "Error al quitar los id_costos huerfanos y colocarlos en id_costo ".$e->getMessage();
+            }
 
             // Finaliza timer y entregamos mensaje 
 
@@ -4029,6 +4065,114 @@
             $mensaje = "Migración dt_entregables completada ".$registros_insertados." registros insertados en ".$tiempo_transcurrido." segundos"."\n<br>";
 
             return $mensaje;
+
+        }
+
+        public static function migraDtHistorialCostos($conexion_sio1,$conexion_migracion_prueba,$array_info_global){
+
+            try{ 
+                $conexion_migracion_prueba->exec("
+
+                    CREATE TABLE `dt_historial_costos` (
+                    `id_historial_costos` int NOT NULL AUTO_INCREMENT,
+                    `fecha_registro` datetime(6) DEFAULT NULL,
+                    `id_tipo_accion` int DEFAULT NULL,
+                    `accion` varchar(40) DEFAULT NULL,
+                    `id_usuario` int DEFAULT NULL,
+                    `observaciones` varchar(100) DEFAULT NULL,
+                    `id_codprodfinal` int DEFAULT NULL,
+                    `id_plantilla_implicado` int DEFAULT NULL,
+                    `nombre_costo_implicado` varchar(556) DEFAULT NULL,
+                    `cantidad_registros_implicados` int DEFAULT NULL,
+                    `id_ordenes` int DEFAULT NULL,
+                    PRIMARY KEY (`id_historial_costos`)
+                    ) ENGINE=InnoDB AUTO_INCREMENT=240 DEFAULT CHARSET=latin1;
+
+                ");
+            }catch(PDOException $e){
+                echo "Hubo un error en la creación de la tabla dt_historial_costos ".$e->getMessage();exit;
+            }
+
+            return "Creación de la tabla dt_historial_costos completada";
+
+        }
+
+        public static function migraDtHistoricoCierres($conexion_sio1,$conexion_migracion_prueba,$array_info_global){
+
+            try{ 
+                $conexion_migracion_prueba->exec("
+
+                    CREATE TABLE `dt_historico_cierres` (
+                    `id_historico_cierre` int NOT NULL AUTO_INCREMENT,
+                    `fecha_registro` datetime(6) NOT NULL,
+                    `tipo` smallint NOT NULL COMMENT '1 = Abierto, 0 = Cerrado',
+                    `id_user` int NOT NULL,
+                    `id_ordenes` int NOT NULL,
+                    `cantidad_costos` int NOT NULL,
+                    PRIMARY KEY (`id_historico_cierre`),
+                    KEY `fk_dt_historico_cierres_user1` (`id_user`),
+                    /*KEY `dt_historico_cierres_id_ordenes_idx` (`id_ordenes`) USING BTREE,*/
+                    CONSTRAINT `fk_dt_historico_cierres_user1` FOREIGN KEY (`id_user`) REFERENCES `user` (`id`)
+                    ) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
+
+                ");
+            }catch(PDOException $e){
+                echo "Hubo un error en la creación de la tabla dt_historico_cierres ".$e->getMessage();exit;
+            }
+
+            return "Creación de la tabla dt_historico_cierres completada";
+
+        }
+
+        public static function migraDtTrazaOp($conexion_sio1,$conexion_migracion_prueba,$array_info_global){
+
+            try{ 
+                $conexion_migracion_prueba->exec("
+
+                        CREATE TABLE `dt_traza_op` (
+                        `id_traza_op` int NOT NULL AUTO_INCREMENT,
+                        `tipo` int NOT NULL,
+                        `descripcion` longtext,
+                        `comentarios` longtext,
+                        `fecha_registro` datetime NOT NULL,
+                        `id_usuario` int NOT NULL,
+                        `id_ordenes` int NOT NULL,
+                        PRIMARY KEY (`id_traza_op`)
+                        ) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb3;
+
+                ");
+            }catch(PDOException $e){
+                echo "Hubo un error en la creación de la tabla dt_traza_op ".$e->getMessage();exit;
+            }
+
+            return "Creación de la tabla dt_traza_op completada";
+
+        }
+
+        public static function migraDtHistoricoTareasCosto($conexion_sio1,$conexion_migracion_prueba,$array_info_global){
+
+            try{ 
+                $conexion_migracion_prueba->exec("
+
+                    CREATE TABLE `dt_historico_tareas_costo` (
+                    `id_historico_tareas_costo` int NOT NULL AUTO_INCREMENT,
+                    `tipo` int NOT NULL DEFAULT '1' COMMENT '1 = Actualizacion',
+                    `fecha_registro` datetime(6) NOT NULL,
+                    `id_tarea_costo` int NOT NULL,
+                    `user_id` int NOT NULL,
+                    PRIMARY KEY (`id_historico_tareas_costo`),
+                    KEY `fk_dt_historico_tareas_costo_dt_tareas_costo1` (`id_tarea_costo`),
+                    KEY `fk_dt_historico_tareas_costo_user1` (`user_id`),
+                    /*CONSTRAINT `fk_dt_historico_tareas_costo_dt_tareas_costo1` FOREIGN KEY (`id_tarea_costo`) REFERENCES `dt_tareas_costo` (`id_tarea_costo`),*/
+                    CONSTRAINT `fk_dt_historico_tareas_costo_user1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
+                    ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+                ");
+            }catch(PDOException $e){
+                echo "Hubo un error en la creación de la tabla dt_historico_tareas_costo ".$e->getMessage();exit;
+            }
+
+            return "Creación de la tabla dt_historico_tareas_costo completada";
 
         }
 
