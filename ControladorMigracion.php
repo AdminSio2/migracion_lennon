@@ -6,7 +6,231 @@
 
     class ControladorMigracion{
 
+        public static function migraDtInventarioDtKardex($conexion_sio1,$conexion_migracion_prueba,$array_info_global){
+
+            //Inicia timer
+
+            $tiempo_inicio = microtime(true);
+
+            //Consultamos dt_inventario en Sio 1
+
+            $consulta_dt_inventario = $conexion_sio1->query("
+                SELECT id_inventario,codigo_prod,cod_transito,cod_barras,producto,medida,
+                stock,kardex,valor_unidad,vrUnidad_compra,lista_precio,valor_total,proveedor,
+                x,y,activo,tiempoCompra,observaciones,fechaCreacion,grupo,subgrupo,
+                minimo,marca,eneC,eneV,febC,febV,marC,marV,abrC,abrV,mayC,mayV,junC,junV,
+                julC,julV,agoC,agoV,sepC,sepV,octC,octV,novC,novV,dicC,dicV  FROM dt_inventario
+            ");
+
+            $array_dt_inventario = $consulta_dt_inventario->fetchAll(PDO::FETCH_OBJ);
+
+            //Borramos el dt_inventario de Oz
+
+            $conexion_migracion_prueba->exec("
+                ALTER TABLE dt_proveeref
+                DROP FOREIGN KEY fk_dt_proveeref_dt_inventario1;
+
+                DROP TABLE dt_inventario;
+                DROP TABLE dt_kardex;
+            ");
+
+            //Creamos nuevamente dt_inventario(Sin llave primaria) y dt_kardex
+
+            $conexion_migracion_prueba->exec("
+                CREATE TABLE `dt_inventario` (
+                `id_inventario` int,
+                `codigo_prod` varchar(180) DEFAULT NULL,
+                `cod_transito` varchar(180) DEFAULT NULL,
+                `cod_barras` varchar(50) DEFAULT NULL,
+                `producto` varchar(256) DEFAULT NULL,
+                `id_medida` int DEFAULT NULL,
+                `stock` DECIMAL(10, 2) DEFAULT NULL,
+                `kardex_estado` char(1) DEFAULT NULL,
+                `valor_unidad` DECIMAL(10, 2) DEFAULT NULL,
+                `valor_unidad_compra` DECIMAL(10, 2) DEFAULT NULL,
+                `lista_precio` DECIMAL(10, 2) DEFAULT NULL,
+                `valor_total` DECIMAL(10, 2) DEFAULT NULL,
+                `id_proveedor` int DEFAULT NULL,
+                `tam_x` float DEFAULT NULL,
+                `tam_y` float DEFAULT NULL,
+                `estado` smallint DEFAULT NULL,
+                `tiempo_compra` int DEFAULT NULL,
+                `observaciones_mat` longtext,
+                `fecha_creacion` date DEFAULT NULL,
+                `id_grupo_inventario` int DEFAULT NULL,
+                `id_subgrupo` int DEFAULT NULL,
+                `cantidad_min` int DEFAULT NULL,
+                `material_crit` int DEFAULT NULL,
+                `marca` varchar(100) DEFAULT NULL
+                ) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+            ");
+
+            $conexion_migracion_prueba->exec("
+                CREATE TABLE `dt_kardex` (
+                `id_kardex` int NOT NULL AUTO_INCREMENT,
+                `id_inventario` int DEFAULT NULL,
+                `codigo_prod` varchar(180) DEFAULT NULL,
+                `producto` varchar(256) DEFAULT NULL,
+                `enero_stock` double(12,2) DEFAULT NULL,
+                `enero_valor` double(12,2) DEFAULT NULL,
+                `febrero_stock` double(12,2) DEFAULT NULL,
+                `febrero_valor` double(12,2) DEFAULT NULL,
+                `marzo_stock` double(12,2) DEFAULT NULL,
+                `marzo_valor` double(12,2) DEFAULT NULL,
+                `abril_stock` double(12,2) DEFAULT NULL,
+                `abril_valor` double(12,2) DEFAULT NULL,
+                `mayo_stock` double(12,2) DEFAULT NULL,
+                `mayo_valor` double(12,2) DEFAULT NULL,
+                `junio_stock` double(12,2) DEFAULT NULL,
+                `junio_valor` double(12,2) DEFAULT NULL,
+                `julio_stock` double(12,2) DEFAULT NULL,
+                `julio_valor` double(12,2) DEFAULT NULL,
+                `agosto_stock` double(12,2) DEFAULT NULL,
+                `agosto_valor` double(12,2) DEFAULT NULL,
+                `septiembre_stock` double(12,2) DEFAULT NULL,
+                `septiembre_valor` double(12,2) DEFAULT NULL,
+                `octubre_stock` double(12,2) DEFAULT NULL,
+                `octubre_valor` double(12,2) DEFAULT NULL,
+                `noviembre_stock` double(12,2) DEFAULT NULL,
+                `noviembre_valor` double(12,2) DEFAULT NULL,
+                `diciembre_stock` double(12,2) DEFAULT NULL,
+                `diciembre_valor` double(12,2) DEFAULT NULL,
+                PRIMARY KEY (`id_kardex`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+            ");
+
+            $array_medidas = $array_info_global['medidas=>id_medida'];
+            $array_proveedores = $array_info_global['empresa=>id_proveedores'];
+            $array_grupo_inventario = $array_info_global['grupo=>id_grupo_inventario'];
+            $array_subgrupo = $array_info_global['subgrupo=>id_subgrupo'];
+
+
+            $registros_insertados = 0;
+
+            $conexion_migracion_prueba->beginTransaction();
+
+            foreach($array_dt_inventario as $registro_dt_inventario){
+
+                try{
+
+                    $id_medidas = array_key_exists($registro_dt_inventario->medida,$array_medidas)?$array_medidas[$registro_dt_inventario->medida]:null;
+                    $id_proveedor = array_key_exists($registro_dt_inventario->proveedor,$array_proveedores)?$array_proveedores[$registro_dt_inventario->proveedor]:null;
+                    $id_grupo_inventario = array_key_exists($registro_dt_inventario->grupo,$array_grupo_inventario)?$array_grupo_inventario[$registro_dt_inventario->grupo]:null;
+                    $id_subgrupo = array_key_exists($registro_dt_inventario->subgrupo,$array_subgrupo)?$array_subgrupo[$registro_dt_inventario->subgrupo]:null;
+
+                    $producto = ControladorFuncionesAuxiliares::formateaString($registro_dt_inventario->producto);
+
+                    $insert_registro = $conexion_migracion_prueba->prepare("
+                        INSERT INTO dt_inventario(id_inventario,codigo_prod,cod_transito,cod_barras,producto,id_medida,stock,kardex_estado,valor_unidad,valor_unidad_compra,
+                        lista_precio,valor_total,id_proveedor,tam_x,tam_y,estado,tiempo_compra,observaciones_mat,fecha_creacion,id_grupo_inventario,id_subgrupo,cantidad_min,material_crit,marca)
+                        VALUES(:id_inventario,:codigo_prod,:cod_transito,:cod_barras,:producto,:id_medida,:stock,:kardex_estado,:valor_unidad,:valor_unidad_compra,
+                        :lista_precio,:valor_total,:id_proveedor,:tam_x,:tam_y,:estado,:tiempo_compra,:observaciones_mat,:fecha_creacion,:id_grupo_inventario,:id_subgrupo,
+                        :cantidad_min,:material_crit,:marca)
+                    ");
+
+                    $insert_registro->execute([
+                        'id_inventario' => $registro_dt_inventario->id_inventario,
+                        'codigo_prod' => $registro_dt_inventario->codigo_prod,
+                        'cod_transito' => $registro_dt_inventario->cod_transito,
+                        'cod_barras' => $registro_dt_inventario->cod_barras,
+                        'producto' => $producto,
+                        'id_medida' => $id_medidas,
+                        'stock' => $registro_dt_inventario->stock,
+                        'kardex_estado' => $registro_dt_inventario->kardex,
+                        'valor_unidad' => $registro_dt_inventario->valor_unidad,
+                        'valor_unidad_compra' => $registro_dt_inventario->vrUnidad_compra,
+                        'lista_precio' => $registro_dt_inventario->lista_precio,
+                        'valor_total' => $registro_dt_inventario->valor_total,
+                        'id_proveedor' => $id_proveedor,
+                        'tam_x' => $registro_dt_inventario->x,
+                        'tam_y' => $registro_dt_inventario->y,
+                        'estado' => $registro_dt_inventario->activo,
+                        'tiempo_compra' => $registro_dt_inventario->tiempoCompra,
+                        'observaciones_mat' => $registro_dt_inventario->observaciones,
+                        'fecha_creacion' => $registro_dt_inventario->fechaCreacion,
+                        'id_grupo_inventario' => $id_grupo_inventario,
+                        'id_subgrupo' => $id_subgrupo,
+                        'cantidad_min' => $registro_dt_inventario->minimo,
+                        'material_crit' => 0,
+                        'marca' => $registro_dt_inventario->marca
+                    ]);
+
+                }catch(PDOException $e){
+                    $conexion_migracion_prueba->rollback();
+                    echo "Error en el id_inventario: ".$registro_dt_inventario->id_inventario."<br>".$e->getMessage();exit;
+                }
+
+                try{
+                    $insert_registro2 = $conexion_migracion_prueba->prepare("
+                        INSERT INTO dt_kardex(id_inventario,codigo_prod,producto,enero_stock,enero_valor,febrero_stock,febrero_valor,marzo_stock,marzo_valor,abril_stock,
+                        abril_valor,mayo_stock,mayo_valor,junio_stock,junio_valor,julio_stock,julio_valor,agosto_stock,agosto_valor,septiembre_stock,septiembre_valor,octubre_stock,
+                        octubre_valor,noviembre_stock, noviembre_valor,diciembre_stock,diciembre_valor)VALUES(:id_inventario,:codigo_prod,:producto,:enero_stock,
+                        :enero_valor,:febrero_stock,:febrero_valor,:marzo_stock,:marzo_valor,:abril_stock,:abril_valor,:mayo_stock,:mayo_valor,:junio_stock,:junio_valor,:julio_stock,
+                        :julio_valor,:agosto_stock,:agosto_valor,:septiembre_stock,:septiembre_valor,:octubre_stock,:octubre_valor,:noviembre_stock,:noviembre_valor,:diciembre_stock,
+                        :diciembre_valor)
+                    ");
+
+                    $insert_registro2->execute([
+                        'id_inventario' => $registro_dt_inventario->id_inventario,
+                        'codigo_prod' => $registro_dt_inventario->codigo_prod,
+                        'producto' => $producto,
+                        'enero_stock' => $registro_dt_inventario->eneC,
+                        'enero_valor' => $registro_dt_inventario->eneV,
+                        'febrero_stock' => $registro_dt_inventario->febC,
+                        'febrero_valor' => $registro_dt_inventario->febV,
+                        'marzo_stock' => $registro_dt_inventario->marC,
+                        'marzo_valor' => $registro_dt_inventario->marV,
+                        'abril_stock' => $registro_dt_inventario->abrC,
+                        'abril_valor' => $registro_dt_inventario->abrV,
+                        'mayo_stock' => $registro_dt_inventario->mayC,
+                        'mayo_valor' => $registro_dt_inventario->mayV,
+                        'junio_stock' => $registro_dt_inventario->junC,
+                        'junio_valor' => $registro_dt_inventario->junV,
+                        'julio_stock' => $registro_dt_inventario->julC,
+                        'julio_valor' => $registro_dt_inventario->julV,
+                        'agosto_stock' => $registro_dt_inventario->agoC,
+                        'agosto_valor' => $registro_dt_inventario->agoV,
+                        'septiembre_stock' => $registro_dt_inventario->sepC,
+                        'septiembre_valor' => $registro_dt_inventario->sepV,
+                        'octubre_stock' => $registro_dt_inventario->octC,
+                        'octubre_valor' => $registro_dt_inventario->octV,
+                        'noviembre_stock' => $registro_dt_inventario->novC,
+                        'noviembre_valor' => $registro_dt_inventario->novV,
+                        'diciembre_stock' => $registro_dt_inventario->dicC,
+                        'diciembre_valor' => $registro_dt_inventario->dicV
+                    ]);
+                }catch(PDOException $e){
+                    $conexion_migracion_prueba->rollback();
+                    echo "Error en el id_inventario para dt_kardex: ".$registro_dt_inventario->id_inventario."<br>".$e->getMessage();exit;
+                }
+
+                $registros_insertados++;
+
+            }
+
+            $conexion_migracion_prueba->commit();
+            $conexion_migracion_prueba->exec("
+                ALTER TABLE dt_inventario
+                MODIFY id_inventario INT AUTO_INCREMENT PRIMARY KEY;
+
+                /*ALTER TABLE dt_proveeref
+                ADD CONSTRAINT fk_dt_proveeref_dt_inventario1 FOREIGN KEY (id_inventario)
+                REFERENCES dt_inventario (id_inventario);*/
+            ");
+
+            // Finaliza timer y entregamos mensaje 
+
+            $tiempo_fin = microtime(true);
+            $tiempo_transcurrido = $tiempo_fin - $tiempo_inicio;
+
+            $mensaje = "Migración id_inventario y dt_kardex completada ".$registros_insertados." registros insertados en ambas tablas en ".$tiempo_transcurrido." segundos";
+
+            return $mensaje;
+            
+        }
+
         public static function migraDtAcabados($conexion_sio1,$conexion_migracion_prueba,$array_info_global){
+
            //Inicia timer
 
            $tiempo_inicio = microtime(true);

@@ -497,6 +497,22 @@
 
         }
 
+        public static function traeArrayIdGrupoInventario($conexion_migracion_prueba){
+
+            $consulta_grupo_inventario = $conexion_migracion_prueba->query("SELECT * from dt_grupoinventario");
+
+            $array_grupo_inventario = $consulta_grupo_inventario->fetchAll(PDO::FETCH_OBJ);
+
+            $array_grupo_inventario_reasignado = [];
+
+            foreach($array_grupo_inventario as $registro_grupo_inventario){
+                $array_grupo_inventario_reasignado[$registro_grupo_inventario->grupo] = $registro_grupo_inventario->id_grupo_inventario;
+            }
+
+            return $array_grupo_inventario_reasignado;
+
+        }
+
         public static function traeArrayIdInventario($conexion_migracion_prueba){
 
             $consulta_inventario = $conexion_migracion_prueba->query("SELECT id_inventario,codigo_prod,id_medida,producto,valor_unidad_compra FROM dt_inventario");
@@ -518,6 +534,22 @@
 
 
             return $array_inventario_reasignado;
+
+        }
+
+        public static function traeArrayIdSubgrupo($conexion_migracion_prueba){
+
+            $consulta_subgrupo = $conexion_migracion_prueba->query("SELECT * from dt_subgrupo");
+
+            $array_subgrupo = $consulta_subgrupo->fetchAll(PDO::FETCH_OBJ);
+
+            $array_subgrupo_reasignado = [];
+
+            foreach($array_subgrupo as $registro_subgrupo){
+                $array_subgrupo_reasignado[$registro_subgrupo->subgrupo] = $registro_subgrupo->id_subgrupo;
+            }
+
+            return $array_subgrupo_reasignado;
 
         }
 

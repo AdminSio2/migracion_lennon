@@ -21157,8 +21157,8 @@
 
             }
 
-            //dt_inventario 
-
+            //dt_inventario (COMENTADO POR MIGRACION DIRECTA)
+            /*
             try{
                 $conexion_migracion_prueba->exec("
 
@@ -21864,10 +21864,11 @@
                 ");
             }catch(PDOException $e){
                 echo "Hubo un error en la actualización de los registros nuevos de la tabla dt_inventario "."\n<br>".$e->getMessage();
-            }
+            }*/
 
-            //dt_kardex
+            //dt_kardex (COMENTADO POR MIGRACION DIRECTA)
 
+            /*
             try{
                 $conexion_migracion_prueba->exec("
 
@@ -22477,7 +22478,7 @@
                 ");
             }catch(PDOException $e){
                 echo "Hubo un error en la actualización de los registros nuevos de la tabla dt_kardex "."\n<br>".$e->getMessage();
-            }
+            }*/
 
             $tiempo_fin = microtime(true);
             $tiempo_transcurrido = $tiempo_fin - $tiempo_inicio;

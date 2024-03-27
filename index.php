@@ -100,7 +100,29 @@
 
     $array_info_global['id_cod=>medidas_codigos'] = ControladorInformacionGlobal::traeDataCorreccionCodprodfinal($conexion_sio1);
 
-    
+    //Traemos array: empresa => id_proveedores
+ 
+    $array_info_global['empresa=>id_proveedores'] = ControladorInformacionGlobal::traeArrayIdProveedores($conexion_migracion_prueba);
+
+    //Traemos array medidas => id_medida
+
+    $array_info_global['medidas=>id_medida'] = ControladorInformacionGlobal::traeArrayMedidas($conexion_migracion_prueba); 
+
+    //Traemos array grupo => id_grupo_inventario 
+
+    $array_info_global['grupo=>id_grupo_inventario'] = ControladorInformacionGlobal::traeArrayIdGrupoInventario($conexion_migracion_prueba);
+
+    //Traemos array subgrupo => id_subgrupo
+
+    $array_info_global['subgrupo=>id_subgrupo'] = ControladorInformacionGlobal::traeArrayIdSubgrupo($conexion_migracion_prueba);
+
+
+
+    echo ControladorMigracion::migraDtInventarioDtKardex($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
+
+    //Desocupamos estos arrays porque no se van a usar luego de la función anterior
+    $array_info_global['grupo=>id_grupo_inventario'] = null;
+    $array_info_global['subgrupo=>id_subgrupo'] = null;
 
     //Traemos el array codigo_prod => id_inventario
 
@@ -108,9 +130,7 @@
 
     $array_info_global['codigo_prod=>id_inventario'] = ControladorInformacionGlobal::traeArrayIdInventario($conexion_migracion_prueba);
 
-    //Traemos array medidas => id_medida
-
-    $array_info_global['medidas=>id_medida'] = ControladorInformacionGlobal::traeArrayMedidas($conexion_migracion_prueba); 
+    
 
     //Traemos array area_sio1 => id_area
 
@@ -201,9 +221,7 @@
     echo ControladorMigracion::migraDtHistoricoFt($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
     echo ControladorMigracion::migraDtTareasCosto($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
 
-    //Traemos array: empresa => id_proveedores
- 
-    $array_info_global['empresa=>id_proveedores'] = ControladorInformacionGlobal::traeArrayIdProveedores($conexion_migracion_prueba);
+    
 
     //Traemos array: id_costo => data_costos
 
