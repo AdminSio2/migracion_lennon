@@ -43,6 +43,9 @@
             elseif(strpos($string_formatear, '├ô') !== false){
                 $string_formateado = str_replace('├ô', 'Ó', $string_formatear);
             }
+            elseif(strpos($string_formatear, '├Æ') !== false){
+                $string_formateado = str_replace('├Æ', 'Ó', $string_formatear);
+            }
             elseif(strpos($string_formatear, '├│') !== false){
                 $string_formateado = str_replace('├│', 'ó', $string_formatear);
             }
@@ -60,6 +63,9 @@
             }
             elseif(strpos($string_formatear, '├®') !== false){
                 $string_formateado = str_replace('├®', 'é', $string_formatear);
+            }
+            elseif(strpos($string_formatear, '├ë') !== false){
+                $string_formateado = str_replace('├ë', 'É', $string_formatear);
             }
             else{
                 $string_formateado = $string_formatear;
@@ -23196,7 +23202,7 @@
                     group by dt_costos.id_costo ORDER BY dt_costos.n_ordenes,dt_costos.id_ordenes,dt_costos.id_costo,dt_acabados.id_area,dt_acabados.cod;
                     
                     CREATE DEFINER=`masterUS`@`%` PROCEDURE `migracion_prueba`.`reporteCostos`(fecha_inicio datetime,fecha_fin datetime)
-                    select o.n_ordenes,o.id_cliente,o.nit,o.id_categoria,o.id_vend,
+                    select o.n_ordenes,cl.nom_empresa,o.nit,ca.nombre_categoria,u.nombre_usuario,
                     sum(case when c.id_tipo_costo = 9 and c.id_clase_costo != 2 or c.id_tipo_costo = 9 and c.id_clase_costo is null then c.valor_total else c.valor_total = 1 end) as 'viaticos_prod',
                     sum(case when c.id_tipo_costo = 9 and c.id_clase_costo = 2 then c.valor_total else c.valor_total = 1 end) as 'viaticos_log',
                     sum(case when c.id_tipo_costo = 3 and c.id_clase_costo != 2 or c.id_tipo_costo = 3 and c.id_clase_costo is null then c.valor_total else c.valor_total = 1 end) as 'insumos_prod',
@@ -23213,6 +23219,9 @@
                     from dt_ordenes o 
                     inner join dt_fechas_op f on o.id_ordenes = f.id_ordenes
                     inner join dt_costos c on o.id_ordenes = c.id_ordenes
+                    left join dt_clientes cl on o.id_cliente = cl.id_cliente 
+                    left join dt_categoria ca on o.id_categoria = ca.id_categoria 
+                    left join `user` u on o.id_vend = u.id
                     where f.fecha_ingreso between fecha_inicio and fecha_fin group by o.n_ordenes;
                     
                     CREATE DEFINER=`masterUS`@`%` PROCEDURE `migracion_prueba`.`tablaKardex`(ano int,mes int)

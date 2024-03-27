@@ -1325,6 +1325,45 @@
                 ALTER TABLE dt_fechas_op
                 ADD CONSTRAINT dt_fechas_op_dt_ordenes_fk FOREIGN KEY (id_ordenes) REFERENCES dt_ordenes (id_ordenes)
             ");
+
+            try{
+                $conexion_migracion_prueba->exec("
+                  
+                    UPDATE dt_ordenes
+                    SET referencia = REPLACE(referencia, '├ô', 'Ó');
+                    UPDATE dt_ordenes
+                    SET referencia = REPLACE(referencia, '├│', 'ó');
+                    UPDATE dt_ordenes
+                    SET referencia = REPLACE(referencia, '├¡', 'í');
+                    UPDATE dt_ordenes
+                    SET referencia = REPLACE(referencia, '├ì', 'Í');
+                    UPDATE dt_ordenes
+                    SET referencia = REPLACE(referencia, '├ü', 'Á');
+                    UPDATE dt_ordenes
+                    SET referencia = REPLACE(referencia, '├®', 'é');
+                
+                    UPDATE dt_ordenes
+                    SET ref_general = REPLACE(ref_general, '├ô', 'Ó');
+                    UPDATE dt_ordenes
+                    SET ref_general = REPLACE(ref_general, '├│', 'ó');
+                    UPDATE dt_ordenes
+                    SET ref_general = REPLACE(ref_general, '├¡', 'í');
+                    UPDATE dt_ordenes
+                    SET ref_general = REPLACE(ref_general, '├ì', 'Í');
+                    UPDATE dt_ordenes
+                    SET ref_general = REPLACE(ref_general, '├ü', 'Á');
+                    UPDATE dt_ordenes
+                    SET ref_general = REPLACE(ref_general, '├®', 'é');
+
+                ");
+
+            }catch(PDOException $e){
+                echo "Hubo un error en el formateo de las columnas referencia y ref general ".$e->getMessage();
+            }
+
+            
+
+
             $tiempo_fin = microtime(true);
             $tiempo_transcurrido = $tiempo_fin - $tiempo_inicio;
 
@@ -2123,6 +2162,11 @@
 
                     $id_usuario = array_key_exists($registro_disenolista->codVendedor,$array_codvendedor_user)?$array_codvendedor_user[$registro_disenolista->codVendedor]:0;
 
+                    $archivo = ControladorFuncionesAuxiliares::formateaString($registro_disenolista->archivo);
+
+                    $foto = ControladorFuncionesAuxiliares::formateaString($registro_disenolista->foto);
+
+                    $ruta = ControladorFuncionesAuxiliares::formateaString($registro_disenolista->ruta);
 
                     if($id_ordenes == null){
                         $registros_no_incluidos++;
@@ -2166,7 +2210,7 @@
                         'plano_electrico' => $registro_disenolista->plano_electrico != null ? 1 : null,
                         'plano_cargue' => $registro_disenolista->plano_cargue != null ? 1 : null,
                         'plano_especial' => $registro_disenolista->plano_especial != null ? 1 : null,
-                        'archivo' => $registro_disenolista->archivo,
+                        'archivo' => $archivo,
                         'fecha_inicio' => $registro_disenolista->fechaInicio,
                         'id_usuario' => $id_usuario,
                         'n_ordenes' => $registro_disenolista->nOrden,
@@ -2176,8 +2220,8 @@
                         'otros_observaciones' => $registro_disenolista->otrosObser,
                         'fecha_inicio_real' => $registro_disenolista->fechaIncioR,
                         'fecha_final_real' => $registro_disenolista->fechaFinalR,
-                        'foto' => $registro_disenolista->foto,
-                        'ruta' => $registro_disenolista->ruta,
+                        'foto' => $foto,
+                        'ruta' => $ruta,
                         'fecha_final_cli' => $registro_disenolista->fechaFinalCli,
                         'estado' =>1,
                         'ok' => $registro_disenolista->OK,
@@ -2204,6 +2248,48 @@
                 ALTER TABLE dt_diseno
                 MODIFY id_disenolista INT AUTO_INCREMENT PRIMARY KEY
             ");
+
+            try{
+                $conexion_migracion_prueba->exec("
+                  
+                    UPDATE dt_diseno
+                    SET archivo = REPLACE(archivo, '├│', 'ó');
+                    UPDATE dt_diseno
+                    SET archivo = REPLACE(archivo, '├¡', 'í');
+                    UPDATE dt_diseno
+                    SET archivo = REPLACE(archivo, '├ì', 'Í');
+                    UPDATE dt_diseno
+                    SET archivo = REPLACE(archivo, '├ü', 'Á');
+                    UPDATE dt_diseno
+                    SET archivo = REPLACE(archivo, '├®', 'é');
+                    
+                    UPDATE dt_diseno
+                    SET foto = REPLACE(foto, '├│', 'ó');
+                    UPDATE dt_diseno
+                    SET foto = REPLACE(foto, '├¡', 'í');
+                    UPDATE dt_diseno
+                    SET foto = REPLACE(foto, '├ì', 'Í');
+                    UPDATE dt_diseno
+                    SET foto = REPLACE(foto, '├ü', 'Á');
+                    UPDATE dt_diseno
+                    SET foto = REPLACE(foto, '├®', 'é');
+                    
+                    UPDATE dt_diseno
+                    SET ruta = REPLACE(ruta, '├│', 'ó');
+                    UPDATE dt_diseno
+                    SET ruta = REPLACE(ruta, '├¡', 'í');
+                    UPDATE dt_diseno
+                    SET ruta = REPLACE(ruta, '├ì', 'Í');
+                    UPDATE dt_diseno
+                    SET ruta = REPLACE(ruta, '├ü', 'Á');
+                    UPDATE dt_diseno
+                    SET ruta = REPLACE(ruta, '├®', 'é');
+
+                ");
+
+            }catch(PDOException $e){
+                echo "Hubo un error en el formateo de las columnas archivo, foto y ruta ".$e->getMessage();
+            }
 
             // Finaliza timer y entregamos mensaje 
 
@@ -2370,6 +2456,10 @@
 
                     $archivo = ControladorFuncionesAuxiliares::formateaString($archivo);
 
+                    $foto = ControladorFuncionesAuxiliares::formateaString($registro_dt_programacion_diseno->foto);
+
+                    $ruta = ControladorFuncionesAuxiliares::formateaString($registro_dt_programacion_diseno->ruta);
+
                     $insert_registro = $conexion_migracion_prueba->prepare("
                         INSERT INTO dt_estructura_p_diseno(grupo,fecha_inicio,fecha_fin,archivo,gantt,ruta,foto,id_programacion_diseno,responsable)
                         VALUES(:grupo,:fecha_inicio,:fecha_fin,:archivo,:gantt,:ruta,:foto,:id_programacion_diseno,:responsable);
@@ -2381,8 +2471,8 @@
                         'fecha_fin' => $registro_dt_programacion_diseno->fecha_final,
                         'archivo' => $archivo,
                         'gantt' => $registro_dt_programacion_diseno->gantt,
-                        'ruta' => $registro_dt_programacion_diseno->ruta,
-                        'foto' => $registro_dt_programacion_diseno->foto,
+                        'ruta' => $ruta,
+                        'foto' => $foto,
                         'id_programacion_diseno' => array_key_exists($registro_dt_programacion_diseno->n_programacion,$array_id_programacion_diseno)?$array_id_programacion_diseno[$registro_dt_programacion_diseno->n_programacion]:null,
                         'responsable' => array_key_exists($registro_dt_programacion_diseno->responsable,$array_usuarios)?$array_usuarios[$registro_dt_programacion_diseno->responsable]:null
                     ]);
@@ -2399,6 +2489,48 @@
             }
 
             $conexion_migracion_prueba->commit();
+
+            try{
+                $conexion_migracion_prueba->exec("
+                  
+                    UPDATE dt_estructura_p_diseno
+                    SET archivo = REPLACE(archivo, '├│', 'ó');
+                    UPDATE dt_estructura_p_diseno
+                    SET archivo = REPLACE(archivo, '├¡', 'í');
+                    UPDATE dt_estructura_p_diseno
+                    SET archivo = REPLACE(archivo, '├ì', 'Í');
+                    UPDATE dt_estructura_p_diseno
+                    SET archivo = REPLACE(archivo, '├ü', 'Á');
+                    UPDATE dt_estructura_p_diseno
+                    SET archivo = REPLACE(archivo, '├®', 'é');
+                    
+                    UPDATE dt_estructura_p_diseno
+                    SET foto = REPLACE(foto, '├│', 'ó');
+                    UPDATE dt_estructura_p_diseno
+                    SET foto = REPLACE(foto, '├¡', 'í');
+                    UPDATE dt_estructura_p_diseno
+                    SET foto = REPLACE(foto, '├ì', 'Í');
+                    UPDATE dt_estructura_p_diseno
+                    SET foto = REPLACE(foto, '├ü', 'Á');
+                    UPDATE dt_estructura_p_diseno
+                    SET foto = REPLACE(foto, '├®', 'é');
+                    
+                    UPDATE dt_estructura_p_diseno
+                    SET ruta = REPLACE(ruta, '├│', 'ó');
+                    UPDATE dt_estructura_p_diseno
+                    SET ruta = REPLACE(ruta, '├¡', 'í');
+                    UPDATE dt_estructura_p_diseno
+                    SET ruta = REPLACE(ruta, '├ì', 'Í');
+                    UPDATE dt_estructura_p_diseno
+                    SET ruta = REPLACE(ruta, '├ü', 'Á');
+                    UPDATE dt_estructura_p_diseno
+                    SET ruta = REPLACE(ruta, '├®', 'é');
+
+                ");
+
+            }catch(PDOException $e){
+                echo "Hubo un error en el formateo de las columnas archivo, foto y ruta ".$e->getMessage();
+            }
 
             
             $tiempo_fin = microtime(true);
@@ -3115,16 +3247,22 @@
                     if($registro_rotaciones->tipo == 13){
                         $id_area = 1;
                     }else{
-                        $id_area = array_key_exists($registro_rotaciones->enviado_a,$array_areas)?$array_areas[$registro_rotaciones->enviado_a]:null;
+                        $id_area = array_key_exists(trim($registro_rotaciones->recibido),$array_areas)?$array_areas[trim($registro_rotaciones->recibido)]:null;
                     }
 
                     if($registro_rotaciones->tipo == 26){
                         $id_encargado = null;
                     }else{
-                        $id_encargado = array_key_exists($registro_rotaciones->enviado_a,$array_usuarios)?$array_usuarios[$registro_rotaciones->enviado_a]:null;
+                        $id_encargado = array_key_exists(trim($registro_rotaciones->enviado_a),$array_usuarios)?$array_usuarios[trim($registro_rotaciones->enviado_a)]:null;
                     }
 
-                    $id_usuario = array_key_exists($registro_rotaciones->elaboro,$array_usuarios)?$array_usuarios[$registro_rotaciones->elaboro]:null;
+                    if(trim($registro_rotaciones->elaboro) == 'DESARROLLADOR SAVIV'){
+                        $id_usuario = 1; 
+                    }else{
+                        $id_usuario = array_key_exists(trim($registro_rotaciones->elaboro),$array_usuarios)?$array_usuarios[trim($registro_rotaciones->elaboro)]:null;
+                    }
+
+                    
 
                     $insert_registro = $conexion_migracion_prueba->prepare("
                         INSERT INTO dt_rotacion(id_rotacion,cantidad,cod_prod,cons_contable,estado,factura,factura_proveedor,fecha,fecha_factura,fecha_legalizacion,
