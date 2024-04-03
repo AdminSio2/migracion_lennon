@@ -1225,8 +1225,7 @@
                 SELECT 
                 id_orden,referencia ,var66,modulo,cobro,nit_op,ref_general,
                 descripcionItem ,cantidad,item_op,id_cot,elaboro,idVend,aprobado,tamanoX,
-                tamanoY,tamanoZ,vUnidad,vTotal,id_proyecto_op,id_Coordinador,nOrden,ArchivoSCOD,
-                nit_op,a_pvo,u_pvo,cotizacion,item_ct,conciliado,
+                tamanoY,tamanoZ,vUnidad,vTotal,id_proyecto_op,id_Coordinador,nOrden,ArchivoSCOD,a_pvo,u_pvo,cotizacion,item_ct,conciliado,
                 fechaIngreso,fechaNotas,fechaAprobacion,fechaAutorizacion,fechaFT,fechaCostos,fechaIdeal,
                 fechaBodegaje,fechaTransIns,fechaInstalacion,fechaFInstalacion,fechaIngresoOP,
                 fecha_conciliacion_new
@@ -1334,7 +1333,9 @@
 
             $array_clientes = $array_info_global['nit=>id_cliente'];
 
-            $array_subcategorias = $array_info_global['nOrden=>cod'];
+            //$array_subcategorias = $array_info_global['nOrden=>cod'];
+
+            $array_data_subcategoria = $array_info_global['nOrden|item_ct=>dataSubcategoria'];
 
             //subcategorias desde el modulo de la op
 
@@ -1380,8 +1381,22 @@
                             $var66 = null;
                         }
 
+                    if(array_key_exists($registro_dt_ordenes->nOrden,$array_data_subcategoria)&&array_key_exists($registro_dt_ordenes->item_ct,$array_data_subcategoria[$registro_dt_ordenes->nOrden])) {
+                        $array_cobro_subcategoria = $array_data_subcategoria[$registro_dt_ordenes->nOrden][$registro_dt_ordenes->item_ct];
+                    }else{
+                        $array_cobro_subcategoria = null;
+                    }
 
-                    
+                    //Asignamos el cobro
+
+                    $cobro = $array_cobro_subcategoria?$array_cobro_subcategoria['cobro']:null;
+
+                    //Asignamos subcategoria
+
+                    $id_subcategoria = $array_cobro_subcategoria&&array_key_exists($array_cobro_subcategoria['cod_subcategoria'],$subcategorias)?$subcategorias[$array_cobro_subcategoria['cod_subcategoria']]:null;
+
+
+                    /*
 
                     if(array_key_exists($registro_dt_ordenes->nOrden,$array_subcategorias)&&array_key_exists($array_subcategorias[$registro_dt_ordenes->nOrden],$subcategorias)){
                         $id_subcategoria = $subcategorias[$array_subcategorias[$registro_dt_ordenes->nOrden]];
@@ -1390,7 +1405,7 @@
                     }
                     else{
                         $id_subcategoria = null;
-                    }
+                    }*/
 
                     //Buscamos categoria 
 
@@ -1427,9 +1442,7 @@
                         $id_cliente = null;
                     }
 
-                    //Asignamos el cobro
-
-                    $cobro = $registro_dt_ordenes->cobro != null ? $registro_dt_ordenes->cobro:0;
+                    
 
                     //Asignamos id_usuario 
 
@@ -1564,6 +1577,8 @@
                     UPDATE dt_ordenes
                     SET referencia = REPLACE(referencia, '├ü', 'Á');
                     UPDATE dt_ordenes
+                    SET referencia = REPLACE(referencia, '├í', 'á');
+                    UPDATE dt_ordenes
                     SET referencia = REPLACE(referencia, '├®', 'é');
                 
                     UPDATE dt_ordenes
@@ -1576,6 +1591,8 @@
                     SET ref_general = REPLACE(ref_general, '├ì', 'Í');
                     UPDATE dt_ordenes
                     SET ref_general = REPLACE(ref_general, '├ü', 'Á');
+                    UPDATE dt_ordenes
+                    SET ref_general = REPLACE(ref_general, '├í', 'á');
                     UPDATE dt_ordenes
                     SET ref_general = REPLACE(ref_general, '├®', 'é');
 
@@ -2485,6 +2502,8 @@
                     UPDATE dt_diseno
                     SET archivo = REPLACE(archivo, '├ü', 'Á');
                     UPDATE dt_diseno
+                    SET archivo = REPLACE(archivo, '├í', 'á');
+                    UPDATE dt_diseno
                     SET archivo = REPLACE(archivo, '├®', 'é');
                     
                     UPDATE dt_diseno
@@ -2496,6 +2515,8 @@
                     UPDATE dt_diseno
                     SET foto = REPLACE(foto, '├ü', 'Á');
                     UPDATE dt_diseno
+                    SET foto = REPLACE(foto, '├í', 'á');
+                    UPDATE dt_diseno
                     SET foto = REPLACE(foto, '├®', 'é');
                     
                     UPDATE dt_diseno
@@ -2506,6 +2527,8 @@
                     SET ruta = REPLACE(ruta, '├ì', 'Í');
                     UPDATE dt_diseno
                     SET ruta = REPLACE(ruta, '├ü', 'Á');
+                    UPDATE dt_diseno
+                    SET ruta = REPLACE(ruta, '├í', 'á');
                     UPDATE dt_diseno
                     SET ruta = REPLACE(ruta, '├®', 'é');
 
@@ -2644,7 +2667,7 @@
                 KEY `fk_dt_estructura_p_diseno_user1` (`responsable`),
                 CONSTRAINT `fk_dt_estructura_p_diseno_dt_programacion_diseno1` FOREIGN KEY (`id_programacion_diseno`) REFERENCES `dt_programacion_diseno` (`id_programacion_diseno`),
                 CONSTRAINT `fk_dt_estructura_p_diseno_user1` FOREIGN KEY (`responsable`) REFERENCES `user` (`id`)
-                ) ENGINE=InnoDB AUTO_INCREMENT=448 DEFAULT CHARSET=latin1;
+                ) ENGINE=InnoDB AUTO_INCREMENT=448 DEFAULT CHARSET=utf8mb3;
             ");
 
             $array_grupos = [
@@ -2911,8 +2934,21 @@
                         :id_user,:id_historico_diseno)
                     ");
                     
-                    if($registro_dt_estructura_p_diseno->archivo != null && $registro_dt_estructura_p_diseno->archivo != ''){
+                    if($registro_dt_estructura_p_diseno->archivo != null && $registro_dt_estructura_p_diseno->foto == null){
                         $recurso = ControladorFuncionesAuxiliares::formateaString($registro_dt_estructura_p_diseno->archivo);
+                        $insert_registro->execute([
+                            'fecha_registro' => $fecha_registro,
+                            'recurso' => $recurso,
+                            'ruta' => $registro_dt_estructura_p_diseno->ruta,
+                            'tipo' => 2,
+                            'observaciones' => null,
+                            'id_estructura_p_diseno' => $registro_dt_estructura_p_diseno->id_estructura_p_diseno,
+                            'id_user' => $registro_dt_estructura_p_diseno->responsable,
+                            'id_historico_diseno' => $id_historico_diseno
+                        ]);
+                    }
+                    elseif($registro_dt_estructura_p_diseno->foto != null && $registro_dt_estructura_p_diseno->archivo == null){
+                        $recurso = ControladorFuncionesAuxiliares::formateaString($registro_dt_estructura_p_diseno->foto);
                         $insert_registro->execute([
                             'fecha_registro' => $fecha_registro,
                             'recurso' => $recurso,
@@ -2924,8 +2960,8 @@
                             'id_historico_diseno' => $id_historico_diseno
                         ]);
                     }
-                    elseif($registro_dt_estructura_p_diseno->foto != null && $registro_dt_estructura_p_diseno->foto != ''){
-                        $recurso = ControladorFuncionesAuxiliares::formateaString($registro_dt_estructura_p_diseno->foto);
+                    elseif($registro_dt_estructura_p_diseno->archivo != null && $registro_dt_estructura_p_diseno->foto != null){
+                        $recurso = ControladorFuncionesAuxiliares::formateaString($registro_dt_estructura_p_diseno->archivo);
                         $insert_registro->execute([
                             'fecha_registro' => $fecha_registro,
                             'recurso' => $recurso,
@@ -2936,6 +2972,18 @@
                             'id_user' => $registro_dt_estructura_p_diseno->responsable,
                             'id_historico_diseno' => $id_historico_diseno
                         ]);
+                        $recurso = ControladorFuncionesAuxiliares::formateaString($registro_dt_estructura_p_diseno->foto);
+                        $insert_registro->execute([
+                            'fecha_registro' => $fecha_registro,
+                            'recurso' => $recurso,
+                            'ruta' => $registro_dt_estructura_p_diseno->ruta,
+                            'tipo' => 1,
+                            'observaciones' => null,
+                            'id_estructura_p_diseno' => $registro_dt_estructura_p_diseno->id_estructura_p_diseno,
+                            'id_user' => $registro_dt_estructura_p_diseno->responsable,
+                            'id_historico_diseno' => $id_historico_diseno
+                        ]);
+                        $registros_insertados++;
                     }else{
                         $registros_no_incluidos++;
                         continue;

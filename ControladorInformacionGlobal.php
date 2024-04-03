@@ -101,6 +101,24 @@
 
         }
 
+        public static function traeArrayDtSubcategorias($conexion_sio1){
+
+            $consulta_dt_subcategorias_sio1 = $conexion_sio1->query("SELECT nOrden,item_ct,activo_cierreCosteo,cod FROM dt_subcategorias");
+
+            $array_data_subcategorias = $consulta_dt_subcategorias_sio1->fetchAll(PDO::FETCH_OBJ);
+
+            $array_reasignado_data_subcategorias = [];
+
+            foreach($array_data_subcategorias as $registro_subcategoria){
+                $array_reasignado_data_subcategorias[$registro_subcategoria->nOrden][$registro_subcategoria->item_ct] = [
+                    'cobro' => $registro_subcategoria->activo_cierreCosteo == 'SI'?1:0,
+                    'cod_subcategoria' => $registro_subcategoria->cod
+                ];
+            }
+
+            return $array_reasignado_data_subcategorias;
+        }
+
         public static function traeDataCorreccionCodprodfinal($conexion_sio1){
 
             $consulta_dt_codprodfinal = $conexion_sio1->query("SELECT id_cod,tamX ,tamY,tamZ,tamL FROM dt_codprodfinal");

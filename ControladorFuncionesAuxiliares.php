@@ -22697,6 +22697,981 @@
 
             $conexion_migracion_prueba->commit();
 
+            try{
+                $conexion_migracion_prueba->exec(' 
+                    UPDATE dt_usuarios set id_cargo = 81, id_area = 13 where id_usuario = 1333;
+                    UPDATE dt_usuarios set id_cargo = 97, id_area = 15 where id_usuario = 1387;
+                    UPDATE dt_usuarios set id_cargo = 85, id_area = 14 where id_usuario = 1109;
+                    UPDATE dt_usuarios set id_cargo = 93, id_area = 19 where id_usuario = 729;
+                    UPDATE dt_usuarios set id_cargo = 84, id_area = 17 where id_usuario = 70;
+                    UPDATE dt_usuarios set id_cargo = 83, id_area = 18 where id_usuario = 341;
+                    UPDATE dt_usuarios set id_cargo = 80, id_area = 16 where id_usuario = 1141;
+                    update `user` u SET password_hash = "$2y$13$UsgsoIcEnreVnJNL7Wf7ZO4pH.x2lHAu60w.8q7t.KQbHs5bLyt8O" WHERE id = 1164;
+                    update `user` u SET password_hash = "$2y$13$HhyggD6T37ETdi.0kYnjWuozBfa3XCCpcolsN20JHm29GTvSeU03K",status = 1 WHERE id = 383;
+
+                    update `user` u SET username = "sareth.gomez" WHERE id = 1165;
+                    update `user` u SET username = "johana.hurtado" WHERE id = 742;
+
+                    update `user` u SET password_hash = "$2y$13$UsgsoIcEnreVnJNL7Wf7ZO4pH.x2lHAu60w.8q7t.KQbHs5bLyt8O" WHERE id = 1164;
+
+                    update `user` u SET password_hash = "$2y$13$HhyggD6T37ETdi.0kYnjWuozBfa3XCCpcolsN20JHm29GTvSeU03K",status = 1 WHERE id = 383;
+
+                    update `user` u SET password_hash = "$2y$13$AQPCmJQKp/xqIpkSanhlrOB.AHUH5cr47KodsaFunQfT8YmXtiMkO",username = "juans.melo" WHERE id = 1117;
+
+                    update `user` u SET username = "karen.peñaloza" WHERE id = 1153;
+
+                    update dt_usuarios set id_cargo = 32 where id_usuario = 1434;
+
+                    update dt_usuarios set id_cargo = 32 where id_usuario = 1426;
+
+                    update `user` u SET username = "david.yazo" WHERE id = 782;
+
+                    update `user` u SET username = "roxana.pardo" WHERE id = 1172;
+
+                    update `user` u SET username = "arnobis.sanchez" WHERE id = 1169;
+
+                    update `user` u SET username = "alejandra.torres" WHERE id = 1143;
+
+                    update `user` u SET username = "elias.guativa",password_hash = "$2y$13$1L3RnciILd99O5fUxM2yVuguE9cqmHhXjM2vUxG4gXvk./mpKWSQO" WHERE id = 1053;
+
+                    update dt_usuarios set id_cargo = 87 where id_usuario = 1422;
+
+                    update `user` u SET username = "nelson.forero" WHERE id = 55;
+
+                    /*Correccion permisos*/
+
+                    DROP table auth_assignment;
+
+
+                    CREATE TABLE `auth_assignment` (
+                    `item_name` varchar(64) NOT NULL,
+                    `user_id` int NOT NULL,
+                    `created_at` int DEFAULT NULL,
+                    PRIMARY KEY (`item_name`,`user_id`),
+                    KEY `user_id` (`user_id`)
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("Admin", 1, 1542641803);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("Admin", 5, 1554821342);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("AdminComercial", 21, 1567111467);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("AdminComercial", 370, 1567111559);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("AuxiliarAlmacen", 1169, 1703174675);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("AuxiliarCompras", 955, 1703092249);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("AuxiliarContable", 55, 1622561435);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("AuxiliarFacturacion", 94, 1622126700);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("AuxiliarFacturacion", 108, 1703167239);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("AuxiliarLogistica", 110, 1703178854);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("AuxiliarLogistica", 1120, 1616610723);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("AuxiliarNomina", 93, 1622126921);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("Commercial", 83, 1616113599);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("CoordinadorLogistica", 1172, 1616610551);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("CoordinadorProyectos", 1164, 1702963973);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("CoordinadorProyectos", 1165, 1620082102);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("CordinadorProyectos", 23, 1620082806);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("CordinadorProyectos", 89, 1620082949);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("CordinadorProyectos", 90, 1620083352);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("CordinadorProyectos", 742, 1620082696);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("Director(a) Proyectos", 742, 1712006289);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("DirectorAdministrativo", 12, 1703012183);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("DirectorAdministrativo", 13, 1618348059);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("DirectorComercial", 18, 1561558971);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("DirectorComercial", 19, 1562352426);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("DirectorComercial", 22, 1564431147);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("DirectorComercial", 24, 1575058042);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("DirectorComercial", 782, 1558628741);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("DirectorFacturacion", 92, 1622126145);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("DirectorFacturacion", 370, 1703166369);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("DirectorLogistica", 11, 1558628873);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("DirectorLogistica", 84, 1616193679);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("DirectorProduccion", 85, 1616194033);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("DirectorProduccion", 1143, 1558629016);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("DirectorRH", 81, 1616099948);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("DirectorRH", 82, 1616099931);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("DirectorRH", 689, 1542718664);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("DirectorVivas", 10, 1558628688);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("DirectorVivas", 25, 1575900768);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("DirectorVivas", 383, 1712009366);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("Disenador", 1117, 1702987867);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("Disenador", 1145, 1702987916);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("Disenador", 1153, 1702987640);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("JefeAlmacen", 96, 1648765275);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("JefeAlmacen", 955, 1616609450);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("JefeAlmacen2", 38, 1703174222);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("JefeCompras", 87, 1637784620);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("JefeCompras", 96, 1648765275);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("JefeCompras", 782, 1616164078);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("JefeCompras", 1172, 1680116631);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("LiderCostos", 100, 1662133858);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("LiderCostos", 383, 1712009118);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("LiderCostos", 1124, 1616607567);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("LiderDiseno", 383, 1616608448);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("Operador", 30, 1576672972);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("Operador", 31, 1576672956);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("Operador", 40, 1703081003);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("Operador", 47, 1703177135);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("Operador", 62, 1657821121);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("Operador", 67, 1616173514);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("Operador", 98, 1654872054);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("Operador", 865, 1703178517);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("Operador", 1053, 1712079209);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("Operador", 1106, 1576672849);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("ProgramadorOperaciones", 1141, 1651581277);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("ProgramadorOperaciones", 1143, 1651521169);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("SuperCoordinador", 3, 1561558659);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("SuperCoordinador", 8, 1564431182);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("SuperCoordinador", 9, 1561585200);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("SuperDiseñador", 95, 1649456085);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("SuperDiseñador", 383, 1575902106);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("SuperMercadeo", 9, 1616163286);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("SuperMercadeo", 16, 1563480008);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("SuperMercadeo", 17, 1564176208);
+
+                    DROP table auth_item ;
+
+
+                    CREATE TABLE `auth_item` (
+                    `name` varchar(64) NOT NULL,
+                    `type` int NOT NULL,
+                    `description` text,
+                    `rule_name` varchar(64) DEFAULT NULL,
+                    `data` text,
+                    `created_at` int DEFAULT NULL,
+                    `updated_at` int DEFAULT NULL,
+                    `group_code` varchar(64) DEFAULT NULL,
+                    PRIMARY KEY (`name`),
+                    KEY `rule_name` (`rule_name`),
+                    KEY `idx-auth_item-type` (`type`),
+                    KEY `fk_auth_item_group_code` (`group_code`)
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+
+
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/*", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("//*", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("//controller", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("//crud", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("//extension", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("//form", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("//index", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("//model", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("//module", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/asset/*", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/asset/compress", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/asset/template", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/cache/*", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/cache/flush", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/cache/flush-all", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/cache/flush-schema", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/cache/index", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/debug/*", 3, "", "", "", 1542641985, 1542641985, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/debug/default/*", 3, "", "", "", 1542641985, 1542641985, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/debug/default/db-explain", 3, "", "", "", 1542641985, 1542641985, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/debug/default/download-mail", 3, "", "", "", 1542641985, 1542641985, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/debug/default/index", 3, "", "", "", 1542641985, 1542641985, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/debug/default/toolbar", 3, "", "", "", 1542641985, 1542641985, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/debug/default/view", 3, "", "", "", 1542641985, 1542641985, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/debug/user/*", 3, "", "", "", 1542641985, 1542641985, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/debug/user/reset-identity", 3, "", "", "", 1542641985, 1542641985, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/debug/user/set-identity", 3, "", "", "", 1542641985, 1542641985, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/fixture/*", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/fixture/load", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/fixture/unload", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/gestioninterna/*", 3, "", "", "", 1542641988, 1542641988, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/gestioninterna/area", 3, "", "", "", 1542641988, 1542641988, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/gestioninterna/area/*", 3, "", "", "", 1542641989, 1542641989, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/gestioninterna/cargo", 3, "", "", "", 1542641988, 1542641988, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/gestioninterna/horario", 3, "", "", "", 1542641988, 1542641988, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/gestioninterna/usuario", 3, "", "", "", 1542641988, 1542641988, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/gii/*", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/gii/default/*", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/gii/default/action", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/gii/default/diff", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/gii/default/index", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/gii/default/preview", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/gii/default/view", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/hello/*", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/hello/index", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/help/*", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/help/index", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/help/list", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/help/list-action-options", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/help/usage", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/menu/*", 3, "", "", "", 1542641984, 1542641984, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/menu/create", 3, "", "", "", 1542641984, 1542641984, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/menu/delete", 3, "", "", "", 1542641984, 1542641984, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/menu/index", 3, "", "", "", 1542641985, 1542641985, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/menu/update", 3, "", "", "", 1542641984, 1542641984, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/menu/view", 3, "", "", "", 1542641985, 1542641985, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/mercadeo/cliente", 3, "", "", "", 1542641988, 1542641988, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/mercadeo/formapago", 3, "", "", "", 1542641988, 1542641988, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/message/*", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/message/config", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/message/config-template", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/message/extract", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/migrate/*", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/migrate/create", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/migrate/down", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/migrate/fresh", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/migrate/history", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/migrate/mark", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/migrate/new", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/migrate/redo", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/migrate/to", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/migrate/up", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/serve/*", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/serve/index", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/site/*", 3, "", "", "", 1542641984, 1542641984, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/site/about", 3, "", "", "", 1542641984, 1542641984, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/site/captcha", 3, "", "", "", 1542641984, 1542641984, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/site/contact", 3, "", "", "", 1542641984, 1542641984, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/site/error", 3, "", "", "", 1542641984, 1542641984, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/site/forgot", 3, "", "", "", 1542641984, 1542641984, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/site/index", 3, "", "", "", 1542641984, 1542641984, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/site/login", 3, "", "", "", 1542641984, 1542641984, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/site/logout", 3, "", "", "", 1542641984, 1542641984, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/site/ver-token", 3, "", "", "", 1542641984, 1542641984, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/*", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/auth-item-group/*", 3, "", "", "", 1542641987, 1542641987, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/auth-item-group/bulk-activate", 3, "", "", "", 1542641987, 1542641987, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/auth-item-group/bulk-deactivate", 3, "", "", "", 1542641987, 1542641987, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/auth-item-group/bulk-delete", 3, "", "", "", 1542641987, 1542641987, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/auth-item-group/create", 3, "", "", "", 1542641987, 1542641987, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/auth-item-group/delete", 3, "", "", "", 1542641987, 1542641987, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/auth-item-group/grid-page-size", 3, "", "", "", 1542641987, 1542641987, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/auth-item-group/grid-sort", 3, "", "", "", 1542641987, 1542641987, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/auth-item-group/index", 3, "", "", "", 1542641987, 1542641987, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/auth-item-group/toggle-attribute", 3, "", "", "", 1542641987, 1542641987, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/auth-item-group/update", 3, "", "", "", 1542641987, 1542641987, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/auth-item-group/view", 3, "", "", "", 1542641987, 1542641987, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/auth/*", 3, "", "", "", 1542641987, 1542641987, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/auth/captcha", 3, "", "", "", 1542641987, 1542641987, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/auth/change-own-password", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/auth/confirm-email", 3, "", "", "", 1542641987, 1542641987, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/auth/confirm-email-receive", 3, "", "", "", 1542641987, 1542641987, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/auth/confirm-registration-email", 3, "", "", "", 1542641987, 1542641987, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/auth/login", 3, "", "", "", 1542641987, 1542641987, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/auth/logout", 3, "", "", "", 1542641987, 1542641987, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/auth/password-recovery", 3, "", "", "", 1542641987, 1542641987, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/auth/password-recovery-receive", 3, "", "", "", 1542641987, 1542641987, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/auth/registration", 3, "", "", "", 1542641987, 1542641987, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/permission/*", 3, "", "", "", 1542641986, 1542641986, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/permission/bulk-activate", 3, "", "", "", 1542641986, 1542641986, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/permission/bulk-deactivate", 3, "", "", "", 1542641986, 1542641986, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/permission/bulk-delete", 3, "", "", "", 1542641986, 1542641986, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/permission/create", 3, "", "", "", 1542641986, 1542641986, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/permission/delete", 3, "", "", "", 1542641986, 1542641986, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/permission/grid-page-size", 3, "", "", "", 1542641986, 1542641986, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/permission/grid-sort", 3, "", "", "", 1542641986, 1542641986, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/permission/index", 3, "", "", "", 1542641986, 1542641986, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/permission/refresh-routes", 3, "", "", "", 1542641987, 1542641987, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/permission/set-child-permissions", 3, "", "", "", 1542641987, 1542641987, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/permission/set-child-routes", 3, "", "", "", 1542641987, 1542641987, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/permission/toggle-attribute", 3, "", "", "", 1542641986, 1542641986, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/permission/update", 3, "", "", "", 1542641986, 1542641986, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/permission/view", 3, "", "", "", 1542641987, 1542641987, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/role/*", 3, "", "", "", 1542641986, 1542641986, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/role/bulk-activate", 3, "", "", "", 1542641986, 1542641986, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/role/bulk-deactivate", 3, "", "", "", 1542641986, 1542641986, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/role/bulk-delete", 3, "", "", "", 1542641986, 1542641986, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/role/create", 3, "", "", "", 1542641986, 1542641986, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/role/delete", 3, "", "", "", 1542641986, 1542641986, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/role/grid-page-size", 3, "", "", "", 1542641986, 1542641986, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/role/grid-sort", 3, "", "", "", 1542641986, 1542641986, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/role/index", 3, "", "", "", 1542641986, 1542641986, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/role/set-child-permissions", 3, "", "", "", 1542641986, 1542641986, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/role/set-child-roles", 3, "", "", "", 1542641986, 1542641986, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/role/toggle-attribute", 3, "", "", "", 1542641986, 1542641986, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/role/update", 3, "", "", "", 1542641986, 1542641986, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/role/view", 3, "", "", "", 1542641986, 1542641986, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/user-permission/*", 3, "", "", "", 1542641985, 1542641985, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/user-permission/set", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/user-permission/set-roles", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/user-visit-log/*", 3, "", "", "", 1542641985, 1542641985, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/user-visit-log/bulk-activate", 3, "", "", "", 1542641985, 1542641985, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/user-visit-log/bulk-deactivate", 3, "", "", "", 1542641985, 1542641985, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/user-visit-log/bulk-delete", 3, "", "", "", 1542641985, 1542641985, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/user-visit-log/create", 3, "", "", "", 1542641985, 1542641985, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/user-visit-log/delete", 3, "", "", "", 1542641985, 1542641985, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/user-visit-log/grid-page-size", 3, "", "", "", 1542641985, 1542641985, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/user-visit-log/grid-sort", 3, "", "", "", 1542641985, 1542641985, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/user-visit-log/index", 3, "", "", "", 1542641985, 1542641985, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/user-visit-log/toggle-attribute", 3, "", "", "", 1542641985, 1542641985, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/user-visit-log/update", 3, "", "", "", 1542641985, 1542641985, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/user-visit-log/view", 3, "", "", "", 1542641985, 1542641985, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/user/*", 3, "", "", "", 1542641985, 1542641985, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/user/bulk-activate", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/user/bulk-deactivate", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/user/bulk-delete", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/user/change-password", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/user/create", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/user/delete", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/user/grid-page-size", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/user/grid-sort", 3, "", "", "", 1542641986, 1542641986, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/user/index", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/user/toggle-attribute", 3, "", "", "", 1542641986, 1542641986, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/user/update", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user-management/user/view", 3, "", "", "", 1542641175, 1542641175, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user/*", 3, "", "", "", 1542641984, 1542641984, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user/create", 3, "", "", "", 1542641984, 1542641984, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user/delete", 3, "", "", "", 1542641984, 1542641984, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user/index", 3, "", "", "", 1542641984, 1542641984, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user/update", 3, "", "", "", 1542641984, 1542641984, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("/user/view", 3, "", "", "", 1542641984, 1542641984, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("AdminComercial", 1, "Administrador Comercial", NULL, NULL, 1567111412, 1567111412, NULL);
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("assignRolesToUsers", 2, "Asignar roles a usuarios", "", "", 1542641175, 1542655816, "Usuarios");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("AuxiliarAlmacen", 1, "Auxiliar Almacen", NULL, NULL, 1703165697, 1703165697, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("AuxiliarCompras", 1, "Auxiliar Compras", NULL, NULL, 1703092110, 1703092110, NULL);
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("AuxiliarContable", 1, "Auxiliar Contable", NULL, NULL, 1622561054, 1622561054, NULL);
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("AuxiliarFacturacion", 1, "Auxiliar Facturación", NULL, NULL, 1622126445, 1622126445, NULL);
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("AuxiliarLogistica", 1, "Auxiliar Logistica", NULL, NULL, 1616610649, 1616610649, NULL);
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("AuxiliarNomina", 1, "Auxiliar Nomina", NULL, NULL, 1622126864, 1622126864, NULL);
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("changeOwnPassword", 2, "Cambiar mi contraseña", "", "", 1542641175, 1542655755, "Configuracion");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("changeUserPassword", 2, "Cambiar contraseña de usuario", "", "", 1542641175, 1542655838, "Usuarios");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("CheckDespiece", 2, "Comprar servicios desde despiece", NULL, NULL, 1703088318, 1703088318, "Compras");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("Commercial", 1, "Comercial General", NULL, NULL, 1616105379, 1616105379, NULL);
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("commonPermission", 2, "Permisos propios", "", "", 1542641171, 1542655867, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("CoordinadorLogistica", 1, "CoordinadorLogistica", NULL, NULL, 1616610490, 1616610490, NULL);
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("CoordinadorProyectos", 1, "Coordinador de Proyectos", NULL, NULL, 1620082502, 1702963774, NULL);
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("createUsers", 2, "Crear usuarios", "", "", 1542641175, 1542655486, "Usuarios");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("deleteArea", 2, "Borrar área", "", "", 1556921888, 1556922200, "Recursosh");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("deleteCargo", 2, "Borrar cargo", "", "", 1556922180, 1556922180, "Recursosh");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("deleteCliente", 2, "Borrar cliente", NULL, NULL, 1560173680, 1560173680, "Mercadeo");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("deleteProyecto", 2, "Borrar proyecto", NULL, NULL, 1559854399, 1559854399, "Mercadeo");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("deleteUsers", 2, "Eliminar usuarios", "", "", 1542641175, 1542655503, "Usuarios");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("DirectorAdministrativo", 1, "Director Administrativo", NULL, NULL, 1542641175, 1702964875, NULL);
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("DirectorComercial", 1, "Director Comercial", NULL, NULL, 1558391315, 1558391315, NULL);
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("DirectorFacturacion", 1, "Director Facturación", NULL, NULL, 1622125995, 1622125995, NULL);
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("DirectorLogistica", 1, "Director de Logística", NULL, NULL, 1558392322, 1558392322, NULL);
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("DirectorProduccion", 1, "Director de Producción", NULL, NULL, 1558391705, 1558391705, NULL);
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("DirectorProyectos", 1, "Director(a) Proyectos", NULL, NULL, 1712005901, 1712084735, NULL);
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("DirectorRH", 1, "Director de recursos humanos", "", "", 1542652560, 1542721005, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("DirectorVivas", 1, "Director de Vivas", NULL, NULL, 1558391686, 1558391686, NULL);
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("Disenador", 1, "Diseñador", NULL, NULL, 1702986998, 1702986998, NULL);
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("editCliente", 2, "Editar cliente", NULL, NULL, 1560173490, 1560173504, "Mercadeo");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("editUserEmail", 2, "Editar email usuario", "", "", 1542641175, 1542718227, "Usuarios");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("editUsers", 2, "Editar usuarios", "", "", 1542641175, 1542655409, "Usuarios");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("Gestioninterna", 2, "Visualizar menú Gestión Interna", "", "", 1542642132, 1542729571, "GestionI");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("InformeProgramacion", 2, "Informe Programación", NULL, NULL, 1663087532, 1663087532, "Produccion");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("InformeRetroalimentacion", 2, "Informe Retroalimentación", NULL, NULL, 1661868232, 1661868232, "Produccion");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("JefeAlmacen", 1, "Jefe Almacen", NULL, NULL, 1616609369, 1616609369, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("JefeAlmacen2", 1, "Jefe de almacen 2", NULL, NULL, 1703174058, 1703174058, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("JefeCompras", 1, "Jefe de Compras", NULL, NULL, 1616164012, 1616164012, NULL);
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("LiderCostos", 1, "Líder de Costos", NULL, NULL, 1616606534, 1616606534, NULL);
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("LiderDiseno", 1, "Líder de Diseño", NULL, NULL, 1616608386, 1616608386, NULL);
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("Operador", 1, "Operador", NULL, NULL, 1576672678, 1576672678, NULL);
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("ProgramadorOperaciones", 1, "Programador Operaciones", NULL, NULL, 1576672113, 1576672113, NULL);
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("Sistemas", 1, "Empleados", "", "", 1542641956, 1542717348, "");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("SuperAdmin", 1, "Super Administrador", NULL, NULL, 1559149200, 1559149200, NULL);
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("SuperCoordinador", 1, "Super Coordinador", NULL, NULL, 1561555501, 1561555501, NULL);
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("SuperDiseñador", 1, "Super Diseñador", NULL, NULL, 1575902011, 1575902011, NULL);
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("SuperMercadeo", 1, "Super Mercadeo", NULL, NULL, 1563477674, 1563477674, NULL);
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewAcabado", 2, "ver modulo Mano de obra", NULL, NULL, 1616606645, 1616606645, "Costos");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewActuaizacionLogistica", 2, "Ver Actualización Logistica", NULL, NULL, 1616610261, 1616610261, "Logistica");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewActualizacionProduccion", 2, "Ver Actualización Producción", NULL, NULL, 1616609779, 1616609779, "Produccion");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewAgenda", 2, "Ver Agenda Producción", NULL, NULL, 1651582414, 1651582414, "Produccion");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewAgendaDis", 2, "Ver Agenda Diseñador", NULL, NULL, 1616608104, 1616608104, "Diseno");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewAgendaVivas", 2, "Ver Agenda Vivas", NULL, NULL, 1616608081, 1616608081, "Diseno");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewAlmacen", 2, "Ver modulo de Almacén", NULL, NULL, 1616165665, 1616165665, "Almacen");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewArea", 2, "Ver módulo Áreas", NULL, NULL, 1542728979, 1560171712, "GestionI");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewBigData", 2, "Ver pestaña big data", NULL, NULL, 1621609779, 1621609779, "Costos");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewBuscadorDocumentos", 2, "Ver Buscador Documentos", NULL, NULL, 1703169874, 1703179652, "Consolidados");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewBuscarMp", 2, "Ver Materiales x OP", NULL, NULL, 1616607491, 1616607491, "Costos");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewBuscarRemisiones", 2, "Ver Buscar Remisiones", NULL, NULL, 1616610312, 1616610312, "Logistica");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewCabina", 2, "Ver cabina", NULL, NULL, 1616604509, 1616604509, "Cabina");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewCambiarClave", 2, "Ver Cambiar Clave", NULL, NULL, 1620064467, 1620064467, "Roles");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewCargaMPresupuesto", 2, "Ver  pestaña de carga masiva de presupuesto", NULL, NULL, 1622742262, 1622742262, "Costos");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewCargo", 2, "Ver múdulo Cargos", NULL, NULL, 1542729022, 1560171702, "GestionI");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewClaseproveedor", 2, "Ver clase Proveedor", NULL, NULL, 1622561328, 1622561328, "GestionI");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewClientes", 2, "Ver Clientes", NULL, NULL, 1616606041, 1616606041, "Mercadeo");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewCodFinal", 2, "Ver Código Final", NULL, NULL, 1616607261, 1616607261, "Costos");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewCompras", 2, "Ver modal de compras", NULL, NULL, 1616163730, 1616163730, "Compras");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewConciliar", 2, "ver Conciliar OPs", NULL, NULL, 1618347942, 1618347942, "GestionI");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewConsolidados", 2, "Ver Consolidados", NULL, NULL, 1703179945, 1703179945, "Consolidados");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewCostos", 2, "ver modulo de Costos", NULL, NULL, 1616607169, 1616607169, "Costos");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewCostosReporte", 2, "Ver Informe Presupuesto xOPs", NULL, NULL, 1702965328, 1702965328, "Costos");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewCotizacion", 2, "Ver Cotización Costos", NULL, NULL, 1616607352, 1616607352, "Costos");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewCrearReferencia", 2, "Ver Crear Referencia", NULL, NULL, 1616608882, 1616608882, "Compras");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewDespiece", 2, "Ver Despiece", NULL, NULL, 1616607397, 1616607397, "Costos");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewDespieceSegundarioD", 2, "Ver despiece segundario diseñadores", NULL, NULL, 1712079026, 1712079026, "Diseno");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewDespieceSegundarioP", 2, "Ver despiece segundario operarios", NULL, NULL, 1712078970, 1712079039, "Operador");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewDetalleValoresOPDoc", 2, "Ver detalle de valores en buscador de pedidos", NULL, NULL, 1712084105, 1712084105, "Consolidados");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewDiseno", 2, "Ver módulo Diseño", NULL, NULL, 1559827365, 1559827395, "Diseno");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewDocumentos", 2, "Ver documentos", NULL, NULL, 1611591137, 1611591137, "Recursosh");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewEmpleado", 2, "Ver módulo Empleados", NULL, NULL, 1542727386, 1560171722, "GestionI");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewEntradasAlmacen", 2, "Ver Entradas Almacen", NULL, NULL, 1616609181, 1616609181, "Almacen");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewEntregables", 2, "ver modulo de Entregables", NULL, NULL, 1616161772, 1616162897, "Mercadeo");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewEstadoL", 2, "Ver estado Logística", NULL, NULL, 1558392492, 1558392492, "Comite");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewEstadoP", 2, "Ver estado Producción", NULL, NULL, 1558392519, 1558392519, "Comite");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewEstadoV", 2, "Ver estado Vivas", NULL, NULL, 1558392536, 1558392536, "Comite");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewExistenciaAlmacen", 2, "ver existencias almacen", NULL, NULL, 1637783617, 1637783743, "Almacen");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewExistenciasArea", 2, "ver existencias por área", NULL, NULL, 1628629506, 1628629506, "Almacen");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewFacturacion", 2, "ver modulo Facturación", NULL, NULL, 1621609204, 1621609204, "Facturacion");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewFacturacionProveedores", 2, "Ver pestaña facturación proveedores", NULL, NULL, 1621609430, 1621609430, "Facturacion");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewFacturasCliente", 2, "Ver pestaña visualizar facturas cliente", NULL, NULL, 1621609334, 1621609334, "Facturacion");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewFiltroDocBigData", 2, "Ver Big Data en el filtro del buscador de documentos", NULL, NULL, 1712086643, 1712086643, "Consolidados");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewFiltroDocCierreVentas", 2, "Ver Cierre de ventas en el filtro del buscador de documentos", NULL, NULL, 1712086497, 1712086497, "Consolidados");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewFiltroDocFacturas", 2, "Ver Facturas en el filtro del buscador de documentos", NULL, NULL, 1712086565, 1712086661, "Consolidados");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewFormaPago", 2, "Ver Forma de Pago", NULL, NULL, 1616605640, 1616605640, "GestionI");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewGenerarFacturaCliente", 2, "Ver Pestaña Generar Factura Cliente", NULL, NULL, 1621609378, 1621609378, "Facturacion");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewGestionCompras", 2, "Ver Gestor de Compras", NULL, NULL, 1703080469, 1703080469, "Compras");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewGestionInterna", 2, "ver Gestión Interna", NULL, NULL, 1616606830, 1616606830, "GestionI");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewGrupoInventario", 2, "Ver Grupo Inventario", NULL, NULL, 1616608712, 1616608712, "Compras");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewHomeCompras", 2, "Ver Home de Compras", NULL, NULL, 1616608617, 1616608617, "Compras");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewHorario", 2, "Ver múdlo Horarios", NULL, NULL, 1542729044, 1560171690, "GestionI");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewID", 2, "Ver id""s en view", NULL, NULL, 1559149158, 1559149158, "Configuracion");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewInformeCodigos", 2, "Ver pestaña de Informe de Códigos", NULL, NULL, 1622841476, 1622841476, "Costos");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewInformeDocumentos", 2, "Ver informe de documentos", NULL, NULL, 1616624404, 1616624404, "Proyectos");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewInformeGR", 2, "Ver informe de Garantías y Reprocesos", NULL, NULL, 1611593973, 1712087409, "Proyectos");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("ViewInformePresupuestos", 2, "Ver pestaña informe de presupuestos", NULL, NULL, 1622742365, 1622742365, "Costos");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewInformeProgramacion", 2, "Ver informe de programación", NULL, NULL, 1702961067, 1702961170, "Produccion");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewInformesCompras", 2, "Ver pestaña de informes de compras", NULL, NULL, 1621609858, 1621609858, "Compras");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewInterfazContable", 2, "Ver Pestaña Interfaz Contable", NULL, NULL, 1621609471, 1621609471, "Facturacion");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewKardex", 2, "Ver Kardex", NULL, NULL, 1712096676, 1712096676, "Facturacion");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewLegalizacionTerceros", 2, "Ver modulo de legalización de terceros", NULL, NULL, 1616535017, 1616535017, "Compras");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewLegalizarMateriales", 2, "Ver Legalizar Materiales", NULL, NULL, 1616608932, 1616608932, "Compras");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewListaPrecios", 2, "Ver pestaña de lista de precios", NULL, NULL, 1621974299, 1621974299, "Compras");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewLogistica", 2, "ver modulo de Logistica", NULL, NULL, 1616192568, 1616192568, "Logistica");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewMacroProyecto", 2, "ver modulo de Macro Proyectos", NULL, NULL, 1608068047, 1608068047, "Mercadeo");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewMateriales", 2, "Ver Materiales", NULL, NULL, 1616608768, 1616608768, "Compras");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewMaterialesxArea", 2, "Ver Materiales x Area", NULL, NULL, 1616609238, 1616609238, "Almacen");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewMedida", 2, "Ver Medida", NULL, NULL, 1616608657, 1616608657, "Compras");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewMercadeo", 2, "Ver módulo Mercadeo", NULL, NULL, 1558629363, 1559827409, "Mercadeo");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewMovimientoxMaterial", 2, "ver pestaña movimientos por material", NULL, NULL, 1622142368, 1622142368, "Compras");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewOperador", 2, "Ver modal Operador", NULL, NULL, 1576672550, 1576672550, "Operador");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewOportunidadNegocio", 2, "Ver módulo Oportunidad Negocio", NULL, NULL, 1558629456, 1620142752, "Mercadeo");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewOrdenes", 2, "Ver módulo Ordenes", NULL, NULL, 1560358907, 1560358907, "Mercadeo");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewPlaneacionLogistica", 2, "Ver Planeación Logistica", NULL, NULL, 1616610233, 1616610233, "Logistica");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewPlaneacionProduccion", 2, "Ver planeación de producción", NULL, NULL, 1702961676, 1702961676, "Produccion");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewPlantilla", 2, "Ver Plantilla", NULL, NULL, 1616607307, 1616607307, "Costos");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewPorteria", 2, "Ver módulo Porteria", NULL, NULL, 1562792063, 1562792063, "Mercadeo");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewProduccion", 2, "Ver modal Produccion", NULL, NULL, 1576672343, 1576672343, "Produccion");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewProgramacionDiseno", 2, "Ver Programación de Códigos en Diseño", NULL, NULL, 1613498557, 1613498557, "Diseno");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewProveedor", 2, "Ver Proveedor", NULL, NULL, 1622561356, 1622561356, "GestionI");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewProyectos", 2, "Ver Modulo de Proyectos", NULL, NULL, 1620145050, 1620145050, "Proyectos");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewProyectosOp", 2, "ver modulo de proyectos op", NULL, NULL, 1608069095, 1608069095, "Mercadeo");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewProyectoSuper", 2, "Ver proyectos Super Coordinador", NULL, NULL, 1561561879, 1561561879, "Mercadeo");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewPucs", 2, "Ver Pucs", NULL, NULL, 1616605370, 1616605370, "GestionI");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewPucsoc", 2, "ver Pucs Oc", NULL, NULL, 1616605438, 1616605438, "GestionI");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewRecursosHumanos", 2, "Ver modulo de Recursos Humanos", NULL, NULL, 1616099447, 1616099447, "Recursosh");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewRegimen", 2, "ver Régimen", NULL, NULL, 1616605540, 1616605540, "GestionI");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewRemisiones", 2, "Ver Remisiones", NULL, NULL, 1616610296, 1616610296, "Logistica");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewRequisicion", 2, "Ver Requisiciones", NULL, NULL, 1616608964, 1616608964, "Compras");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewSalidasAlmacen", 2, "Ver Salidas Almacen", NULL, NULL, 1616609207, 1616609207, "Almacen");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewSolicitudGR", 2, "Ver Solicitudes de Garantías & Reprocesos", NULL, NULL, 1611591480, 1712087391, "Proyectos");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewSubGrupo", 2, "Ver Sub Grupo", NULL, NULL, 1616608730, 1616608730, "Compras");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewTiemposProduccion", 2, "ver tiempos de producción", NULL, NULL, 1628627565, 1628627565, "Costos");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewTipoPago", 2, "ver Tipo Pago", NULL, NULL, 1616605715, 1616605715, "GestionI");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewUserEmail", 2, "Ver email usuario", "", "", 1542641175, 1542655636, "Usuarios");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewUserRoles", 2, "Ver roles", "", "", 1542641175, 1542655657, "Usuarios");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewUsers", 2, "Ver usuarios", "", "", 1542641175, 1542655460, "Usuarios");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewVisitLog", 2, "Ver Log", "", "", 1542641175, 1542655561, "Usuarios");
+
+                    drop table auth_item_child;
+
+                    -- migracion_prueba.auth_item_child definition
+
+                    CREATE TABLE `auth_item_child` (
+                    `parent` varchar(64) NOT NULL,
+                    `child` varchar(64) NOT NULL,
+                    PRIMARY KEY (`parent`,`child`),
+                    KEY `child` (`child`)
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+                    INSERT INTO auth_item_child (parent, child) VALUES("Gestioninterna", "/gestioninterna/*");
+                    INSERT INTO auth_item_child (parent, child) VALUES("viewEmpleado", "/gestioninterna/usuario");
+                    INSERT INTO auth_item_child (parent, child) VALUES("changeOwnPassword", "/user-management/auth/change-own-password");
+                    INSERT INTO auth_item_child (parent, child) VALUES("assignRolesToUsers", "/user-management/user-permission/set");
+                    INSERT INTO auth_item_child (parent, child) VALUES("assignRolesToUsers", "/user-management/user-permission/set-roles");
+                    INSERT INTO auth_item_child (parent, child) VALUES("editUsers", "/user-management/user/bulk-activate");
+                    INSERT INTO auth_item_child (parent, child) VALUES("editUsers", "/user-management/user/bulk-deactivate");
+                    INSERT INTO auth_item_child (parent, child) VALUES("deleteUsers", "/user-management/user/bulk-delete");
+                    INSERT INTO auth_item_child (parent, child) VALUES("changeUserPassword", "/user-management/user/change-password");
+                    INSERT INTO auth_item_child (parent, child) VALUES("createUsers", "/user-management/user/create");
+                    INSERT INTO auth_item_child (parent, child) VALUES("deleteUsers", "/user-management/user/delete");
+                    INSERT INTO auth_item_child (parent, child) VALUES("viewUsers", "/user-management/user/grid-page-size");
+                    INSERT INTO auth_item_child (parent, child) VALUES("viewUsers", "/user-management/user/index");
+                    INSERT INTO auth_item_child (parent, child) VALUES("editUsers", "/user-management/user/update");
+                    INSERT INTO auth_item_child (parent, child) VALUES("viewUsers", "/user-management/user/view");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Admin", "assignRolesToUsers");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Admin", "changeOwnPassword");
+                    INSERT INTO auth_item_child (parent, child) VALUES("assignRolesToUsers", "changeOwnPassword");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "changeOwnPassword");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Admin", "changeUserPassword");
+                    INSERT INTO auth_item_child (parent, child) VALUES("assignRolesToUsers", "changeUserPassword");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarCompras", "changeUserPassword");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "changeUserPassword");
+                    INSERT INTO auth_item_child (parent, child) VALUES("LiderCostos", "changeUserPassword");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorProduccion", "CheckDespiece");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Admin", "createUsers");
+                    INSERT INTO auth_item_child (parent, child) VALUES("assignRolesToUsers", "createUsers");
+                    INSERT INTO auth_item_child (parent, child) VALUES("viewRecursosHumanos", "deleteArea");
+                    INSERT INTO auth_item_child (parent, child) VALUES("viewRecursosHumanos", "deleteCargo");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AdminComercial", "deleteCliente");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorFacturacion", "deleteCliente");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AdminComercial", "deleteProyecto");
+                    INSERT INTO auth_item_child (parent, child) VALUES("SuperMercadeo", "deleteProyecto");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Admin", "deleteUsers");
+                    INSERT INTO auth_item_child (parent, child) VALUES("assignRolesToUsers", "deleteUsers");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AdminComercial", "editCliente");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Director Administrativo", "editCliente");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorFacturacion", "editCliente");
+                    INSERT INTO auth_item_child (parent, child) VALUES("assignRolesToUsers", "editUserEmail");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Admin", "editUsers");
+                    INSERT INTO auth_item_child (parent, child) VALUES("assignRolesToUsers", "editUsers");
+                    INSERT INTO auth_item_child (parent, child) VALUES("assignRolesToUsers", "Gestioninterna");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Director Administrativo", "Gestioninterna");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "Gestioninterna");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorFacturacion", "Gestioninterna");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorRH", "Gestioninterna");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "InformeProgramacion");
+                    INSERT INTO auth_item_child (parent, child) VALUES("ProgramadorOperaciones", "InformeProgramacion");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "InformeRetroalimentacion");
+                    INSERT INTO auth_item_child (parent, child) VALUES("InformeProgramacion", "InformeRetroalimentacion");
+                    INSERT INTO auth_item_child (parent, child) VALUES("ProgramadorOperaciones", "InformeRetroalimentacion");
+                    INSERT INTO auth_item_child (parent, child) VALUES("viewInformeProgramacion", "InformeRetroalimentacion");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorProduccion", "ProgramadorOperaciones");
+                    INSERT INTO auth_item_child (parent, child) VALUES("LiderCostos", "viewAcabado");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarLogistica", "viewActuaizacionLogistica");
+                    INSERT INTO auth_item_child (parent, child) VALUES("CoordinadorLogistica", "viewActuaizacionLogistica");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorLogistica", "viewActuaizacionLogistica");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewActuaizacionLogistica");
+                    INSERT INTO auth_item_child (parent, child) VALUES("ProgramadorOperaciones", "viewActualizacionProduccion");
+                    INSERT INTO auth_item_child (parent, child) VALUES("ProgramadorOperaciones", "viewAgenda");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Disenador", "viewAgendaDis");
+                    INSERT INTO auth_item_child (parent, child) VALUES("LiderDiseno", "viewAgendaDis");
+                    INSERT INTO auth_item_child (parent, child) VALUES("viewDiseno", "viewAgendaDis");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewAgendaVivas");
+                    INSERT INTO auth_item_child (parent, child) VALUES("LiderDiseno", "viewAgendaVivas");
+                    INSERT INTO auth_item_child (parent, child) VALUES("viewDiseno", "viewAgendaVivas");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarAlmacen", "viewAlmacen");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarCompras", "viewAlmacen");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarContable", "viewAlmacen");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewAlmacen");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeAlmacen", "viewAlmacen");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeAlmacen2", "viewAlmacen");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewAlmacen");
+                    INSERT INTO auth_item_child (parent, child) VALUES("assignRolesToUsers", "viewArea");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Director Administrativo", "viewArea");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewArea");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorRH", "viewArea");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewBigData");
+                    INSERT INTO auth_item_child (parent, child) VALUES("LiderCostos", "viewBigData");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AdminComercial", "viewBuscadorDocumentos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("CoordinadorProyectos", "viewBuscadorDocumentos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Director(a) Proyectos", "viewBuscadorDocumentos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorFacturacion", "viewBuscadorDocumentos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorProduccion", "viewBuscadorDocumentos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorVivas", "viewBuscadorDocumentos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("ProgramadorOperaciones", "viewBuscadorDocumentos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewBuscarMp");
+                    INSERT INTO auth_item_child (parent, child) VALUES("LiderCostos", "viewBuscarMp");
+                    INSERT INTO auth_item_child (parent, child) VALUES("CoordinadorLogistica", "viewBuscarRemisiones");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorLogistica", "viewBuscarRemisiones");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewBuscarRemisiones");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarLogistica", "viewCabina");
+                    INSERT INTO auth_item_child (parent, child) VALUES("CoordinadorLogistica", "viewCabina");
+                    INSERT INTO auth_item_child (parent, child) VALUES("CoordinadorProyectos", "viewCabina");
+                    INSERT INTO auth_item_child (parent, child) VALUES("CordinadorProyectos", "viewCabina");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Director(a) Proyectos", "viewCabina");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewCabina");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorFacturacion", "viewCabina");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorLogistica", "viewCabina");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Disenador", "viewCabina");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewCabina");
+                    INSERT INTO auth_item_child (parent, child) VALUES("LiderCostos", "viewCabina");
+                    INSERT INTO auth_item_child (parent, child) VALUES("LiderDiseno", "viewCabina");
+                    INSERT INTO auth_item_child (parent, child) VALUES("ProgramadorOperaciones", "viewCabina");
+                    INSERT INTO auth_item_child (parent, child) VALUES("SuperCoordinador", "viewCabina");
+                    INSERT INTO auth_item_child (parent, child) VALUES("SuperDiseñador", "viewCabina");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AdminComercial", "viewCambiarClave");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarContable", "viewCambiarClave");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarFacturacion", "viewCambiarClave");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarLogistica", "viewCambiarClave");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarNomina", "viewCambiarClave");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Commercial", "viewCambiarClave");
+                    INSERT INTO auth_item_child (parent, child) VALUES("CoordinadorLogistica", "viewCambiarClave");
+                    INSERT INTO auth_item_child (parent, child) VALUES("CordinadorProyectos", "viewCambiarClave");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Director Administrativo", "viewCambiarClave");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorComercial", "viewCambiarClave");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorFacturacion", "viewCambiarClave");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorLogistica", "viewCambiarClave");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorRH", "viewCambiarClave");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeAlmacen", "viewCambiarClave");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewCambiarClave");
+                    INSERT INTO auth_item_child (parent, child) VALUES("LiderCostos", "viewCambiarClave");
+                    INSERT INTO auth_item_child (parent, child) VALUES("LiderDiseno", "viewCambiarClave");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Operador", "viewCambiarClave");
+                    INSERT INTO auth_item_child (parent, child) VALUES("ProgramadorOperaciones", "viewCambiarClave");
+                    INSERT INTO auth_item_child (parent, child) VALUES("SuperCoordinador", "viewCambiarClave");
+                    INSERT INTO auth_item_child (parent, child) VALUES("SuperMercadeo", "viewCambiarClave");
+                    INSERT INTO auth_item_child (parent, child) VALUES("LiderCostos", "viewCargaMPresupuesto");
+                    INSERT INTO auth_item_child (parent, child) VALUES("assignRolesToUsers", "viewCargo");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Director Administrativo", "viewCargo");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewCargo");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorRH", "viewCargo");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarContable", "viewClaseproveedor");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Director Administrativo", "viewClaseproveedor");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewClaseproveedor");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AdminComercial", "viewClientes");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarContable", "viewClientes");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarFacturacion", "viewClientes");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarNomina", "viewClientes");
+                    INSERT INTO auth_item_child (parent, child) VALUES("CordinadorProyectos", "viewClientes");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Director Administrativo", "viewClientes");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewClientes");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorFacturacion", "viewClientes");
+                    INSERT INTO auth_item_child (parent, child) VALUES("SuperCoordinador", "viewClientes");
+                    INSERT INTO auth_item_child (parent, child) VALUES("LiderCostos", "viewCodFinal");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarCompras", "viewCompras");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarContable", "viewCompras");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarLogistica", "viewCompras");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewCompras");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorLogistica", "viewCompras");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeAlmacen", "viewCompras");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeAlmacen2", "viewCompras");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewCompras");
+                    INSERT INTO auth_item_child (parent, child) VALUES("ProgramadorOperaciones", "viewCompras");
+                    INSERT INTO auth_item_child (parent, child) VALUES("viewLegalizacionTerceros", "viewCompras");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Director Administrativo", "viewConciliar");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewConciliar");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AdminComercial", "viewConsolidados");
+                    INSERT INTO auth_item_child (parent, child) VALUES("CoordinadorProyectos", "viewConsolidados");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Director(a) Proyectos", "viewConsolidados");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorFacturacion", "viewConsolidados");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorProduccion", "viewConsolidados");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorVivas", "viewConsolidados");
+                    INSERT INTO auth_item_child (parent, child) VALUES("ProgramadorOperaciones", "viewConsolidados");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarCompras", "viewCostos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewCostos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewCostos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("LiderCostos", "viewCostos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("ProgramadorOperaciones", "viewCostos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewCostosReporte");
+                    INSERT INTO auth_item_child (parent, child) VALUES("LiderCostos", "viewCotizacion");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewCrearReferencia");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarCompras", "viewDespiece");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewDespiece");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewDespiece");
+                    INSERT INTO auth_item_child (parent, child) VALUES("LiderCostos", "viewDespiece");
+                    INSERT INTO auth_item_child (parent, child) VALUES("ProgramadorOperaciones", "viewDespiece");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Disenador", "viewDespieceSegundarioD");
+                    INSERT INTO auth_item_child (parent, child) VALUES("LiderDiseno", "viewDespieceSegundarioD");
+                    INSERT INTO auth_item_child (parent, child) VALUES("SuperDiseñador", "viewDespieceSegundarioD");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Operador", "viewDespieceSegundarioP");
+                    INSERT INTO auth_item_child (parent, child) VALUES("CoordinadorProyectos", "viewDetalleValoresOPDoc");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Director(a) Proyectos", "viewDetalleValoresOPDoc");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorFacturacion", "viewDetalleValoresOPDoc");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewDiseno");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorVivas", "viewDiseno");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Disenador", "viewDiseno");
+                    INSERT INTO auth_item_child (parent, child) VALUES("LiderDiseno", "viewDiseno");
+                    INSERT INTO auth_item_child (parent, child) VALUES("SuperDiseñador", "viewDiseno");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AdminComercial", "viewDocumentos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("CoordinadorLogistica", "viewDocumentos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Director Administrativo", "viewDocumentos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewDocumentos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorLogistica", "viewDocumentos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewDocumentos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("SuperCoordinador", "viewDocumentos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("viewRecursosHumanos", "viewDocumentos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("assignRolesToUsers", "viewEmpleado");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Director Administrativo", "viewEmpleado");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewEmpleado");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorRH", "viewEmpleado");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarAlmacen", "viewEntradasAlmacen");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeAlmacen", "viewEntradasAlmacen");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeAlmacen2", "viewEntradasAlmacen");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewEntradasAlmacen");
+                    INSERT INTO auth_item_child (parent, child) VALUES("CordinadorProyectos", "viewEntregables");
+                    INSERT INTO auth_item_child (parent, child) VALUES("SuperCoordinador", "viewEntregables");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorLogistica", "viewEstadoL");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorProduccion", "viewEstadoP");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorVivas", "viewEstadoV");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarAlmacen", "viewExistenciaAlmacen");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewExistenciaAlmacen");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeAlmacen", "viewExistenciaAlmacen");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeAlmacen2", "viewExistenciaAlmacen");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewExistenciaAlmacen");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewExistenciasAlmacen");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarAlmacen", "viewExistenciasArea");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewExistenciasArea");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeAlmacen", "viewExistenciasArea");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeAlmacen2", "viewExistenciasArea");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewExistenciasArea");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarContable", "viewFacturacion");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarFacturacion", "viewFacturacion");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarNomina", "viewFacturacion");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Director Administrativo", "viewFacturacion");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewFacturacion");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorFacturacion", "viewFacturacion");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarContable", "viewFacturacionProveedores");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Director Administrativo", "viewFacturacionProveedores");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewFacturacionProveedores");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarFacturacion", "viewFacturasCliente");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarNomina", "viewFacturasCliente");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorFacturacion", "viewFacturasCliente");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AdminComercial", "viewFiltroDocFacturas");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorFacturacion", "viewFiltroDocFacturas");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarContable", "viewFormaPago");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Director Administrativo", "viewFormaPago");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewFormaPago");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorFacturacion", "viewFormaPago");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarFacturacion", "viewGenerarFacturaCliente");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarNomina", "viewGenerarFacturaCliente");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorFacturacion", "viewGenerarFacturaCliente");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarCompras", "viewGestionCompras");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarLogistica", "viewGestionCompras");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorProduccion", "viewGestionCompras");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewGestionCompras");
+                    INSERT INTO auth_item_child (parent, child) VALUES("ProgramadorOperaciones", "viewGestionCompras");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarContable", "viewGestionInterna");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Director Administrativo", "viewGestionInterna");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewGestionInterna");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarCompras", "viewGrupoInventario");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarContable", "viewGrupoInventario");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeAlmacen", "viewGrupoInventario");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeAlmacen2", "viewGrupoInventario");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewGrupoInventario");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarCompras", "viewHomeCompras");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewHomeCompras");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewHomeCompras");
+                    INSERT INTO auth_item_child (parent, child) VALUES("assignRolesToUsers", "viewHorario");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Director Administrativo", "viewHorario");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewHorario");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorRH", "viewHorario");
+                    INSERT INTO auth_item_child (parent, child) VALUES("SuperAdmin", "viewID");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewInformeCodigos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("LiderCostos", "viewInformeCodigos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AdminComercial", "viewInformeDocumentos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarContable", "viewInformeDocumentos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarNomina", "viewInformeDocumentos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Director Administrativo", "viewInformeDocumentos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("SuperCoordinador", "viewInformeDocumentos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("CoordinadorProyectos", "viewInformeGR");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Director Administrativo", "viewInformeGR");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewInformeGR");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorProyectos", "viewInformeGR");
+                    INSERT INTO auth_item_child (parent, child) VALUES("SuperCoordinador", "viewInformeGR");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Director Administrativo", "ViewInformePresupuestos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("LiderCostos", "ViewInformePresupuestos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("ProgramadorOperaciones", "viewInformeProgramacion");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewInformesCompras");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarContable", "viewInterfazContable");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarFacturacion", "viewInterfazContable");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarNomina", "viewInterfazContable");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Director Administrativo", "viewInterfazContable");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewInterfazContable");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarContable", "viewKardex");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarFacturacion", "viewKardex");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarCompras", "viewLegalizacionTerceros");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarLogistica", "viewLegalizacionTerceros");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorLogistica", "viewLegalizacionTerceros");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewLegalizacionTerceros");
+                    INSERT INTO auth_item_child (parent, child) VALUES("ProgramadorOperaciones", "viewLegalizacionTerceros");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarCompras", "viewLegalizarMateriales");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewLegalizarMateriales");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarCompras", "viewListaPrecios");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarContable", "viewListaPrecios");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewListaPrecios");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarLogistica", "viewLogistica");
+                    INSERT INTO auth_item_child (parent, child) VALUES("CoordinadorLogistica", "viewLogistica");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorLogistica", "viewLogistica");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewLogistica");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Director(a) Proyectos", "viewMacroProyecto");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewMacroProyecto");
+                    INSERT INTO auth_item_child (parent, child) VALUES("SuperCoordinador", "viewMacroProyecto");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarCompras", "viewMateriales");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarContable", "viewMateriales");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewMateriales");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeAlmacen", "viewMateriales");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeAlmacen2", "viewMateriales");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewMateriales");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarAlmacen", "viewMaterialesxArea");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarCompras", "viewMaterialesxArea");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarContable", "viewMaterialesxArea");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Director Administrativo", "viewMaterialesxArea");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeAlmacen", "viewMaterialesxArea");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeAlmacen2", "viewMaterialesxArea");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewMaterialesxArea");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarCompras", "viewMedida");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarContable", "viewMedida");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeAlmacen", "viewMedida");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeAlmacen2", "viewMedida");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewMedida");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AdminComercial", "viewMercadeo");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarContable", "viewMercadeo");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarFacturacion", "viewMercadeo");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarNomina", "viewMercadeo");
+                    INSERT INTO auth_item_child (parent, child) VALUES("CordinadorProyectos", "viewMercadeo");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewMercadeo");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorComercial", "viewMercadeo");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorFacturacion", "viewMercadeo");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorVivas", "viewMercadeo");
+                    INSERT INTO auth_item_child (parent, child) VALUES("SuperCoordinador", "viewMercadeo");
+                    INSERT INTO auth_item_child (parent, child) VALUES("SuperCordinador", "viewMercadeo");
+                    INSERT INTO auth_item_child (parent, child) VALUES("SuperMercadeo", "viewMercadeo");
+                    INSERT INTO auth_item_child (parent, child) VALUES("viewMacroProyecto", "viewMercadeo");
+                    INSERT INTO auth_item_child (parent, child) VALUES("viewProyectosOp", "viewMercadeo");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AdminComercial", "viewModalProyectos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Commercial", "viewModalProyectos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("CoordinadorProyectos", "viewModalProyectos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("CordinadorProyectos", "viewModalProyectos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("SuperCoordinador", "viewModalProyectos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("SuperMercadeo", "viewModalProyectos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarCompras", "viewMovimientoxMaterial");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarContable", "viewMovimientoxMaterial");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewMovimientoxMaterial");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Operador", "viewOperador");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewOportunidadNegocio");
+                    INSERT INTO auth_item_child (parent, child) VALUES("SuperCoordinador", "viewOportunidadNegocio");
+                    INSERT INTO auth_item_child (parent, child) VALUES("CoordinadorProyectos", "viewOrdenes");
+                    INSERT INTO auth_item_child (parent, child) VALUES("CordinadorProyectos", "viewOrdenes");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Director(a) Proyectos", "viewOrdenes");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewOrdenes");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorComercial", "viewOrdenes");
+                    INSERT INTO auth_item_child (parent, child) VALUES("SuperCoordinador", "viewOrdenes");
+                    INSERT INTO auth_item_child (parent, child) VALUES("SuperMercadeo", "viewOrdenes");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarLogistica", "viewPlaneacionLogistica");
+                    INSERT INTO auth_item_child (parent, child) VALUES("CoordinadorLogistica", "viewPlaneacionLogistica");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewPlaneacionLogistica");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorLogistica", "viewPlaneacionLogistica");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewPlaneacionLogistica");
+                    INSERT INTO auth_item_child (parent, child) VALUES("ProgramadorOperaciones", "viewPlaneacionProduccion");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewPlantilla");
+                    INSERT INTO auth_item_child (parent, child) VALUES("LiderCostos", "viewPlantilla");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorProduccion", "viewProduccion");
+                    INSERT INTO auth_item_child (parent, child) VALUES("ProgramadorOperaciones", "viewProduccion");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Disenador", "viewProgramacionDiseno");
+                    INSERT INTO auth_item_child (parent, child) VALUES("LiderDiseno", "viewProgramacionDiseno");
+                    INSERT INTO auth_item_child (parent, child) VALUES("viewDiseno", "viewProgramacionDiseno");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarContable", "viewProveedor");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Director Administrativo", "viewProveedor");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewProveedor");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AdminComercial", "viewProyectos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarContable", "viewProyectos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarNomina", "viewProyectos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Director Administrativo", "viewProyectos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Director(a) Proyectos", "viewProyectos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorComercial", "viewProyectos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorProyectos", "viewProyectos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorVivas", "viewProyectos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("SuperCoordinador", "viewProyectos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("SuperCordinador", "viewProyectos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("SuperMercadeo", "viewProyectos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("viewModalProyectos", "viewProyectos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("viewviewEntregables", "viewProyectos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("CoordinadorProyectos", "viewProyectosOp");
+                    INSERT INTO auth_item_child (parent, child) VALUES("CordinadorProyectos", "viewProyectosOp");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Director(a) Proyectos", "viewProyectosOp");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewProyectosOp");
+                    INSERT INTO auth_item_child (parent, child) VALUES("SuperCoordinador", "viewProyectosOp");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AdminComercial", "viewProyectoSuper");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewProyectoSuper");
+                    INSERT INTO auth_item_child (parent, child) VALUES("SuperCoordinador", "viewProyectoSuper");
+                    INSERT INTO auth_item_child (parent, child) VALUES("SuperCordinador", "viewProyectoSuper");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarContable", "viewPucs");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Director Administrativo", "viewPucs");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewPucs");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorFacturacion", "viewPucs");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarContable", "viewPucsoc");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Director Administrativo", "viewPucsoc");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewPucsoc");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorFacturacion", "viewPucsoc");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AdminComercial", "viewRecursosHumanos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("CoordinadorLogistica", "viewRecursosHumanos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Director Administrativo", "viewRecursosHumanos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewRecursosHumanos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorLogistica", "viewRecursosHumanos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorRH", "viewRecursosHumanos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewRecursosHumanos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("SuperCoordinador", "viewRecursosHumanos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarContable", "viewRegimen");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Director Administrativo", "viewRegimen");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewRegimen");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorFacturacion", "viewRegimen");
+                    INSERT INTO auth_item_child (parent, child) VALUES("CoordinadorLogistica", "viewRemisiones");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Director(a) Proyectos", "viewRemisiones");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewRemisiones");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorLogistica", "viewRemisiones");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewRemisiones");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarCompras", "viewRequisicion");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewRequisicion");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarAlmacen", "viewSalidasAlmacen");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeAlmacen", "viewSalidasAlmacen");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeAlmacen2", "viewSalidasAlmacen");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewSalidasAlmacen");
+                    INSERT INTO auth_item_child (parent, child) VALUES("CordinadorProyectos", "viewSolicitudGR");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Director Administrativo", "viewSolicitudGR");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewSolicitudGR");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorProyectos", "viewSolicitudGR");
+                    INSERT INTO auth_item_child (parent, child) VALUES("SuperCoordinador", "viewSolicitudGR");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarCompras", "viewSubGrupo");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarContable", "viewSubGrupo");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeAlmacen", "viewSubGrupo");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeAlmacen2", "viewSubGrupo");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewSubGrupo");
+                    INSERT INTO auth_item_child (parent, child) VALUES("LiderCostos", "viewTiemposProduccion");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarContable", "viewTipoPago");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Director Administrativo", "viewTipoPago");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewTipoPago");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorFacturacion", "viewTipoPago");
+                    INSERT INTO auth_item_child (parent, child) VALUES("assignRolesToUsers", "viewUserEmail");
+                    INSERT INTO auth_item_child (parent, child) VALUES("editUserEmail", "viewUserEmail");
+                    INSERT INTO auth_item_child (parent, child) VALUES("assignRolesToUsers", "viewUserRoles");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Admin", "viewUsers");
+                    INSERT INTO auth_item_child (parent, child) VALUES("assignRolesToUsers", "viewUsers");
+                    INSERT INTO auth_item_child (parent, child) VALUES("changeUserPassword", "viewUsers");
+                    INSERT INTO auth_item_child (parent, child) VALUES("createUsers", "viewUsers");
+                    INSERT INTO auth_item_child (parent, child) VALUES("deleteUsers", "viewUsers");
+                    INSERT INTO auth_item_child (parent, child) VALUES("editUsers", "viewUsers");
+                    INSERT INTO auth_item_child (parent, child) VALUES("viewModalProyectos", "viewviewEntregables");
+                    INSERT INTO auth_item_child (parent, child) VALUES("assignRolesToUsers", "viewVisitLog");
+
+                    drop table auth_item_group;
+
+
+                    CREATE TABLE `auth_item_group` (
+                    `code` varchar(64) NOT NULL,
+                    `name` varchar(255) NOT NULL,
+                    `created_at` int DEFAULT NULL,
+                    `updated_at` int DEFAULT NULL,
+                    PRIMARY KEY (`code`)
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+                    INSERT INTO auth_item_group (code, name, created_at, updated_at) VALUES("Almacen", "Almacen", 1616165537, 1703176396);
+                    INSERT INTO auth_item_group (code, name, created_at, updated_at) VALUES("Cabina", "Cabina", 1616603308, 1616603308);
+                    INSERT INTO auth_item_group (code, name, created_at, updated_at) VALUES("Comite", "Comité", 1558392412, 1558392412);
+                    INSERT INTO auth_item_group (code, name, created_at, updated_at) VALUES("Compras", "Compras", 1616163520, 1616163520);
+                    INSERT INTO auth_item_group (code, name, created_at, updated_at) VALUES("Configuracion", "Configuración", 1542641175, 1542661748);
+                    INSERT INTO auth_item_group (code, name, created_at, updated_at) VALUES("Consolidados", "Consolidados", 1703179593, 1703179593);
+                    INSERT INTO auth_item_group (code, name, created_at, updated_at) VALUES("Costos", "Costos", 1616606595, 1616606595);
+                    INSERT INTO auth_item_group (code, name, created_at, updated_at) VALUES("Diseno", "Diseño", 1559827177, 1559827177);
+                    INSERT INTO auth_item_group (code, name, created_at, updated_at) VALUES("Facturacion", "Facturación", 1621609158, 1621609158);
+                    INSERT INTO auth_item_group (code, name, created_at, updated_at) VALUES("GestionI", "Gestion Interna", 1542721086, 1542727286);
+                    INSERT INTO auth_item_group (code, name, created_at, updated_at) VALUES("Logistica", "Logistica", 1616192440, 1616192440);
+                    INSERT INTO auth_item_group (code, name, created_at, updated_at) VALUES("Mercadeo", "Mercadeo", 1558629348, 1558629348);
+                    INSERT INTO auth_item_group (code, name, created_at, updated_at) VALUES("Operador", "Operador", 1576672522, 1576672522);
+                    INSERT INTO auth_item_group (code, name, created_at, updated_at) VALUES("Produccion", "Produccion", 1576672161, 1576672161);
+                    INSERT INTO auth_item_group (code, name, created_at, updated_at) VALUES("Proyectos", "Proyectos", 1572986213, 1572986213);
+                    INSERT INTO auth_item_group (code, name, created_at, updated_at) VALUES("Recursosh", "Recursos humanos", 1556922142, 1556922142);
+                    INSERT INTO auth_item_group (code, name, created_at, updated_at) VALUES("Roles", "Roles", 1620064446, 1620064446);
+                    INSERT INTO auth_item_group (code, name, created_at, updated_at) VALUES("Usuarios", "Usuarios", 1542641175, 1542654209);
+
+
+
+
+
+
+
+
+
+                ');
+            }catch(PDOException $e){
+                echo "Hubo un error en la correccion de usuarios-operario".$id."\n<br>".$e->getMessage();exit;
+            } 
+
+
             $tiempo_fin = microtime(true);
             $tiempo_transcurrido = $tiempo_fin - $tiempo_inicio;
 
@@ -22747,18 +23722,19 @@
                     o.cantidad as 'cantidad',
                     uO.nombre_usuario as 'experto',
                     t.id_costo as 'id_costo',
-                    t.fecha_inicio_real as 'fecha_inicio',
+                    t.fecha_inicio as 'fecha_inicio',
                     t.fecha_final as 'fecha_final',
                     t.nombre_costo as 'tarea',
                     t.can_horas as 'horas',
-                    o.id_usuario as 'comercial_id',
+                    o.id_vend as 'comercial_id',
                     o.id_coordinador as 'coordinador_id'
                     from dt_tareas_costo t 
                     inner join dt_ordenes o on t.id_ordenes = o.id_ordenes
                     inner join `user` uP on t.id_usuario = uP.id
                     inner join `user` uO on t.id_vendedor = uO.id
                     left join dt_clientes c on c.id_cliente = o.id_cliente where t.id_area = id_area and t.fecha_retro is null
-                    order by o.n_ordenes asc, t.fecha_inicio asc,o.item_op asc;
+                    and year(t.fecha_inicio) in (YEAR(CURRENT_TIMESTAMP),YEAR(CURRENT_TIMESTAMP)-1)
+                    order by  t.fecha_inicio asc,o.n_ordenes asc,o.item_op asc;
                     
                     CREATE DEFINER=`masterUS`@`%` PROCEDURE `migracion_prueba`.`agendaOperadoresOP`(id_area int,n_ordenes int)
                     select
@@ -22771,18 +23747,19 @@
                     o.cantidad as 'cantidad',
                     uO.nombre_usuario as 'experto',
                     t.id_costo as 'id_costo',
-                    t.fecha_inicio_real as 'fecha_inicio',
+                    t.fecha_inicio as 'fecha_inicio',
                     t.fecha_final as 'fecha_final',
                     t.nombre_costo as 'tarea',
                     t.can_horas as 'horas',
-                    o.id_usuario as 'comercial_id',
+                    o.id_vend as 'comercial_id',
                     o.id_coordinador as 'coordinador_id'
                     from dt_tareas_costo t 
                     inner join dt_ordenes o on t.id_ordenes = o.id_ordenes
                     inner join `user` uP on t.id_usuario = uP.id
                     inner join `user` uO on t.id_vendedor = uO.id
                     left join dt_clientes c on c.id_cliente = o.id_cliente where t.id_area = id_area and t.fecha_retro is null and o.n_ordenes = n_ordenes
-                    order by o.n_ordenes asc, t.fecha_inicio asc,o.item_op asc;
+                    and year(t.fecha_inicio) in (YEAR(CURRENT_TIMESTAMP),YEAR(CURRENT_TIMESTAMP)-1)
+                    order by  t.fecha_inicio asc,o.n_ordenes asc,o.item_op asc;
                     
                     CREATE DEFINER=`masterUS`@`%` PROCEDURE `migracion_prueba`.`buscadorDiseno`(n_ordenes int)
                     select 
@@ -23363,6 +24340,7 @@
             return "Se ha completado la creación de procedimientos almacenados";
 
         }
+
         public static function creaVistasBd($conexion_migracion_prueba){
 
             try{
@@ -26514,6 +27492,21 @@
                         `migracion_prueba`.`vw_sub_existencia_area` `vw`
                     group by
                         `migracion_prueba`.`vw`.`codigo_prod`;   
+
+                    CREATE OR REPLACE
+                    ALGORITHM = UNDEFINED VIEW `migracion_prueba`.`vw_usuarios_2` AS
+                    select
+                        `migracion_prueba`.`user`.`id` AS `id`,
+                        `migracion_prueba`.`user`.`username` AS `username`,
+                        `migracion_prueba`.`user`.`nombre_usuario` AS `nombre_usuario`,
+                        `migracion_prueba`.`dt_usuarios`.`id_area` AS `id_area`,
+                        `migracion_prueba`.`dt_usuarios`.`activacion` AS `activacion`,
+                        `dt_usuarios`.`id_cargo` AS `id_cargo`
+                    from
+                        (`migracion_prueba`.`user`
+                    join `migracion_prueba`.`dt_usuarios` on
+                        ((`migracion_prueba`.`user`.`id_empleado` = `migracion_prueba`.`dt_usuarios`.`id_usuario`)));
+                         
                 ");
 
             }catch(PDOException $e){

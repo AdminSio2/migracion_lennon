@@ -176,12 +176,19 @@
 
     $array_info_global['cod=>id_codpdrodfinal'] = ControladorInformacionGlobal::traeArrayIdCodprodfinal($conexion_sio1);
 
-    //Traemos el array nOrden => cod  (desde dt_subcategorias del sio 1)
+    //Traemos el array nOrden => cod  (desde dt_subcategorias del sio 1) suspendemos
 
-    $array_info_global['nOrden=>cod'] = ControladorInformacionGlobal::traeArrayCodSubcategorias($conexion_sio1);
+    //$array_info_global['nOrden=>cod'] = ControladorInformacionGlobal::traeArrayCodSubcategorias($conexion_sio1);
+
+    //Traemos el array nOrden|item_ct=>dataSubcategoria
+
+    $array_info_global['nOrden|item_ct=>dataSubcategoria'] = ControladorInformacionGlobal::traeArrayDtSubcategorias($conexion_sio1);
 
     echo ControladorMigracion::migraDtOrdenes($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
 
+    //Desocupamos este sub aray que no usaremos más
+
+    $array_info_global['nOrden|item_ct=>dataSubcategoria'] = null;
     
     //Traemos el array: n_ordenes|item_op => id_ordenes
 
