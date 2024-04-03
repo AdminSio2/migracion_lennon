@@ -23668,14 +23668,14 @@
 
                 ');
             }catch(PDOException $e){
-                echo "Hubo un error en la correccion de usuarios-operario".$id."\n<br>".$e->getMessage();exit;
+                echo "Hubo un error en la correccion de usuarios-operario y tablas de permisos".$id."\n<br>".$e->getMessage();exit;
             } 
 
 
             $tiempo_fin = microtime(true);
             $tiempo_transcurrido = $tiempo_fin - $tiempo_inicio;
 
-            $mensaje = "Actualización de credenciales de ingreso en user y id_cargo en id_usuarios completa, ".$registros_corregidos." usuarios actualizados en sus credenciales de ingreso y id_cargo ".$tiempo_transcurrido." segundos";
+            $mensaje = "Actualización de credenciales de ingreso en user y id_cargo en id_usuarios completa, ".$registros_corregidos." usuarios actualizados en sus credenciales de ingreso y id_cargo, actualización de tablas de permisos todo en ".$tiempo_transcurrido." segundos";
 
             return $mensaje;
 
