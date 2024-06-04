@@ -66,9 +66,9 @@
     - dt_proveedores
     - dt_inf_contable_prove
     - dt_contacto_cliente
-    - dt_codprodfinal
-    - dt_inventario
-    - dt_kardex
+    - dt_codprodfinal Esta ya quedo por migración directa
+    - dt_inventario   Esta ya quedo por migración directa
+    - dt_kardex       Esta ya quedo por migración directa 
 
 
     Se pueden migrar desde SQL
@@ -78,7 +78,7 @@
     */ 
 
     date_default_timezone_set('America/Bogota');
-    set_time_limit(8100); //Seteamos tiempo de ejecución máximo en 135 min/ 2 h y 15 m
+    set_time_limit(9600); //Seteamos tiempo de ejecución máximo en 160 min/ 2 h y 40 m
     ini_set('memory_limit', '2G'); //Seteamos una memoria de 2G
     $fechaHoraActual = date('Y-m-d H:i:s');
 
@@ -116,9 +116,17 @@
 
     $array_info_global['subgrupo=>id_subgrupo'] = ControladorInformacionGlobal::traeArrayIdSubgrupo($conexion_migracion_prueba);
 
+    //Traemos array nit => id_cliente
 
+    $array_info_global['nit=>id_cliente'] = ControladorInformacionGlobal::traeArrayIdCliente($conexion_migracion_prueba);
 
+    
+    
+    echo ControladorFuncionesAuxiliares::agregaRegistrosFaltantes($conexion_migracion_prueba)."\n<br>";
+    echo ControladorMigracion::migraDtCodprodfinal($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";//exit;
+    echo ControladorFuncionesAuxiliares::creaTablaDtSublinea($conexion_migracion_prueba)."\n<br>";
     echo ControladorMigracion::migraDtInventarioDtKardex($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
+    echo ControladorFuncionesAuxiliares::incluyeIdMedidasFaltantes($conexion_migracion_prueba)."\n<br>";
 
     //Desocupamos estos arrays porque no se van a usar luego de la función anterior
     $array_info_global['grupo=>id_grupo_inventario'] = null;
@@ -136,9 +144,7 @@
 
     $array_info_global['id_area'] = ControladorInformacionGlobal::traeArrayIdArea($conexion_migracion_prueba);
 
-    //Traemos array nit => id_cliente
-
-    $array_info_global['nit=>id_cliente'] = ControladorInformacionGlobal::traeArrayIdCliente($conexion_migracion_prueba);
+    
 
     //Traemos array grupos diseño
 
@@ -157,11 +163,12 @@
 
     echo ControladorMigracion::migraDtUsuariosUser($conexion_sio1,$conexion_migracion_prueba)."\n<br>";
     echo ControladorFuncionesAuxiliares::complementaInfoUsuariosActivos($conexion_migracion_prueba)."\n<br>";
-    echo ControladorFuncionesAuxiliares::actualizaAuthAssignment($conexion_migracion_prueba)."\n<br>";
+    //echo ControladorFuncionesAuxiliares::actualizaAuthAssignment($conexion_migracion_prueba)."\n<br>"; YA NO VA 
     echo ControladorFuncionesAuxiliares::actualizaRegistrosNuevosTablasOz($conexion_migracion_prueba)."\n<br>"; //Actualización tablas Oz
     echo ControladorFuncionesAuxiliares::corrigeDtInfContableProve($conexion_migracion_prueba,$array_info_global)."\n<br>";
-    echo ControladorFuncionesAuxiliares::corrijeDtCodprodfinal($conexion_migracion_prueba,$array_info_global)."\n<br>";
+    //echo ControladorFuncionesAuxiliares::corrijeDtCodprodfinal($conexion_migracion_prueba,$array_info_global)."\n<br>"; Esta ya se fue por migración directa
     echo ControladorMigracion::migraDtInventarioxarea($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
+    echo ControladorFuncionesAuxiliares::corrijeDtClientes($conexion_migracion_prueba)."\n<br>";
     
 
     //Traemos los arrays: user codVendedor => id_usuario y vendedor => id_usuario 
