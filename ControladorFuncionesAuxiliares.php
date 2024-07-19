@@ -37,74 +37,98 @@
 
             $tiempo_inicio = microtime(true);
 
-            //dt_clientes 
+            //dt_clientes (COMENTADO POR MIGRACIÓN DIRECTA)
 
-            try{
-                $conexion_migracion_prueba->exec("
+            // try{
+            //     $conexion_migracion_prueba->exec("
 
-                    INSERT INTO dt_clientes
-                    (id_cliente, estado, potencial, objetivo, nom_empresa, id_usuario, nit, dig_verificacion, fecha_ingreso, fecha_actualizacion, usuario_actualizador, direccion, telefono, email_empresa, pagina_web, 
-                    contacto, sector, area, telefono_contacto, cargo_contacto, email_contacto, fecha_nac_contacto, direccion_contacto, gustos, representante_legal, cedula_representante_legal, celular_representante_legal,
-                    facturacion, id_pais, importancia_1, importancia_2, importancia_3, importancia_4, intereses_compras, intereses_mercadeo, intereses_proyectos, id_ciudad, id_regimen, id_forma_pago, id_geografia)
-                    VALUES(2744, 1, 0, 1, 'YULY MAYERLY CABALLERO LEON', 782, '1070706941',0, '2023-09-20 16:20:58', '2023-09-20 16:22:00', 55, 'CR 2 18 168 CENTRO', '3102618705', 'caballero.yuly@gmail.com',
-                    '', '', '', '', '', '', '', '0001-01-01', '', '', 'YULY MAYERLY CABALLERO LEON', 0,  0,  '',1, 0, 0, 0, 0, '', '', '', 707, 3, 0,15);
-
-
-                    INSERT INTO dt_clientes
-                    (id_cliente, estado, potencial, objetivo, nom_empresa, id_usuario, nit, dig_verificacion, fecha_ingreso, fecha_actualizacion, usuario_actualizador, direccion, telefono, email_empresa, pagina_web, 
-                    contacto, sector, area, telefono_contacto, cargo_contacto, email_contacto, fecha_nac_contacto, direccion_contacto, gustos, representante_legal, cedula_representante_legal, celular_representante_legal,
-                    facturacion, id_pais, importancia_1, importancia_2, importancia_3, importancia_4, intereses_compras, intereses_mercadeo, intereses_proyectos, id_ciudad, id_regimen, id_forma_pago, id_geografia)
-                    VALUES(2745, 1, 0, 1, 'FORMAS TRENDY S A S', 782, '901502103',3, '2023-11-08 09:08:10', '2023-11-08 09:08:10', 55, 'CL 68 23 36', '3103396111', 'formastrendy@gmail.com',
-                    '', '', '', '', '', '', '', '0001-01-01', '', '', '', 0,  0,  '',1, 0, 0, 0, 0, '', '', '', 707, 2, 41, NULL);
+            //         INSERT INTO dt_clientes
+            //         (id_cliente, estado, potencial, objetivo, nom_empresa, id_usuario, nit, dig_verificacion, fecha_ingreso, fecha_actualizacion, usuario_actualizador, direccion, telefono, email_empresa, pagina_web, 
+            //         contacto, sector, area, telefono_contacto, cargo_contacto, email_contacto, fecha_nac_contacto, direccion_contacto, gustos, representante_legal, cedula_representante_legal, celular_representante_legal,
+            //         facturacion, id_pais, importancia_1, importancia_2, importancia_3, importancia_4, intereses_compras, intereses_mercadeo, intereses_proyectos, id_ciudad, id_regimen, id_forma_pago, id_geografia)
+            //         VALUES(2744, 1, 0, 1, 'YULY MAYERLY CABALLERO LEON', 782, '1070706941',0, '2023-09-20 16:20:58', '2023-09-20 16:22:00', 55, 'CR 2 18 168 CENTRO', '3102618705', 'caballero.yuly@gmail.com',
+            //         '', '', '', '', '', '', '', '0001-01-01', '', '', 'YULY MAYERLY CABALLERO LEON', 0,  0,  '',1, 0, 0, 0, 0, '', '', '', 1, 3, 0,15);
 
 
-                    INSERT INTO dt_clientes
-                    (id_cliente, estado, potencial, objetivo, nom_empresa, id_usuario, nit, dig_verificacion, fecha_ingreso, fecha_actualizacion, usuario_actualizador, direccion, telefono, email_empresa, pagina_web, 
-                    contacto, sector, area, telefono_contacto, cargo_contacto, email_contacto, fecha_nac_contacto, direccion_contacto, gustos, representante_legal, cedula_representante_legal, celular_representante_legal,
-                    facturacion, id_pais, importancia_1, importancia_2, importancia_3, importancia_4, intereses_compras, intereses_mercadeo, intereses_proyectos, id_ciudad, id_regimen, id_forma_pago, id_geografia)
-                    VALUES(2746, 1, 0, 1, 'INGRAS S A S', 110, '901256344',6, '2024-02-13 16:23:01', '2024-02-13 16:24:40', 55, 'CR 48 98 A SUR 112', '3223118', 'contabilidad@ingras.com.co',
-                    '', '', '', '', '', '', '', '0001-01-01', '', '', '', 0,  0,  '',1, 0, 0, 0, 0, '', '', '', 707, 2, 0,10);
+            //         INSERT INTO dt_clientes
+            //         (id_cliente, estado, potencial, objetivo, nom_empresa, id_usuario, nit, dig_verificacion, fecha_ingreso, fecha_actualizacion, usuario_actualizador, direccion, telefono, email_empresa, pagina_web, 
+            //         contacto, sector, area, telefono_contacto, cargo_contacto, email_contacto, fecha_nac_contacto, direccion_contacto, gustos, representante_legal, cedula_representante_legal, celular_representante_legal,
+            //         facturacion, id_pais, importancia_1, importancia_2, importancia_3, importancia_4, intereses_compras, intereses_mercadeo, intereses_proyectos, id_ciudad, id_regimen, id_forma_pago, id_geografia)
+            //         VALUES(2745, 1, 0, 1, 'FORMAS TRENDY S A S', 782, '901502103',3, '2023-11-08 09:08:10', '2023-11-08 09:08:10', 55, 'CL 68 23 36', '3103396111', 'formastrendy@gmail.com',
+            //         '', '', '', '', '', '', '', '0001-01-01', '', '', '', 0,  0,  '',1, 0, 0, 0, 0, '', '', '',1, 2, 41, NULL);
 
 
-                    INSERT INTO dt_clientes
-                    (id_cliente, estado, potencial, objetivo, nom_empresa, id_usuario, nit, dig_verificacion, fecha_ingreso, fecha_actualizacion, usuario_actualizador, direccion, telefono, email_empresa, pagina_web, 
-                    contacto, sector, area, telefono_contacto, cargo_contacto, email_contacto, fecha_nac_contacto, direccion_contacto, gustos, representante_legal, cedula_representante_legal, celular_representante_legal,
-                    facturacion, id_pais, importancia_1, importancia_2, importancia_3, importancia_4, intereses_compras, intereses_mercadeo, intereses_proyectos, id_ciudad, id_regimen, id_forma_pago, id_geografia)
-                    VALUES(2747, 1, 0, 1, 'SERVICAMPESTRE LTDA', 110, '800145300',null, '2024-04-19 12:02:31', '2024-04-19 12:10:01', 55, 'KM 4 VIA PUERTO COLOMBIA', '3598638', 'administracion@servicampestre.co',
-                    '', '', '', '', '', '', '', '0001-01-01', '', '', '', 0,  0,  '',1, 0, 0, 0, 0, '', '', '', 707, 2, 0,12);
+            //         INSERT INTO dt_clientes
+            //         (id_cliente, estado, potencial, objetivo, nom_empresa, id_usuario, nit, dig_verificacion, fecha_ingreso, fecha_actualizacion, usuario_actualizador, direccion, telefono, email_empresa, pagina_web, 
+            //         contacto, sector, area, telefono_contacto, cargo_contacto, email_contacto, fecha_nac_contacto, direccion_contacto, gustos, representante_legal, cedula_representante_legal, celular_representante_legal,
+            //         facturacion, id_pais, importancia_1, importancia_2, importancia_3, importancia_4, intereses_compras, intereses_mercadeo, intereses_proyectos, id_ciudad, id_regimen, id_forma_pago, id_geografia)
+            //         VALUES(2746, 1, 0, 1, 'INGRAS S A S', 110, '901256344',6, '2024-02-13 16:23:01', '2024-02-13 16:24:40', 55, 'CR 48 98 A SUR 112', '3223118', 'contabilidad@ingras.com.co',
+            //         '', '', '', '', '', '', '', '0001-01-01', '', '', 'alejandro maya herrera', 0,  0,  '',1, 0, 0, 0, 0, '', '', '', 1, 2, 0,10);
 
-                ");
-            }catch(PDOException $e){
-                echo "Hubo un error en la actualización de los registros nuevos de la tabla dt_clientes "."\n<br>".$e->getMessage();
-            }
 
-            //dt_inffac_cli
+            //         INSERT INTO dt_clientes
+            //         (id_cliente, estado, potencial, objetivo, nom_empresa, id_usuario, nit, dig_verificacion, fecha_ingreso, fecha_actualizacion, usuario_actualizador, direccion, telefono, email_empresa, pagina_web, 
+            //         contacto, sector, area, telefono_contacto, cargo_contacto, email_contacto, fecha_nac_contacto, direccion_contacto, gustos, representante_legal, cedula_representante_legal, celular_representante_legal,
+            //         facturacion, id_pais, importancia_1, importancia_2, importancia_3, importancia_4, intereses_compras, intereses_mercadeo, intereses_proyectos, id_ciudad, id_regimen, id_forma_pago, id_geografia)
+            //         VALUES(2747, 1, 0, 1, 'SERVICAMPESTRE LTDA', 110, '800145300',null, '2024-04-19 12:02:31', '2024-04-19 12:10:01', 55, 'KM 4 VIA PUERTO COLOMBIA', '3598638', 'administracion@servicampestre.co',
+            //         '', '', '', '', '', '', '', '0001-01-01', '', '', 'MARIA GABRIEL DIAGO GARCIA', 0,  0,  '',1, 0, 0, 0, 0, '', '', '',1, 2, 0,198);
 
-            try{
-                $conexion_migracion_prueba->exec("
-
-                    INSERT INTO dt_inffac_cli
-                    (id_inffac_cli, cuenta_contable, descuento_ica, cupo_credito, cupo_contrato, aprobado_por, cod_clasitri, tipo_identificacion, tipo_persona, declarante, agente_retenedor, benefactor_rtiva, agente_rtiva, rete_garantia, meses_garantia, valor_rt_garantia, rt_fuente_renta, entidad_publica, cod_entidad_publica, razon_social, comision_coorporativa, id_cliente)
-                    VALUES(1899, '0', '', NULL, '0', 0, NULL, 0, 2, 2, 0, 2, 0, 0, 0, '0', 0, 0, '', 0, '', 2744);
+            //         INSERT INTO dt_clientes
+            //         (id_cliente, estado, potencial, objetivo, nom_empresa, id_usuario, nit, dig_verificacion, fecha_ingreso, fecha_actualizacion, usuario_actualizador, direccion, telefono, email_empresa, pagina_web, 
+            //         contacto, sector, area, telefono_contacto, cargo_contacto, email_contacto, fecha_nac_contacto, direccion_contacto, gustos, representante_legal, cedula_representante_legal, celular_representante_legal,
+            //         facturacion, id_pais, importancia_1, importancia_2, importancia_3, importancia_4, intereses_compras, intereses_mercadeo, intereses_proyectos, id_ciudad, id_regimen, id_forma_pago, id_geografia)
+            //         VALUES(2748, 1, 0, 1, 'COMPAÑIA DE INVERSIONES Y CONSULTORA ACGM SAS', 110, '901312085',3, '2024-05-29 13:52:31', '2024-05-29 13:53:19', 55, 'AV 6 A BIS 35 N 100 OF 803', '6594053', 'facturacioncgm@cgm.com.co',
+            //         '', '', '', '', '', '', '', '0001-01-01', '', '', 'ALBERTO LOSADA TORRES', 0,  0,  '',1, 0, 0, 0, 0, '', '', '', 1, 2, 0,1127);
                     
-                    INSERT INTO dt_inffac_cli
-                    (id_inffac_cli, cuenta_contable, descuento_ica, cupo_credito, cupo_contrato, aprobado_por, cod_clasitri, tipo_identificacion, tipo_persona, declarante, agente_retenedor, benefactor_rtiva, agente_rtiva, rete_garantia, meses_garantia, valor_rt_garantia, rt_fuente_renta, entidad_publica, cod_entidad_publica, razon_social, comision_coorporativa, id_cliente)
-                    VALUES(1900, '0', '', NULL, '0', 0, NULL, 1, 1, 1, 0, 2, 0, 0, 0, '0', 0, 0, '', 0, '', 2745);
-                    
-                    INSERT INTO dt_inffac_cli
-                    (id_inffac_cli, cuenta_contable, descuento_ica, cupo_credito, cupo_contrato, aprobado_por, cod_clasitri, tipo_identificacion, tipo_persona, declarante, agente_retenedor,
-                    benefactor_rtiva, agente_rtiva, rete_garantia, meses_garantia, valor_rt_garantia, rt_fuente_renta, entidad_publica, cod_entidad_publica, razon_social, comision_coorporativa, id_cliente)
-                    VALUES(1901, '0', '', NULL, '0', 0, NULL, 1, 1, 1, 0, 2, 0, 0, 0, '0', 0, 0, '', 0, '', 2746);
-                    
-                    INSERT INTO dt_inffac_cli
-                    (id_inffac_cli, cuenta_contable, descuento_ica, cupo_credito, cupo_contrato, aprobado_por, cod_clasitri, tipo_identificacion, tipo_persona, declarante, agente_retenedor,
-                    benefactor_rtiva, agente_rtiva, rete_garantia, meses_garantia, valor_rt_garantia, rt_fuente_renta, entidad_publica, cod_entidad_publica, razon_social, comision_coorporativa, id_cliente)
-                    VALUES(1902, '0', '', NULL, '0', 0, NULL, 1, 1, 1, 0, 2, 0, 0, 0, '0', 0, 0, '', 0, '', 2747);
+            //         INSERT INTO dt_clientes
+            //         (id_cliente, estado, potencial, objetivo, nom_empresa, id_usuario, nit, dig_verificacion, fecha_ingreso, fecha_actualizacion, usuario_actualizador, direccion, telefono, email_empresa, pagina_web, 
+            //         contacto, sector, area, telefono_contacto, cargo_contacto, email_contacto, fecha_nac_contacto, direccion_contacto, gustos, representante_legal, cedula_representante_legal, celular_representante_legal,
+            //         facturacion, id_pais, importancia_1, importancia_2, importancia_3, importancia_4, intereses_compras, intereses_mercadeo, intereses_proyectos, id_ciudad, id_regimen, id_forma_pago, id_geografia)
+            //         VALUES(2749, 1, 0, 1, 'GREEN EARTH INVESTMENTS LIMITED', 110, '131616046',null, '2024-05-31 11:04:03', '2024-05-31 11:23:07', 55, 'Abraham Lincoln Esq. John F. Kennedy Edificio Ambar 4to Piso, Paraíso', '8092629804', 'crosario@santiagocenter.com.do',
+            //         '', '', '', '', '', '', '', '0001-01-01', '', '', 'ANDRES EMILIO BOBADILLA FERNANEZ', 0,  0,  '',1, 0, 0, 0, 0, '', '', '', 7, 2, 0,1610);
 
-                ");
-            }catch(PDOException $e){
-                echo "Hubo un error en la actualización de los registros nuevos de la tabla dt_inffac_cli "."\n<br>".$e->getMessage();
-            }
+            //     ");
+            // }catch(PDOException $e){
+            //     echo "Hubo un error en la actualización de los registros nuevos de la tabla dt_clientes "."\n<br>".$e->getMessage();
+            // }
+
+            //dt_inffac_cli (COMENTADO POR MIGRACIÓN DIRECTA)
+
+            // try{
+            //     $conexion_migracion_prueba->exec("
+
+            //         INSERT INTO dt_inffac_cli
+            //         (id_inffac_cli, cuenta_contable, descuento_ica, cupo_credito, cupo_contrato, aprobado_por, cod_clasitri, tipo_identificacion, tipo_persona, declarante, agente_retenedor, benefactor_rtiva, agente_rtiva, rete_garantia, meses_garantia, valor_rt_garantia, rt_fuente_renta, entidad_publica, cod_entidad_publica, razon_social, comision_coorporativa, id_cliente)
+            //         VALUES(1899, '0', '', NULL, '0', 0, NULL, 0, 2, 2, 0, 2, 0, 0, 0, '0', 0, 0, '', 0, '', 2744);
+                    
+            //         INSERT INTO dt_inffac_cli
+            //         (id_inffac_cli, cuenta_contable, descuento_ica, cupo_credito, cupo_contrato, aprobado_por, cod_clasitri, tipo_identificacion, tipo_persona, declarante, agente_retenedor, benefactor_rtiva, agente_rtiva, rete_garantia, meses_garantia, valor_rt_garantia, rt_fuente_renta, entidad_publica, cod_entidad_publica, razon_social, comision_coorporativa, id_cliente)
+            //         VALUES(1900, '0', '', NULL, '0', 0, NULL, 1, 1, 1, 0, 2, 0, 0, 0, '0', 0, 0, '', 0, '', 2745);
+                    
+            //         INSERT INTO dt_inffac_cli
+            //         (id_inffac_cli, cuenta_contable, descuento_ica, cupo_credito, cupo_contrato, aprobado_por, cod_clasitri, tipo_identificacion, tipo_persona, declarante, agente_retenedor,
+            //         benefactor_rtiva, agente_rtiva, rete_garantia, meses_garantia, valor_rt_garantia, rt_fuente_renta, entidad_publica, cod_entidad_publica, razon_social, comision_coorporativa, id_cliente)
+            //         VALUES(1901, '0', '', NULL, '0', 0, NULL, 1, 1, 1, 0, 2, 0, 0, 0, '0', 0, 0, '', 0, '', 2746);
+                    
+            //         INSERT INTO dt_inffac_cli
+            //         (id_inffac_cli, cuenta_contable, descuento_ica, cupo_credito, cupo_contrato, aprobado_por, cod_clasitri, tipo_identificacion, tipo_persona, declarante, agente_retenedor,
+            //         benefactor_rtiva, agente_rtiva, rete_garantia, meses_garantia, valor_rt_garantia, rt_fuente_renta, entidad_publica, cod_entidad_publica, razon_social, comision_coorporativa, id_cliente)
+            //         VALUES(1902, '0', '', NULL, '0', 0, NULL, 1, 1, 1, 0, 2, 0, 0, 0, '0', 0, 0, '', 0, '', 2747);
+
+            //         INSERT INTO dt_inffac_cli
+            //         (id_inffac_cli, cuenta_contable, descuento_ica, cupo_credito, cupo_contrato, aprobado_por, cod_clasitri, tipo_identificacion, tipo_persona, declarante, agente_retenedor,
+            //         benefactor_rtiva, agente_rtiva, rete_garantia, meses_garantia, valor_rt_garantia, rt_fuente_renta, entidad_publica, cod_entidad_publica, razon_social, comision_coorporativa, id_cliente)
+            //         VALUES(1903, '0', '', NULL, '0', 0, NULL, 1, 1, 1, 0, 2, 0, 0, 0, '0', 0, 0, '', 0, '', 2748);
+
+            //         INSERT INTO dt_inffac_cli
+            //         (id_inffac_cli, cuenta_contable, descuento_ica, cupo_credito, cupo_contrato, aprobado_por, cod_clasitri, tipo_identificacion, tipo_persona, declarante, agente_retenedor,
+            //         benefactor_rtiva, agente_rtiva, rete_garantia, meses_garantia, valor_rt_garantia, rt_fuente_renta, entidad_publica, cod_entidad_publica, razon_social, comision_coorporativa, id_cliente)
+            //         VALUES(1904, '0', '', NULL, '0', 0, NULL, 1, 1, 1, 0, 2, 0, 0, 0, '0', 0, 0, '', 0, '', 2749);
+
+            //     ");
+            // }catch(PDOException $e){
+            //     echo "Hubo un error en la actualización de los registros nuevos de la tabla dt_inffac_cli "."\n<br>".$e->getMessage();
+            // }
 
             //dt_macro_proyecto 
 
@@ -149,6 +173,26 @@
                     INSERT INTO dt_macro_proyecto
                     (id_macro_proyecto, nombre_proyecto, observacion, fecha_final, fecha_registro, id_user, id_cliente, nit)
                     VALUES(128, 'Suministro e Instalación de Avisos', '', '2025-01-31', '2024-05-02 09:33:28', 742, 2747, 860517030);
+                    
+                    INSERT INTO dt_macro_proyecto
+                    (id_macro_proyecto, nombre_proyecto, observacion, fecha_final, fecha_registro, id_user, id_cliente, nit)
+                    VALUES(129, 'Suministro + Instalación de Aviso Habitel', '', '2024-12-31', '2024-05-22 07:17:51', 742, 2742, 901580139);
+                    
+                    INSERT INTO dt_macro_proyecto
+                    (id_macro_proyecto, nombre_proyecto, observacion, fecha_final, fecha_registro, id_user, id_cliente, nit)
+                    VALUES(130, 'Suministro + Instalación de Avisos Santiago Center Republica Dominicana', '', '2024-12-30', '2024-05-23 14:39:57', 742, 2749, 131616046);
+                    
+                    INSERT INTO dt_macro_proyecto
+                    (id_macro_proyecto, nombre_proyecto, observacion, fecha_final, fecha_registro, id_user, id_cliente, nit)
+                    VALUES(131, 'Organización y Aseo de Despachos', '', '2025-07-31', '2024-06-19 09:33:32', 742, 910, 800237746);
+                    
+                    INSERT INTO dt_macro_proyecto
+                    (id_macro_proyecto, nombre_proyecto, observacion, fecha_final, fecha_registro, id_user, id_cliente, nit)
+                    VALUES(132, 'Suminsitro + Instalación de Avisos Tru by Hilton', '', '2025-02-28', '2024-06-24 17:01:08', 742, 2748, 901312085);
+                    
+                    INSERT INTO dt_macro_proyecto
+                    (id_macro_proyecto, nombre_proyecto, observacion, fecha_final, fecha_registro, id_user, id_cliente, nit)
+                    VALUES(133, 'Proyectos contratados con OC fuera de contratos', '', '2025-07-31', '2024-07-04 16:31:36', 742, 622, 830095213);
                 ");
             }catch(PDOException $e){
                 echo "Hubo un error en la actualización de los registros nuevos de la tabla dt_macro_proyecto "."\n<br>".$e->getMessage();
@@ -322,6 +366,50 @@
                     INSERT INTO dt_proveedores
                     (id_proveedores, empresa, dig_verificacion, id_regimen, direccion, id_ciudad, telefono, celular, fecha_ingreso, email, contacto, celular_contacto, descripcion, id_clase_proveedor, id_forma_pago, nit, id_tipo_pago, rtefuente_renta, id_geografia)
                     VALUES(2130, 'HERNANDEZ DIEGO ARMANDO', null, 3, 'CR 4 31 354 BRR LA CONCORDIA', 15, '3104426477', null, '2024-05-07', 'diegoar_812@hotmial.com', 'NA', '', 'SISO', 2, 0, '1054552505', 0, 0, 403);
+                    
+                    INSERT INTO dt_proveedores
+                    (id_proveedores, empresa, dig_verificacion, id_regimen, direccion, id_ciudad, telefono, celular, fecha_ingreso, email, contacto, celular_contacto, descripcion, id_clase_proveedor, id_forma_pago, nit, id_tipo_pago, rtefuente_renta, id_geografia)
+                    VALUES(2131, 'SERRATO HERRERA BRYAN AFRANIO', null, 3, 'CL 26 SUR 78 Q 33', 1, 4548660, 3192735150, '2024-05-16', 'bash.1995@hotmail.com', 'NA', '', 'SISO', 2, 0, '1032473869', 0, 0, 41);
+                    
+                    INSERT INTO dt_proveedores
+                    (id_proveedores, empresa, dig_verificacion, id_regimen, direccion, id_ciudad, telefono, celular, fecha_ingreso, email, contacto, celular_contacto, descripcion, id_clase_proveedor, id_forma_pago, nit, id_tipo_pago, rtefuente_renta, id_geografia)
+                    VALUES(2132, 'GARCIA BELTRAN VALERIA ANDREA', null, 3, 'CL 29 N 44 43 AP 3', 28, 3161774868, null, '2024-05-30', 'valerin-2011@hotmail.com', 'NA', '', 'SISO', 2, 0, '1038136809', 0, 0, 966);
+                    
+                    INSERT INTO dt_proveedores
+                    (id_proveedores, empresa, dig_verificacion, id_regimen, direccion, id_ciudad, telefono, celular, fecha_ingreso, email, contacto, celular_contacto, descripcion, id_clase_proveedor, id_forma_pago, nit, id_tipo_pago, rtefuente_renta, id_geografia)
+                    VALUES(2133, 'TRANSPORTES ESPECIALES H G S A S', null, 2, 'CL 15 D 112 42', 1, 3107752451, null, '2024-05-30 14', 'transportesespecialeshg@hotmail.com', 'NA', '', 'FLETES', 2, 0, '901116989', 0, 0, 41);
+                    
+                    INSERT INTO dt_proveedores
+                    (id_proveedores, empresa, dig_verificacion, id_regimen, direccion, id_ciudad, telefono, celular, fecha_ingreso, email, contacto, celular_contacto, descripcion, id_clase_proveedor, id_forma_pago, nit, id_tipo_pago, rtefuente_renta, id_geografia)
+                    VALUES(2134, 'SERVIMAQUINAS Y TRANSPORTES SAS', null, 2, 'DG 50 SUR 53 68', 1, 7528152, null, '2024-06-04 15', 'gruaph@gmail.com', 'NA', '', 'MAQUINARIA Y TRANSPORTES', 2, 0, '901227237', 0, 0, 41);
+                    
+                    INSERT INTO dt_proveedores
+                    (id_proveedores, empresa, dig_verificacion, id_regimen, direccion, id_ciudad, telefono, celular, fecha_ingreso, email, contacto, celular_contacto, descripcion, id_clase_proveedor, id_forma_pago, nit, id_tipo_pago, rtefuente_renta, id_geografia)
+                    VALUES(2135, 'GRUAS Y EQUIPOS JD MALAGON SAS', 7, 2, 'MZ A LT 3 AP 201', 6, 3118974930, 3105406285, '2024-06-14 17:19:20', 'Teléfono 1 45. Teléfono 2 CLASIFICACIÓN 0 2 Actualización 14', 'NA', '', 'GRUAS Y EQUIPOS', 2, 0, '901603576', 0, 0, 224);
+                    
+                    INSERT INTO dt_proveedores
+                    (id_proveedores, empresa, dig_verificacion, id_regimen, direccion, id_ciudad, telefono, celular, fecha_ingreso, email, contacto, celular_contacto, descripcion, id_clase_proveedor, id_forma_pago, nit, id_tipo_pago, rtefuente_renta, id_geografia)
+                    VALUES(2136, 'VQ GLOBAL INGENIERIA Y CONSULTORIA SAS', 8, 4, 'CR 43 18 50 E 14 BRR BUQUE', 21, 3102860714, null, '2024-06-18 14:07:37', 'oscarquintero2006@hotmail.com', 'NA', '', 'INGENIERIA', 2, 0, '901087414', 0, 0, 812);
+                    
+                    INSERT INTO dt_proveedores
+                    (id_proveedores, empresa, dig_verificacion, id_regimen, direccion, id_ciudad, telefono, celular, fecha_ingreso, email, contacto, celular_contacto, descripcion, id_clase_proveedor, id_forma_pago, nit, id_tipo_pago, rtefuente_renta, id_geografia)
+                    VALUES(2137, 'MONTOYA RODRIGUEZ LAURA SAMANYI', null, 3, 'CL 48 K 8 D 07', 8, 3126479639, null, '2024-06-24 12:17:34', 'samanyi95@hotmail.com', 'NA', '', 'SISO', 2, 0, '1053846300', 0, 0, 399);
+                
+                    INSERT INTO dt_proveedores
+                    (id_proveedores, empresa, dig_verificacion, id_regimen, direccion, id_ciudad, telefono, celular, fecha_ingreso, email, contacto, celular_contacto, descripcion, id_clase_proveedor, id_forma_pago, nit, id_tipo_pago, rtefuente_renta, id_geografia)
+                    VALUES(2138, 'MAKI BOYACA S.A.S.', null, 2, 'CR 18 23 69 SAN VICENTE', 7, 3142647491, 3134004912, '2024-07-02 12:01:25', 'DUITAMA@MAKIEQUIPOS.COM', 'NA', '', 'ANDAMIOS', 2, 0, '901808488', 0, 0, 370);
+                
+                    INSERT INTO dt_proveedores
+                    (id_proveedores, empresa, dig_verificacion, id_regimen, direccion, id_ciudad, telefono, celular, fecha_ingreso, email, contacto, celular_contacto, descripcion, id_clase_proveedor, id_forma_pago, nit, id_tipo_pago, rtefuente_renta, id_geografia)
+                    VALUES(2139, 'SALAMANCA CASTIBLANCO MARINA', null, 3, 'CL 116A 70D 69', 1, 3002673009, null, '2024-07-03 14:01:36', 'msalamanca@saviv.net', 'NA', '', 'PRESTAMOS', 2, 0, '51792347', 0, 0, 41);
+                
+                    INSERT INTO dt_proveedores
+                    (id_proveedores, empresa, dig_verificacion, id_regimen, direccion, id_ciudad, telefono, celular, fecha_ingreso, email, contacto, celular_contacto, descripcion, id_clase_proveedor, id_forma_pago, nit, id_tipo_pago, rtefuente_renta, id_geografia)
+                    VALUES(2140, 'QUINTANA SEPULVEDA CYNDI PAOLA', null, 3, 'CR 30 18 26 SUR', 1, 3057232874, null, '2024-07-03 16:22:20', 'electrosenaelectronica@gmail.com', 'NA', '', 'ELECTRICOS', 2, 0, '1015404283', 0, 0, 41);
+                
+                    INSERT INTO dt_proveedores
+                    (id_proveedores, empresa, dig_verificacion, id_regimen, direccion, id_ciudad, telefono, celular, fecha_ingreso, email, contacto, celular_contacto, descripcion, id_clase_proveedor, id_forma_pago, nit, id_tipo_pago, rtefuente_renta, id_geografia)
+                    VALUES(2141, 'SIGN LINE PUBLICIDAD SAS', null, 2, 'CR 30 18 26 SUR', 1, 6013290328, 3108190491, '2024-07-08 13:36:51', 'contabilidad@signlinepublicidad.com', 'NA', '', 'METALMECANICA', 2, 0, '830083006', 0, 0, 41);
                 
 
                 ");
@@ -332,177 +420,231 @@
 
             //dt_inf_contable_provee ica_prove = Filtro de ica 1 para si 2 para no
 
+            try{
+                $conexion_migracion_prueba->exec("
+                    ALTER TABLE dt_inf_contable_prove
+                    MODIFY COLUMN desc_ica DECIMAL(15,5);
+                ");
+            }catch(PDOException $e){
+                echo "Hubo un error en la actualización de la precisión decimal de la columna desc_ica en dt_inf_contable_prove "."\n<br>".$e->getMessage();
+
+            }
+
 
             try{
                 $conexion_migracion_prueba->exec("
                     INSERT INTO dt_inf_contable_prove
                     (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
-                    VALUES(2093, 0.08, '2', 0, 0, 220505, 23680102, '', 0.01104, '', 0, 2093);
+                    VALUES(2093, 0.08, '1', 0, 0, 220505, 23680102, '', 0.01104, '', 0, 2093);
 
 
 
                     INSERT INTO dt_inf_contable_prove
                     (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
-                    VALUES(2094, 0.08, '1', 0, 0, 220506, 0, '', 0, '', 0, 2094);
+                    VALUES(2094, 0.08, '2', 0, 0, 220506, 0, '', 0, '', 0, 2094);
 
                     INSERT INTO dt_inf_contable_prove
                     (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
-                    VALUES(2095, 0.08, '1', 0, 0, 220505, 23680102, '', 0.01104, '', 0, 2095);
-
-
-                    INSERT INTO dt_inf_contable_prove
-                    (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
-                    VALUES(2096, 0.08, '1', 0, 0, 220506, 23680103, '', 0.00966, '', 0, 2096);
-
-                    INSERT INTO dt_inf_contable_prove
-                    (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
-                    VALUES(2097, 0.08, '1', 0, 0, 220506, 23680102, '', 0.01104, '', 0, 2097);
-
+                    VALUES(2095, 0.08, '2', 0, 0, 220505, 23680102, '', 0.01104, '', 0, 2095);
 
 
                     INSERT INTO dt_inf_contable_prove
                     (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
-                    VALUES(2098, 0.08, '1', 0, 0, 220506, 23680103, '', 0.00966, '', 0, 2098);
+                    VALUES(2096, 0.08, '2', 0, 0, 220506, 23680103, '', 0.00966, '', 0, 2096);
 
                     INSERT INTO dt_inf_contable_prove
                     (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
-                    VALUES(2099, 0.08, '2', 0, 0, 220505, 23680102, '', 0.01104, '', 0, 2099);
-
-
-                    INSERT INTO dt_inf_contable_prove
-                    (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
-                    VALUES(2100, 0.08, '1', 0, 0, 220506, 23680103, '', 0.00966, '', 0, 2100);
-
-
-                    INSERT INTO dt_inf_contable_prove
-                    (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
-                    VALUES(2101, 0.08, '1', 0, 0, 220506, 23680102, '', 0.01104, '', 0, 2101);
-
-                    INSERT INTO dt_inf_contable_prove
-                    (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
-                    VALUES(2102, 0.08, '1', 0, 0, 220506, 23680102, '', 0.01104, '', 0, 2102);
-
-
-                    INSERT INTO dt_inf_contable_prove
-                    (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
-                    VALUES(2103, 0.08, '1', 0, 0, 220505, 23680102, '',0.01104, '', 0, 2103);
-
-
-                    INSERT INTO dt_inf_contable_prove
-                    (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
-                    VALUES(2104, 0.08, '1', 0, 0, 220505, 23680102, '', 0.01104, '', 0, 2104);
-
-                    INSERT INTO dt_inf_contable_prove
-                    (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
-                    VALUES(2105, 0.08, '1', 0, 0, 220506, 23680104, '', 0.00414, '', 0, 2105);
-
-
-                    INSERT INTO dt_inf_contable_prove
-                    (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
-                    VALUES(2106, 0.08, '1', 0, 0, 220505, 23680102, '',0.01104, '', 0, 2106);
-
-                    INSERT INTO dt_inf_contable_prove
-                    (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
-                    VALUES(2107, 0.08, '1', 0, 0, 220506, 23680103, '',0.00966, '', 0, 2107);
-
-                    INSERT INTO dt_inf_contable_prove
-                    (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
-                    VALUES(2108, 0.08, '1', 0, 0, 220505, 23680102, '', 0.01104, '', 0, 2108);
-
-
-                    INSERT INTO dt_inf_contable_prove
-                    (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
-                    VALUES(2109, 0.08, '1', 0, 0, 220506, 23680102, '',0.01104, '', 0, 2109);
-
+                    VALUES(2097, 0.08, '2', 0, 0, 220506, 23680102, '', 0.01104, '', 0, 2097);
 
 
 
                     INSERT INTO dt_inf_contable_prove
                     (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
-                    VALUES(2110, 0.08, '1', 0, 0, 220506, 23680103, '', 0.00966, '', 0, 2110);
+                    VALUES(2098, 0.08, '2', 0, 0, 220506, 23680103, '', 0.00966, '', 0, 2098);
 
                     INSERT INTO dt_inf_contable_prove
                     (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
-                    VALUES(2111, 0.08, '1', 0, 0, 220505, 23680102, '', 0.01104, '', 0, 2111);
-
-
-                    INSERT INTO dt_inf_contable_prove
-                    (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
-                    VALUES(2112, 0.08, '1', 0, 0, 220506, 23680102, '',0.01104, '', 0, 2112);
-
-                    INSERT INTO dt_inf_contable_prove
-                    (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
-                    VALUES(2113, 0.08, '1', 0, 0, 220506, 23680102, '',0.00966, '', 0, 2113);
-
-                    INSERT INTO dt_inf_contable_prove
-                    (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
-                    VALUES(2114, 0.08, '1', 0, 0, 220506, 23680102, '', 0.01104, '', 0, 2114);
+                    VALUES(2099, 0.08, '1', 0, 0, 220505, 23680102, '', 0.01104, '', 0, 2099);
 
 
                     INSERT INTO dt_inf_contable_prove
                     (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
-                    VALUES(2115, 0.08, '1', 0, 0, 220506, 23680102, '',0.01104, '', 0, 2115);
+                    VALUES(2100, 0.08, '2', 0, 0, 220506, 23680103, '', 0.00966, '', 0, 2100);
+
+
+                    INSERT INTO dt_inf_contable_prove
+                    (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
+                    VALUES(2101, 0.08, '2', 0, 0, 220506, 23680102, '', 0.01104, '', 0, 2101);
+
+                    INSERT INTO dt_inf_contable_prove
+                    (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
+                    VALUES(2102, 0.08, '2', 0, 0, 220506, 23680102, '', 0.01104, '', 0, 2102);
+
+
+                    INSERT INTO dt_inf_contable_prove
+                    (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
+                    VALUES(2103, 0.08, '2', 0, 0, 220505, 23680102, '',0.01104, '', 0, 2103);
+
+
+                    INSERT INTO dt_inf_contable_prove
+                    (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
+                    VALUES(2104, 0.08, '2', 0, 0, 220505, 23680102, '', 0.01104, '', 0, 2104);
+
+                    INSERT INTO dt_inf_contable_prove
+                    (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
+                    VALUES(2105, 0.08, '2', 0, 0, 220506, 23680104, '', 0.00414, '', 0, 2105);
+
+
+                    INSERT INTO dt_inf_contable_prove
+                    (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
+                    VALUES(2106, 0.08, '2', 0, 0, 220505, 23680102, '',0.01104, '', 0, 2106);
+
+                    INSERT INTO dt_inf_contable_prove
+                    (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
+                    VALUES(2107, 0.08, '2', 0, 0, 220506, 23680103, '',0.00966, '', 0, 2107);
+
+                    INSERT INTO dt_inf_contable_prove
+                    (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
+                    VALUES(2108, 0.08, '2', 0, 0, 220505, 23680102, '', 0.01104, '', 0, 2108);
+
+
+                    INSERT INTO dt_inf_contable_prove
+                    (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
+                    VALUES(2109, 0.08, '2', 0, 0, 220506, 23680102, '',0.01104, '', 0, 2109);
+
 
 
 
                     INSERT INTO dt_inf_contable_prove
                     (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
-                    VALUES(2116, 0.08, '1', 0, 0, 220506, 23680102, '', 0.01104, '', 0, 2116);
+                    VALUES(2110, 0.08, '2', 0, 0, 220506, 23680103, '', 0.00966, '', 0, 2110);
 
                     INSERT INTO dt_inf_contable_prove
                     (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
-                    VALUES(2117, 0.08, '1', 0, 0, 220505, 23680102, '', 0.01104, '', 0, 2117);
-
-
-                    INSERT INTO dt_inf_contable_prove
-                    (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
-                    VALUES(2118, 0.08, '1', 0, 0, 220506, 23680104, '',0.00414, '', 0, 2118);
-
-                    INSERT INTO dt_inf_contable_prove
-                    (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
-                    VALUES(2119, 0.08, '1', 0, 0, 220506, 23680103, '',0.00966, '', 0, 2119);
-
-                    INSERT INTO dt_inf_contable_prove
-                    (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
-                    VALUES(2120, 0.08, '1', 0, 0, 220505, 23680102, '', 0.01104, '', 0, 2120);
+                    VALUES(2111, 0.08, '2', 0, 0, 220505, 23680102, '', 0.01104, '', 0, 2111);
 
 
                     INSERT INTO dt_inf_contable_prove
                     (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
-                    VALUES(2121, 0.08, '1', 0, 0, 220505, 23680102, '',0.01104, '', 0, 2121);
+                    VALUES(2112, 0.08, '2', 0, 0, 220506, 23680102, '',0.01104, '', 0, 2112);
+
+                    INSERT INTO dt_inf_contable_prove
+                    (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
+                    VALUES(2113, 0.08, '2', 0, 0, 220506, 23680102, '',0.00966, '', 0, 2113);
+
+                    INSERT INTO dt_inf_contable_prove
+                    (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
+                    VALUES(2114, 0.08, '2', 0, 0, 220506, 23680102, '', 0.01104, '', 0, 2114);
 
 
                     INSERT INTO dt_inf_contable_prove
                     (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
-                    VALUES(2123, 0.08, '1', 0, 0, 220506, 23680102, '',0.01104, '', 0, 2123);
+                    VALUES(2115, 0.08, '2', 0, 0, 220506, 23680102, '',0.01104, '', 0, 2115);
+
+
 
                     INSERT INTO dt_inf_contable_prove
                     (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
-                    VALUES(2124, 0.08, '1', 0, 0, 220506, 23680102, '',0.01104, '', 0, 2124);
+                    VALUES(2116, 0.08, '2', 0, 0, 220506, 23680102, '', 0.01104, '', 0, 2116);
 
                     INSERT INTO dt_inf_contable_prove
                     (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
-                    VALUES(2125, 0.08, '1', 0, 0, 220506, 23680102, '',0.01104, '', 0, 2125);
+                    VALUES(2117, 0.08, '2', 0, 0, 220505, 23680102, '', 0.01104, '', 0, 2117);
+
 
                     INSERT INTO dt_inf_contable_prove
                     (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
-                    VALUES(2126, 0.08, '1', 0, 0, 220505, 23680102, '',0.01104, '', 0, 2126);
+                    VALUES(2118, 0.08, '2', 0, 0, 220506, 23680104, '',0.00414, '', 0, 2118);
 
                     INSERT INTO dt_inf_contable_prove
                     (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
-                    VALUES(2127, 0.08, '1', 0, 0, 220505, 23680102, '',0.0069, '', 0, 2127);
+                    VALUES(2119, 0.08, '2', 0, 0, 220506, 23680103, '',0.00966, '', 0, 2119);
 
                     INSERT INTO dt_inf_contable_prove
                     (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
-                    VALUES(2128, 0.08, '1', 0, 0, 220506, 23680102, '',0.0069, '', 0, 2128);
+                    VALUES(2120, 0.08, '2', 0, 0, 220505, 23680102, '', 0.01104, '', 0, 2120);
+
 
                     INSERT INTO dt_inf_contable_prove
                     (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
-                    VALUES(2129, 0.08, '1', 0, 0, 220506, 23680102, '',0.0069, '', 0, 2129);
+                    VALUES(2121, 0.08, '2', 0, 0, 220505, 23680102, '',0.01104, '', 0, 2121);
+
 
                     INSERT INTO dt_inf_contable_prove
                     (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
-                    VALUES(2130, 0.08, '1', 0, 0, 220506, 23680102, '',0.0069, '', 0, 2129);
+                    VALUES(2123, 0.08, '2', 0, 0, 220506, 23680102, '',0.01104, '', 0, 2123);
+
+                    INSERT INTO dt_inf_contable_prove
+                    (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
+                    VALUES(2124, 0.08, '2', 0, 0, 220506, 23680102, '',0.01104, '', 0, 2124);
+
+                    INSERT INTO dt_inf_contable_prove
+                    (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
+                    VALUES(2125, 0.08, '2', 0, 0, 220506, 23680102, '',0.01104, '', 0, 2125);
+
+                    INSERT INTO dt_inf_contable_prove
+                    (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
+                    VALUES(2126, 0.08, '2', 0, 0, 220505, 23680102, '',0.01104, '', 0, 2126);
+
+                    INSERT INTO dt_inf_contable_prove
+                    (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
+                    VALUES(2127, 0.08, '2', 0, 0, 220505, 23680102, '',0.0069, '', 0, 2127);
+
+                    INSERT INTO dt_inf_contable_prove
+                    (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
+                    VALUES(2128, 0.08, '2', 0, 0, 220506, 23680102, '',0.01104, '', 0, 2128);
+
+                    INSERT INTO dt_inf_contable_prove
+                    (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
+                    VALUES(2129, 0.08, '2', 0, 0, 220506, 23680102, '',0.01104, '', 0, 2129);
+
+                    INSERT INTO dt_inf_contable_prove
+                    (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
+                    VALUES(2130, 0.08, '2', 0, 0, 220506, 23680102, '',0.01104, '', 0, 2130);
+
+                    INSERT INTO dt_inf_contable_prove
+                    (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
+                    VALUES(2131, 0.08, '2', 0, 0, 220506, 23680102, '',0.00966, '', 0, 2131);
+
+                    INSERT INTO dt_inf_contable_prove
+                    (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
+                    VALUES(2132, 0.08, '2', 0, 0, 220506, 23680102, '',0.01104, '', 0, 2132);
+
+                    INSERT INTO dt_inf_contable_prove
+                    (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
+                    VALUES(2133, 0.08, '2', 0, 0, 220506, 23680102, '',0.00414, '', 0, 2133);
+
+                    INSERT INTO dt_inf_contable_prove
+                    (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
+                    VALUES(2134, 0.08, '1', 0, 0, 220506, null, '',null, '', 0, 2134);
+
+                    INSERT INTO dt_inf_contable_prove
+                    (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
+                    VALUES(2135, 0.08, '1', 0, 0, 220506, 23680102, '',null, '', 0, 2135);
+
+                    INSERT INTO dt_inf_contable_prove
+                    (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
+                    VALUES(2136, 0.08, '1', 0, 0, 220506, 23680102, '',null, '', 0, 2136);
+
+                    INSERT INTO dt_inf_contable_prove
+                    (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
+                    VALUES(2137, 0.08, '2', 0, 0, 220506, 23680102, '',null, '', 0, 2137);
+
+                    INSERT INTO dt_inf_contable_prove
+                    (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
+                    VALUES(2138, 0.08, '2', 0, 0, 220506, 23680102, '',null, '', 0, 2138);
+
+                    INSERT INTO dt_inf_contable_prove
+                    (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
+                    VALUES(2139, 0.08, '2', 0, 0, 220506, 23680102, '',null, '', 0, 2139);
+
+                    INSERT INTO dt_inf_contable_prove
+                    (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
+                    VALUES(2140, 0.08, '2', 0, 0, 220506, 23680102, '',null, '', 0, 2140);
+
+                    INSERT INTO dt_inf_contable_prove
+                    (id_inf_contable_prove, rteica, autoret, aporte_especial, vr_aporte, cuenta_contable, cuenta_con_ica, ica_prove, desc_ica, cupo_credito, aprobado_por, id_proveedores)
+                    VALUES(2141, 0.08, '2', 0, 0, 220506, 23680102, '',null, '', 0, 2141);
                 ");
             }catch(PDOException $e){
                 echo "Hubo un error en la actualización de los registros nuevos de la tabla dt_inf_contable_provee "."\n<br>".$e->getMessage();
@@ -2497,9 +2639,25 @@
                     CONSTRAINT `fk_dt_requisicion_user2` FOREIGN KEY (`aprobado_por`) REFERENCES `user` (`id`)
                     ) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=latin1;
 
+                    -- base2.dt_historico_factura definition
+
+                    CREATE TABLE `dt_historico_factura` (
+                    `id_historico_factura` int NOT NULL AUTO_INCREMENT,
+                    `fecha_registro` datetime(6) NOT NULL,
+                    `observacion` varchar(556) NOT NULL,
+                    `tipo` smallint NOT NULL,
+                    `id_factura` int NOT NULL,
+                    `id_user` int NOT NULL,
+                    PRIMARY KEY (`id_historico_factura`),
+                    KEY `fk_dt_historico_factura_dt_factura1` (`id_factura`),
+                    KEY `fk_dt_historico_factura_user1` (`id_user`),
+                    CONSTRAINT `fk_dt_historico_factura_dt_factura1` FOREIGN KEY (`id_factura`) REFERENCES `dt_factura` (`id_factura`),
+                    CONSTRAINT `fk_dt_historico_factura_user1` FOREIGN KEY (`id_user`) REFERENCES `user` (`id`)
+                    ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
                 ");
             }catch(PDOException $e){
-                echo "Error al generar las tablas complementarias a dt_solicitud_g_r y dt_empresa, adicionalmente se crea la tabla de dt_requisicion".$e->getMessage();exit;
+                echo "Error al generar las tablas complementarias a dt_solicitud_g_r y dt_empresa, adicionalmente se crea la tabla de dt_requisicion y dt_historico_factura".$e->getMessage();exit;
             }
 
             return "Se crearon las tablas dt_actividades, dt_actividades_f, dt_aprobado_g_r,dt_comite_g_r_f y dt_comite_g_r complemetarias a dt_solicitud_g_r";
@@ -22720,7 +22878,7 @@
                         "password_hash" => '$2y$13$3h8Dq3QrH6sk3uzDhaq1t.hfhHfppXdBkemSUY3LKBSltwt9w.hEq'
                     ),
              
-                1143 => array(
+                1142 => array(
                         "id_cargo" => 38,
                         'id_empleado' => 1424,
                         "auth_key" =>"1ASRBg25PSGjBcJG_dnVsk8zXr3Pf0Vj",
@@ -22742,7 +22900,7 @@
                     ),
                 
                 865 => array(
-                        "id_cargo" =>49,
+                        "id_cargo" =>80,
                         'id_empleado' => 1141,
                         "auth_key" =>"3RhPQ-g51W_s1idMG81Sf3a-AI90FD_d",
                         "password_hash" => '$2y$13$jvH0jVr8xiIueT.FZGQpROGuhXys45VH7q4XlWhSvQpl6WEycLzNS'
@@ -22750,13 +22908,13 @@
              
              
                 370 => array(
-                        "id_cargo" => 88,
+                        "id_cargo" => 72,
                         'id_empleado' => 596,
                         "auth_key" =>'b4_dviNJ72Qbfhqj6uLsh0UpZxLWjajR',
                         "password_hash" => '$2y$13$E8Qcyq.16aasY4H3tA8MZOPom7eEPWQYQaOZnNVExUxlM4LLKTcf6'
                     ),
                 
-                955 => array(
+                954 => array(
                         "id_cargo" => 17,
                         'id_empleado' => 1232,
                         "auth_key" =>"cZ7izz15zIHwJdeG3mFGwLKogU_eRw-Q",
@@ -22765,13 +22923,13 @@
                 
                 689 => array(
                         "id_cargo" =>18,
-                        'id_empleado' => 689,
+                        'id_empleado' => 958,
                         "auth_key" =>"P-9BlOloLuqK4Q05dHInM1VN_9W0HMag",
                         "password_hash" => '$2y$13$YF8uPif.G50vRdJcCGMP7.pahTR8UnOaTjlqi0/dkHJ87vJkq0xtG'
                     ),
                 
                 
-                1120 => array(
+                1119 => array(
                         "id_cargo" =>6,
                         'id_empleado' => 1401,
                         "auth_key" =>"6ob2C1c-S6L6gaO2wj94ZWMdDafFZQOx",
@@ -22793,29 +22951,29 @@
                         "password_hash" => '$2y$13$es9/QTGXqv7cd.3pMCxrx.3eiMvV6Jsn4INM0Xvx/ylIGoHOGaUXS'
                     ),
                 
-                1141 => array(
+                1140 => array(
                         "id_cargo" => 87,
                         'id_empleado' => 1422,
                         "auth_key" =>"P0cQj0_IgHntddXrnCGhTDeTWqjCQSnA",
                         "password_hash" => '$2y$13$unvcyMeX6yuLXqlB9Mw4j.4p6v9L6Tl5LQPVseAT1K.1FtCg69Nbi'
                     ),
                 
-                1124 => array(
-                        "id_cargo" =>54,
+                1123 => array(
+                        "id_cargo" => 54,
                         'id_empleado' => 1405,
                         "auth_key" =>"pRxZvS1CAxZL_7Z7a9tgWsKIdiYCqOE6",
                         "password_hash" => '$2y$13$pwQFq0r3tkz.RhqTRhuvfulPwLv3LuFXWghL.3sCKT1wCPDymcp7C'
                     ),
              
              
-                1145 => array(
+                1144 => array(
                         "id_cargo" =>22,
                         'id_empleado' => 1426,
                         "auth_key" =>"aBnUhCke_TEbq0h1G1AzXQuj34SppsUf",
                         "password_hash" => '$2y$13$JLsOZGz8RdfB4NlcXlxVTuxrjF6UBV794ARK01el4BpefP4.aUh8.'
                     ),
                 
-                1153 => array(
+                1152 => array(
                         "id_cargo" =>22,
                         'id_empleado' => 1434,
                         "auth_key" =>"9k-zM57xA41ByuMmwyE0w2i7iR7jsV1O",
@@ -22829,7 +22987,7 @@
                         "password_hash" => '$2y$13$bQfKRq1FFBoP5mwZtKdhL.oVS2.boudarp/F3jNE7doCX9qR3RoaW'
                     ),
                 
-                1165 => array(
+                1164 => array(
                         "id_cargo" =>5,
                         'id_empleado' => 1446,
                         "auth_key" =>"G6mVvSMQAlmK_vlDXaQmzu2wMeiAJv6t",
@@ -22837,25 +22995,25 @@
                     ),
                 
                 
-                1172 => array(
+                1171 => array(
                         "id_cargo" =>21,
                         'id_empleado' => 1453,
                         "auth_key" =>"VFtxVymDge8dH3HeEONsBSN_FQ2A74xQ",
                         "password_hash" => '$2y$13$CzzW3voB5EDUHvkMP0hX/O1ug6PfTIZ0ugQFiYDicVtpHBpKbj2v2'
                     ),
              
-                1169  => array(
+                1168  => array(
                         "id_cargo" =>68,
                         'id_empleado' => 1450,
                         "auth_key" =>"IBJIC1ddHPGNlgMStzOqyQKXHlUWnxui",
                         "password_hash" => '$2y$13$3BTSVeggBMdiSMYST4Eljuz6ftw7YXGjLGoL.m98fDjfSg6MHfYSW'
                     ),
                 
-                1106  => array(
+                1105  => array(
                         "id_cargo" =>49,
                         'id_empleado' => 1387,
                         "auth_key" =>"zZlHhIt9wD00nCV5emHA7aII2fzvE25x",
-                        "password_hash" => '$2y$13$G4s1ykJtsWPyvbG6ehWUOehxg577K7eL/szwZlDgNHb/tRzbNRB1i'
+                        "password_hash" => '$2y$13$1L3RnciILd99O5fUxM2yVuguE9cqmHhXjM2vUxG4gXvk./mpKWSQO'
                     )
 
              
@@ -22913,25 +23071,25 @@
                     update dt_usuarios set id_area = 20 where id_usuario = 1445;
                     UPDATE dt_usuarios set id_cargo = 80, id_area = 16 where id_usuario = 1141;
                     update dt_usuarios set id_area = 20 where id_usuario = 1446;
-                    update `user` u SET password_hash = "$2y$13$UsgsoIcEnreVnJNL7Wf7ZO4pH.x2lHAu60w.8q7t.KQbHs5bLyt8O" WHERE id = 1164;
+                    update `user` u SET password_hash = "$2y$13$UsgsoIcEnreVnJNL7Wf7ZO4pH.x2lHAu60w.8q7t.KQbHs5bLyt8O" WHERE id = 1163;
                     update `user` u SET password_hash = "$2y$13$HhyggD6T37ETdi.0kYnjWuozBfa3XCCpcolsN20JHm29GTvSeU03K",status = 1 WHERE id = 383;
                     update `user` u SET password_hash = "$2y$13$AJ7e9KnevugdgaCYYawUf.7K.UqZYOyMBfgklMUPC6/sVbLohOQUu" WHERE id = 152;
                     update `user` u SET username = "juan.londoño",password_hash = "$2y$13$TjP/9FvTae7hvi0i/G5taukaTZP4JlNFhlXHcd5p/yeaXxtsjBvLO" WHERE id = 8;
                     update `user` u SET password_hash = "$2y$13$H91ZIbBdufgs/603hSTdPO2t9YjNeKqYNcIGuRCSQlEzwjHYqhSla" WHERE id = 834;
 
-                    update `user` u SET username = "sareth.gomez" WHERE id = 1165;
+                    update `user` u SET username = "sareth.gomez" WHERE id = 1164;
                     update `user` u SET username = "johana.hurtado" WHERE id = 742;
-                    UPDATE dt_usuarios SET id_cargo = 7 WHERE id_usuario in (1445,1446);
+                    UPDATE dt_usuarios SET id_cargo = 7 WHERE id_usuario in (1445,1446,1455);
 
-                    update `user` u SET password_hash = "$2y$13$UsgsoIcEnreVnJNL7Wf7ZO4pH.x2lHAu60w.8q7t.KQbHs5bLyt8O" WHERE id = 1164;
+                    update `user` u SET password_hash = "$2y$13$UsgsoIcEnreVnJNL7Wf7ZO4pH.x2lHAu60w.8q7t.KQbHs5bLyt8O" WHERE id = 1163;
 
-                    update `user` u SET password_hash = "$2y$13$Z9npj3LA.jzFzY/b38Ru3OnZtwfkKRLnWfH5LWCAnu7f.veB.g6ra" WHERE id = 1120;
+                    update `user` u SET password_hash = "$2y$13$Z9npj3LA.jzFzY/b38Ru3OnZtwfkKRLnWfH5LWCAnu7f.veB.g6ra" WHERE id = 1119;
 
                     update `user` u SET password_hash = "$2y$13$HhyggD6T37ETdi.0kYnjWuozBfa3XCCpcolsN20JHm29GTvSeU03K",status = 1 WHERE id = 383;
 
                     update `user` u SET password_hash = "$2y$13$AQPCmJQKp/xqIpkSanhlrOB.AHUH5cr47KodsaFunQfT8YmXtiMkO",username = "juans.melo" WHERE id = 1117;
 
-                    update `user` u SET username = "karen.peñaloza" WHERE id = 1153;
+                    update `user` u SET username = "karen.peñaloza" WHERE id = 1152;
 
                     update dt_usuarios set id_cargo = 32 where id_usuario = 1434;
 
@@ -22939,21 +23097,22 @@
 
                     update `user` u SET username = "david.yazo" WHERE id = 782;
 
-                    update `user` u SET username = "roxana.pardo" WHERE id = 1172;
+                    update `user` u SET username = "roxana.pardo" WHERE id = 1171;
 
-                    update `user` u SET username = "arnobis.sanchez" WHERE id = 1169;
+                    update `user` u SET username = "arnobis.sanchez" WHERE id = 1168;
 
-                    update `user` u SET username = "alejandra.torres" WHERE id = 1143;
+                    update `user` u SET username = "alejandra.torres" WHERE id = 1142;
 
-                    update `user` u SET username = "elias.guativa",password_hash = "$2y$13$1L3RnciILd99O5fUxM2yVuguE9cqmHhXjM2vUxG4gXvk./mpKWSQO" WHERE id = 1053;
+                    update `user` u SET username = "elias.guativa",password_hash = "$2y$13$1L3RnciILd99O5fUxM2yVuguE9cqmHhXjM2vUxG4gXvk./mpKWSQO" WHERE id = 1052;
 
-                    update `user` u SET username = "cristian.muñoz",password_hash = "$2y$13$1L3RnciILd99O5fUxM2yVuguE9cqmHhXjM2vUxG4gXvk./mpKWSQO" WHERE id = 1106;
+                    update `user` u SET username = "cristian.muñoz",password_hash = "$2y$13$1L3RnciILd99O5fUxM2yVuguE9cqmHhXjM2vUxG4gXvk./mpKWSQO" WHERE id = 1105;
 
                     update dt_usuarios set id_cargo = 87 where id_usuario = 1422;
 
                     update `user` u SET username = "nelson.forero" WHERE id = 55;
 
                     /*Correccion permisos*/
+                    
 
                     DROP table auth_assignment;
 
@@ -22971,17 +23130,17 @@
                     INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("Admin", 5, 1554821342);
                     INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("AdminComercial", 21, 1567111467);
                     INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("AdminComercial", 370, 1567111559);
-                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("AuxiliarAlmacen", 1169, 1703174675);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("AuxiliarAlmacen", 1168, 1703174675);
                     INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("AuxiliarCompras", 955, 1703092249);
                     INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("AuxiliarContable", 55, 1622561435);
                     INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("AuxiliarFacturacion", 94, 1622126700);
                     INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("AuxiliarFacturacion", 108, 1703167239);
                     INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("AuxiliarNomina", 93, 1622126921);
                     INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("Commercial", 83, 1616113599);
-                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("CoordinadorLogistica", 1120, 1713273503);
-                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("CoordinadorLogistica", 1172, 1616610551);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("CoordinadorLogistica", 1119, 1713273503);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("CoordinadorLogistica", 1171, 1616610551);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("CoordinadorProyectos", 1163, 1620082102);
                     INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("CoordinadorProyectos", 1164, 1702963973);
-                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("CoordinadorProyectos", 1165, 1620082102);
                     INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("CordinadorProyectos", 23, 1620082806);
                     INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("CordinadorProyectos", 89, 1620082949);
                     INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("CordinadorProyectos", 90, 1620083352);
@@ -23000,49 +23159,40 @@
                     INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("DirectorLogistica", 11, 1558628873);
                     INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("DirectorLogistica", 84, 1616193679);
                     INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("DirectorProduccion", 85, 1616194033);
-                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("DirectorProduccion", 1143, 1558629016);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("DirectorProduccion", 1142, 1558629016);
                     INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("DirectorRH", 81, 1616099948);
                     INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("DirectorRH", 82, 1616099931);
                     INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("DirectorRH", 689, 1542718664);
                     INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("DirectorVivas", 10, 1558628688);
                     INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("DirectorVivas", 25, 1575900768);
-                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("DirectorVivas", 383, 1712009366);
-                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("DirectorVivas", 1117, 1713237771);
-                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("Disenador", 1117, 1702987867);
-                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("Disenador", 1145, 1702987916);
-                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("Disenador", 1153, 1702987640);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("DirectorVivas", 1116, 1713237771);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("Disenador", 1116, 1702987867);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("Disenador", 1144, 1702987916);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("Disenador", 1152, 1702987640);
                     INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("JefeAlmacen", 96, 1648765275);
-                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("JefeAlmacen", 955, 1616609450);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("JefeAlmacen", 954, 1616609450);
                     INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("JefeAlmacen2", 38, 1703174222);
                     INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("JefeCompras", 87, 1637784620);
                     INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("JefeCompras", 96, 1648765275);
                     INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("JefeCompras", 782, 1616164078);
-                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("JefeCompras", 1172, 1680116631);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("JefeCompras", 1171, 1680116631);
                     INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("LiderCostos", 100, 1662133858);
-                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("LiderCostos", 383, 1712009118);
-                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("LiderCostos", 1124, 1616607567);
-                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("LiderDiseno", 383, 1616608448);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("LiderCostos", 1123, 1616607567);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("LiderDesarrolloProducto", 383, 1719239111);
                     INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("Operador", 8, 1712151469);
-                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("Operador", 30, 1576672972);
-                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("Operador", 31, 1576672956);
-                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("Operador", 40, 1703081003);
-                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("Operador", 47, 1703177135);
-                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("Operador", 62, 1657821121);
-                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("Operador", 67, 1616173514);
-                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("Operador", 98, 1654872054);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("Operador", 152, 1718979751);
                     INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("Operador", 834, 1712151754);
                     INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("Operador", 865, 1703178517);
-                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("Operador", 1053, 1712079209);
-                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("Operador", 1106, 1576672849);
-                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("ProgramadorOperaciones", 1141, 1651581277);
-                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("ProgramadorOperaciones", 1143, 1651521169);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("Operador", 1105, 1718979684);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("ProgramadorOperaciones", 1140, 1651581277);
+                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("ProgramadorOperaciones", 1142, 1651521169);
                     INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("SuperCoordinador", 3, 1561558659);
                     INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("SuperCoordinador", 9, 1561585200);
                     INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("SuperDiseñador", 95, 1649456085);
-                    INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("SuperDiseñador", 383, 1575902106);
                     INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("SuperMercadeo", 9, 1616163286);
                     INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("SuperMercadeo", 16, 1563480008);
                     INSERT INTO auth_assignment (item_name, user_id, created_at) VALUES("SuperMercadeo", 17, 1564176208);
+
 
 
                     DROP table auth_item ;
@@ -23242,19 +23392,13 @@
                     INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("AuxiliarFacturacion", 1, "Auxiliar Facturación", NULL, NULL, 1622126445, 1622126445, NULL);
                     INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("AuxiliarLogistica", 1, "Auxiliar Logistica", NULL, NULL, 1616610649, 1616610649, NULL);
                     INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("AuxiliarNomina", 1, "Auxiliar Nomina", NULL, NULL, 1622126864, 1622126864, NULL);
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("CambiarEstadoPlantilla", 2, "Botón cambio de estado en las plantillas", NULL, NULL, 1712680368, 1712680732, "Costos");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("changeOwnPassword", 2, "Cambiar mi contraseña", "", "", 1542641175, 1542655755, "Configuracion");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("CambiarEstadoPlantilla", 2, "(Granular)Botón cambio de estado en las plantillas", NULL, NULL, 1712680368, 1720544703, "Costos");
                     INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("changeUserPassword", 2, "Cambiar contraseña de usuario", "", "", 1542641175, 1542655838, "Usuarios");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("CheckDespiece", 2, "Comprar servicios desde despiece", NULL, NULL, 1703088318, 1703088318, "Compras");
                     INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("Commercial", 1, "Comercial General", NULL, NULL, 1616105379, 1616105379, NULL);
                     INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("commonPermission", 2, "Permisos propios", "", "", 1542641171, 1542655867, "");
                     INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("CoordinadorLogistica", 1, "CoordinadorLogistica", NULL, NULL, 1616610490, 1616610490, NULL);
                     INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("CoordinadorProyectos", 1, "Coordinador de Proyectos", NULL, NULL, 1620082502, 1702963774, NULL);
                     INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("createUsers", 2, "Crear usuarios", "", "", 1542641175, 1542655486, "Usuarios");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("deleteArea", 2, "Borrar área", "", "", 1556921888, 1556922200, "Recursosh");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("deleteCargo", 2, "Borrar cargo", "", "", 1556922180, 1556922180, "Recursosh");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("deleteCliente", 2, "Borrar cliente", NULL, NULL, 1560173680, 1560173680, "Mercadeo");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("deleteProyecto", 2, "Borrar proyecto", NULL, NULL, 1559854399, 1559854399, "Mercadeo");
                     INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("deleteUsers", 2, "Eliminar usuarios", "", "", 1542641175, 1542655503, "Usuarios");
                     INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("DirectorAdministrativo", 1, "Director Administrativo", NULL, NULL, 1542641175, 1702964875, NULL);
                     INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("DirectorComercial", 1, "Director Comercial", NULL, NULL, 1558391315, 1558391315, NULL);
@@ -23266,16 +23410,15 @@
                     INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("DirectorRH", 1, "Director de recursos humanos", "", "", 1542652560, 1542721005, "");
                     INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("DirectorVivas", 1, "Director de Vivas", NULL, NULL, 1558391686, 1558391686, NULL);
                     INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("Disenador", 1, "Diseñador", NULL, NULL, 1702986998, 1702986998, NULL);
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("editCliente", 2, "Editar cliente", NULL, NULL, 1560173490, 1560173504, "Mercadeo");
                     INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("editUserEmail", 2, "Editar email usuario", "", "", 1542641175, 1542718227, "Usuarios");
                     INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("editUsers", 2, "Editar usuarios", "", "", 1542641175, 1542655409, "Usuarios");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("Gestioninterna", 2, "Visualizar menú Gestión Interna", "", "", 1542642132, 1542729571, "GestionI");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("InformeProgramacion", 2, "Informe Programación", NULL, NULL, 1663087532, 1663087532, "Produccion");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("InformeRetroalimentacion", 2, "Informe Retroalimentación", NULL, NULL, 1661868232, 1661868232, "Produccion");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("HerramientasAnularActualizarOcs", 2, "(Granular)Ver  herramientas de anulación y actualización de OCs", NULL, NULL, 1720041576, 1720552751, "Compras");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("InformeProgramacion", 2, "(Submódulo)Ver Informe Programación", NULL, NULL, 1663087532, 1720555496, "Produccion");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("InformeRetroalimentacion", 2, "(Submódulo) Ver Informe Retroalimentación", NULL, NULL, 1661868232, 1720555539, "Produccion");
                     INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("JefeAlmacen", 1, "Jefe Almacen", NULL, NULL, 1616609369, 1616609369, "");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("JefeAlmacen2", 1, "Jefe de almacen 2", NULL, NULL, 1703174058, 1703174058, "");
                     INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("JefeCompras", 1, "Jefe de Compras", NULL, NULL, 1616164012, 1616164012, NULL);
                     INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("LiderCostos", 1, "Líder de Costos", NULL, NULL, 1616606534, 1616606534, NULL);
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("LiderDesarrolloProducto", 1, "Lider de desarrollo de producto", NULL, NULL, 1719238956, 1719238956, NULL);
                     INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("LiderDiseno", 1, "Líder de Diseño", NULL, NULL, 1616608386, 1616608386, NULL);
                     INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("Operador", 1, "Operador", NULL, NULL, 1576672678, 1576672678, NULL);
                     INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("ProgramadorOperaciones", 1, "Programador Operaciones", NULL, NULL, 1576672113, 1576672113, NULL);
@@ -23284,122 +23427,117 @@
                     INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("SuperCoordinador", 1, "Super Coordinador", NULL, NULL, 1561555501, 1561555501, NULL);
                     INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("SuperDiseñador", 1, "Super Diseñador", NULL, NULL, 1575902011, 1575902011, NULL);
                     INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("SuperMercadeo", 1, "Super Mercadeo", NULL, NULL, 1563477674, 1563477674, NULL);
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewAcabado", 2, "ver modulo Mano de obra", NULL, NULL, 1616606645, 1616606645, "Costos");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewAccesoDespieceCabina", 2, "Ver Acceso al despiece desde la cabina", NULL, NULL, 1713238092, 1713238092, "Cabina");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewAcabado", 2, "(Submódulo)Ver Submódulo acabados", NULL, NULL, 1616606645, 1720544508, "Costos");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewAccesoDespieceCabina", 2, "(Granular)Ver Acceso al despiece desde la cabina", NULL, NULL, 1713238092, 1720540306, "Cabina");
                     INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewActuaizacionLogistica", 2, "Ver Actualización Logistica", NULL, NULL, 1616610261, 1616610261, "Logistica");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewActualizacionProduccion", 2, "Ver Actualización Producción", NULL, NULL, 1616609779, 1616609779, "Produccion");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewAgenda", 2, "Ver Agenda Producción", NULL, NULL, 1651582414, 1651582414, "Produccion");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewAgendaDis", 2, "Ver Agenda Diseñador", NULL, NULL, 1616608104, 1616608104, "Diseno");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewAgendaVivas", 2, "Ver Agenda Vivas", NULL, NULL, 1616608081, 1616608081, "Diseno");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewAlmacen", 2, "Ver modulo de Almacén", NULL, NULL, 1616165665, 1616165665, "Almacen");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewArea", 2, "Ver módulo Áreas", NULL, NULL, 1542728979, 1560171712, "GestionI");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewArteComplementarioDisenoCabina", 2, "Ver arte complementario de diseño desde la cabina", NULL, NULL, 1713232326, 1713232326, "Cabina");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewBigData", 2, "Ver pestaña big data", NULL, NULL, 1621609779, 1621609779, "Costos");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewBotonValidarServicioDespiece", 2, "Ver botón validar servicio del despiece", NULL, NULL, 1713235950, 1713235950, "Costos");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewBuscadorDocumentos", 2, "Ver Buscador Documentos", NULL, NULL, 1703169874, 1703179652, "Consolidados");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewBuscadorRotaciones", 2, "Ver buscador de rotaciones", NULL, NULL, 1712177359, 1712177359, "Almacen");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewBuscarMp", 2, "Ver Materiales x OP", NULL, NULL, 1616607491, 1616607491, "Costos");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewBuscarRemisiones", 2, "Ver Buscar Remisiones", NULL, NULL, 1616610312, 1616610312, "Logistica");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewCabina", 2, "Ver cabina", NULL, NULL, 1616604509, 1616604509, "Cabina");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewCambiarClave", 2, "Ver Cambiar Clave", NULL, NULL, 1620064467, 1620064467, "Roles");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewCargaMPresupuesto", 2, "Ver  pestaña de carga masiva de presupuesto", NULL, NULL, 1622742262, 1622742262, "Costos");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewCargo", 2, "Ver múdulo Cargos", NULL, NULL, 1542729022, 1560171702, "GestionI");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewCheckCompraMODespiece", 2, "Ver check compra MO en despiece", NULL, NULL, 1713236034, 1713236034, "Costos");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewCheckCompraServiciosDespiece", 2, "Ver check compra servicios en el despiece", NULL, NULL, 1713236066, 1713236066, "Costos");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewClaseproveedor", 2, "Ver clase Proveedor", NULL, NULL, 1622561328, 1622561328, "GestionI");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewClientes", 2, "Ver Clientes", NULL, NULL, 1616606041, 1616606041, "Mercadeo");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewCodFinal", 2, "Ver Código Final", NULL, NULL, 1616607261, 1616607261, "Costos");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewCompras", 2, "Ver modal de compras", NULL, NULL, 1616163730, 1616163730, "Compras");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewConciliar", 2, "ver Conciliar OPs", NULL, NULL, 1618347942, 1618347942, "GestionI");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewConsolidadoCostosxOPDespiece", 2, "Ver consolidado de costos x OP en el despiece", NULL, NULL, 1713235479, 1713235479, NULL);
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewConsolidadoCostosxProductoDespiece", 2, "Ver consolidado de costos x producto en el despiece", NULL, NULL, 1713235045, 1713235045, "Costos");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewConsolidados", 2, "Ver Consolidados", NULL, NULL, 1703179945, 1703179945, "Consolidados");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewConsolidadoValoresVentaDespiece", 2, "Ver Consolidado de valores de venta en el despiece", NULL, NULL, 1713234863, 1713234863, "Costos");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewCostos", 2, "ver modulo de Costos", NULL, NULL, 1616607169, 1616607169, "Costos");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewCostosReporte", 2, "Ver Informe Presupuesto xOPs", NULL, NULL, 1702965328, 1702965328, "Costos");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewCotizacion", 2, "Ver Cotización Costos", NULL, NULL, 1616607352, 1616607352, "Costos");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewCrearCostosEnOpCabina", 2, "Crear costos desde la OP en la cabina", NULL, NULL, 1713231383, 1713231383, "Cabina");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewCrearPresupuestosModificarEstadoCostosCabina", 2, "Crear presupuestos y cambiar estado de los costos desde la cabina", NULL, NULL, 1713231962, 1713231962, "Cabina");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewCrearReferencia", 2, "Ver Crear Referencia", NULL, NULL, 1616608882, 1616608882, "Compras");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewDespiece", 2, "Ver Despiece", NULL, NULL, 1616607397, 1616607397, "Costos");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewDespieceSegundarioD", 2, "Ver despiece segundario diseñadores", NULL, NULL, 1712079026, 1712079026, "Diseno");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewDespieceSegundarioP", 2, "Ver despiece segundario operarios", NULL, NULL, 1712078970, 1712079039, "Operador");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewDetalleValoresOPDoc", 2, "Ver detalle de valores en buscador de pedidos", NULL, NULL, 1712084105, 1712084105, "Consolidados");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewDiseno", 2, "Ver módulo Diseño", NULL, NULL, 1559827365, 1559827395, "Diseno");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewActualizacionProduccion", 2, "(Submódulo)Ver submódulo actualización producción", NULL, NULL, 1616609779, 1720555400, "Produccion");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewAgenda", 2, "(Submódulo)Ver submódulo agenda producción", NULL, NULL, 1651582414, 1720555620, "Produccion");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewAlmacen", 2, "(Módulo)Ver modulo de almacén", NULL, NULL, 1616165665, 1720453940, "Almacen");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewApruebaRequisicion", 2, "(Submódulo)Ver submódulo aprobar requisiciones", NULL, NULL, 1720215254, 1720553540, "Compras");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewArea", 2, "(Submódulo)Ver submódulo Áreas", NULL, NULL, 1542728979, 1720542650, "Recursosh");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewArteComplementarioDisenoCabina", 2, "(Granular)Ver arte complementario de diseño desde la cabina", NULL, NULL, 1713232326, 1720540561, "Cabina");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewBotonAprobacionGR", 2, "(Granular)Botón de aprobación-rechazo GR", NULL, NULL, 1719604876, 1720544439, "Proyectos");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewBotonValidarServicioDespiece", 2, "(Granular)Ver botón validar servicio del despiece", NULL, NULL, 1713235950, 1720544912, "Costos");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewBuscadorDocumentos", 2, "(Submódulo)Ver submódulo Buscador Documentos", NULL, NULL, 1703169874, 1720542360, "Consolidados");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewBuscadorRotaciones", 2, "(Submódulo)Ver submódulo buscador de rotaciones", NULL, NULL, 1712177359, 1720554236, "Almacen");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewBuscarMp", 2, "(Submódulo)Ver submódulo Materiales x OP", NULL, NULL, 1616607491, 1720545200, "Costos");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewBuscarRemisiones", 2, "(Submódulo)Ver submódulo Buscar Remisiones", NULL, NULL, 1616610312, 1720556087, "Logistica");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewCabina", 2, "(Módulo)Ver módulo cabina", NULL, NULL, 1616604509, 1720452143, "Cabina");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewCambiarClave", 2, "(Submódulo)Ver submódulo cambiar clave", NULL, NULL, 1620064467, 1720562561, "Roles");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewCargaMPresupuesto", 2, "(Submódulo)Ver submódulo de carga masiva de presupuesto", NULL, NULL, 1622742262, 1720545336, "Costos");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewCargo", 2, "(Submódulo)Ver submódulo Cargos", NULL, NULL, 1542729022, 1720542739, "Recursosh");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewCheckCompraMODespiece", 2, "(Granular)Ver check compra MO en despiece", NULL, NULL, 1713236034, 1720544847, "Costos");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewCheckCompraServiciosDespiece", 2, "(Granular)Ver check compra servicios en el despiece", NULL, NULL, 1713236066, 1720544883, "Costos");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewClaseproveedor", 2, "(Submódulo)Ver submódulo clase Proveedor", NULL, NULL, 1622561328, 1720543537, "GestionI");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewClientes", 2, "(Submódulo)Ver submódulo Clientes", NULL, NULL, 1616606041, 1720543787, "Mercadeo");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewCodFinal", 2, "(Submódulo)Ver submódulo códigos de producto", NULL, NULL, 1616607261, 1720544560, "Costos");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewCodigosProducto", 2, "(Granular)Botón de eliminación para códigos de producto", NULL, NULL, 1720210201, 1720544591, "Costos");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewCompras", 2, "(Módulo) Ver módulo de compras", NULL, NULL, 1616163730, 1720453909, "Compras");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewConciliar", 2, "(Submódulo)Ver submódulo Conciliar OPs", NULL, NULL, 1618347942, 1720543578, "GestionI");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewConsolidadoCostosxOPDespiece", 2, "(Granular)Ver consolidado de costos x OP en el despiece", NULL, NULL, 1713235479, 1720544970, "Costos");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewConsolidadoCostosxProductoDespiece", 2, "(Granular)Ver consolidado de costos x producto en el despiece", NULL, NULL, 1713235045, 1720545029, "Costos");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewConsolidados", 2, "(Módulo)Ver módulo consolidados", NULL, NULL, 1703179945, 1720452205, "Consolidados");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewConsolidadoValoresVentaDespiece", 2, "(Granular)Ver Consolidado de valores de venta en el despiece", NULL, NULL, 1713234863, 1720544790, "Costos");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewCostos", 2, "(Módulo)Ver  modulo de Costos", NULL, NULL, 1616607169, 1720453791, "Costos");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewCostosReporte", 2, "(Submódulo)Ver submódulo Informe Presupuesto xOPs", NULL, NULL, 1702965328, 1720552214, "Costos");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewCrearCostosEnOpCabina", 2, "(Granular)Crear costos desde la OP en la cabina", NULL, NULL, 1713231383, 1720540620, "Cabina");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewCrearPresupuestosModificarEstadoCostosCabina", 2, "(Granular)Crear presupuestos y cambiar estado de los costos desde la cabina", NULL, NULL, 1713231962, 1720540730, "Cabina");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewCrearReferencia", 2, "(Submódulo)Ver submódulo Crear Referencia", NULL, NULL, 1616608882, 1720553178, "Compras");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewDespiece", 2, "(Submódulo)Ver submódulo Despiece", NULL, NULL, 1616607397, 1720544753, "Costos");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewDespieceSegundarioD", 2, "(Submódulo)Ver submódulo despiece segundario diseñadores", NULL, NULL, 1712079026, 1720552058, "Diseno");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewDespieceSegundarioP", 2, "(Submódulo)Ver submódulo despiece segundario operarios", NULL, NULL, 1712078970, 1720555816, "Operador");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewDetalleValoresOPDoc", 2, "(Granular)Ver detalle de valores en buscador de pedidos", NULL, NULL, 1712084105, 1720541267, "Consolidados");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewDiseno", 2, "(Módulo)Ver módulo diseño", NULL, NULL, 1559827365, 1720453843, "Diseno");
                     INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewDocumentos", 2, "Ver documentos", NULL, NULL, 1611591137, 1611591137, "Recursosh");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewEmpleado", 2, "Ver módulo Empleados", NULL, NULL, 1542727386, 1560171722, "GestionI");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewEntradasAlmacen", 2, "Ver Entradas Almacen", NULL, NULL, 1616609181, 1616609181, "Almacen");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewEntregables", 2, "ver modulo de Entregables", NULL, NULL, 1616161772, 1616162897, "Mercadeo");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewEmpleado", 2, "Ver módulo Empleados", NULL, NULL, 1542727386, 1720627927, "Recursosh");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewEntradasAlmacen", 2, "(Submódulo)Ver submódulo Entradas Almacén", NULL, NULL, 1616609181, 1720554348, "Almacen");
                     INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewEstadoL", 2, "Ver estado Logística", NULL, NULL, 1558392492, 1558392492, "Comite");
                     INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewEstadoP", 2, "Ver estado Producción", NULL, NULL, 1558392519, 1558392519, "Comite");
                     INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewEstadoV", 2, "Ver estado Vivas", NULL, NULL, 1558392536, 1558392536, "Comite");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewExistenciaAlmacen", 2, "ver existencias almacen", NULL, NULL, 1637783617, 1637783743, "Almacen");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewExistenciasArea", 2, "ver existencias por área", NULL, NULL, 1628629506, 1628629506, "Almacen");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewFacturacion", 2, "ver modulo Facturación", NULL, NULL, 1621609204, 1621609204, "Facturacion");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewFacturacionProveedores", 2, "Ver pestaña facturación proveedores", NULL, NULL, 1621609430, 1621609430, "Facturacion");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewFacturasCliente", 2, "Ver pestaña visualizar facturas cliente", NULL, NULL, 1621609334, 1621609334, "Facturacion");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewFiltroDocBigData", 2, "Ver Big Data en el filtro del buscador de documentos", NULL, NULL, 1712086643, 1712086643, "Consolidados");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewFiltroDocCierreVentas", 2, "Ver Cierre de ventas en el filtro del buscador de documentos", NULL, NULL, 1712086497, 1712086497, "Consolidados");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewFiltroDocFacturas", 2, "Ver Facturas en el filtro del buscador de documentos", NULL, NULL, 1712086565, 1712086661, "Consolidados");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewFormaPago", 2, "Ver Forma de Pago", NULL, NULL, 1616605640, 1616605640, "GestionI");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewGenerarFacturaCliente", 2, "Ver Pestaña Generar Factura Cliente", NULL, NULL, 1621609378, 1621609378, "Facturacion");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewGestionCompras", 2, "Ver Gestor de Compras", NULL, NULL, 1703080469, 1703080469, "Compras");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewGestionInterna", 2, "ver Gestión Interna", NULL, NULL, 1616606830, 1616606830, "GestionI");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewGrupoInventario", 2, "Ver Grupo Inventario", NULL, NULL, 1616608712, 1616608712, "Compras");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewHerramientasCostosDespiece", 2, "Ver Herramientas de costos en el despiece", NULL, NULL, 1713234901, 1713234901, "Costos");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewHomeCompras", 2, "Ver Home de Compras", NULL, NULL, 1616608617, 1616608617, "Compras");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewHorario", 2, "Ver múdlo Horarios", NULL, NULL, 1542729044, 1560171690, "GestionI");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewID", 2, "Ver ids en view", NULL, NULL, 1559149158, 1559149158, "Configuracion");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewInformeCodigos", 2, "Ver pestaña de Informe de Códigos", NULL, NULL, 1622841476, 1622841476, "Costos");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewInformeDocumentos", 2, "Ver informe de documentos", NULL, NULL, 1616624404, 1616624404, "Proyectos");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewInformeGR", 2, "Ver informe de Garantías y Reprocesos", NULL, NULL, 1611593973, 1712087409, "Proyectos");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("ViewInformePresupuestos", 2, "Ver pestaña informe de presupuestos", NULL, NULL, 1622742365, 1622742365, "Costos");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewInformeProgramacion", 2, "Ver informe de programación", NULL, NULL, 1702961067, 1702961170, "Produccion");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewInformeRotacionesCabina", 2, "Ver informe de rotaciones desde la cabina", NULL, NULL, 1713231467, 1713231467, "Cabina");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewInformesCompras", 2, "Ver pestaña de informes de compras", NULL, NULL, 1621609858, 1621609858, "Compras");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewInterfazContable", 2, "Ver Pestaña Interfaz Contable", NULL, NULL, 1621609471, 1621609471, "Facturacion");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewKardex", 2, "Ver Kardex", NULL, NULL, 1712096676, 1712096676, "Facturacion");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewLegalizacionTerceros", 2, "Ver modulo de legalización de terceros", NULL, NULL, 1616535017, 1616535017, "Compras");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewLegalizarMateriales", 2, "Ver Legalizar Materiales", NULL, NULL, 1616608932, 1616608932, "Compras");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewLegalizarTercerosCabina", 2, "Ver Legalización de terceros desde la cabina", NULL, NULL, 1713231237, 1713231237, "Cabina");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewListaPrecios", 2, "Ver pestaña de lista de precios", NULL, NULL, 1621974299, 1621974299, "Compras");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewLogistica", 2, "ver modulo de Logistica", NULL, NULL, 1616192568, 1616192568, "Logistica");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewMacroProyecto", 2, "ver modulo de Macro Proyectos", NULL, NULL, 1608068047, 1608068047, "Mercadeo");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewMateriales", 2, "Ver Materiales", NULL, NULL, 1616608768, 1616608768, "Compras");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewMaterialesxArea", 2, "Ver Materiales x Area", NULL, NULL, 1616609238, 1616609238, "Almacen");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewMedida", 2, "Ver Medida", NULL, NULL, 1616608657, 1616608657, "Compras");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewMercadeo", 2, "Ver módulo Mercadeo", NULL, NULL, 1558629363, 1559827409, "Mercadeo");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewExistenciaAlmacen", 2, "(Submódulo)Ver submódulo existencias almacén", NULL, NULL, 1637783617, 1720555025, "Almacen");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewExistenciasArea", 2, "(Submódulo)Ver submódulo existencias x área", NULL, NULL, 1628629506, 1720554596, "Almacen");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewFacturacion", 2, "(Módulo) Ver módulo de facturación", NULL, NULL, 1621609204, 1720454201, "Facturacion");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewFacturacionProveedores", 2, "(Submódulo)Ver submódulo facturación proveedores", NULL, NULL, 1621609430, 1720557419, "Facturacion");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewFacturasCliente", 2, "(Submódulo)Ver submódulo visualizar facturas cliente", NULL, NULL, 1621609334, 1720557140, "Facturacion");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewFiltroDocBigData", 2, "(Granular)Ver Big Data en el filtro del buscador de documentos", NULL, NULL, 1712086643, 1720541477, "Consolidados");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewFiltroDocCierreVentas", 2, "(Granular)Ver Cierre de ventas en el filtro del buscador de documentos", NULL, NULL, 1712086497, 1720541424, "Consolidados");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewFiltroDocFacturas", 2, "(Granular)Ver Facturas en el filtro del buscador de documentos", NULL, NULL, 1712086565, 1720541356, "Consolidados");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewFormaPago", 2, "(Submódulo)Ver submódulo forma de pago", NULL, NULL, 1616605640, 1720543414, "GestionI");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewGenerarFacturaCliente", 2, "(Submódulo)Ver submódulo Generar Factura Cliente", NULL, NULL, 1621609378, 1720627440, "Facturacion");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewGestionCompras", 2, "(Submódulo)Ver submódulo Gestor de Compras", NULL, NULL, 1703080469, 1720552539, "Compras");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewGestionInterna", 2, "(Módulo) Ver módulo de gestión interna", NULL, NULL, 1616606830, 1720453646, "GestionI");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewGraficaPedidosVsFacturas", 2, "(Index)Ver gráfica de pedidos vs facturas", NULL, NULL, 1718834625, 1720540172, "Consolidados");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewGrupoInventario", 2, "(Submódulo)Ver submódulo Grupo Inventario", NULL, NULL, 1616608712, 1720552983, "Compras");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewHerramientasCostosDespiece", 2, "(Granular)Ver Herramientas de costos en el despiece", NULL, NULL, 1713234901, 1720544814, "Costos");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewHorario", 2, "(Submódulo)Ver submódulo Horarios", NULL, NULL, 1542729044, 1720542837, "Recursosh");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("ViewInformePresupuestos", 2, "(Submódulo)Ver submódulo informe de presupuestos", NULL, NULL, 1622742365, 1720545514, "Costos");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewInformeRotacionesCabina", 2, "(Granulares)Ver informe de rotaciones desde la cabina", NULL, NULL, 1713231467, 1720540757, "Cabina");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewInterfazContable", 2, "(Submódulo)Ver submódulo interfaz contable", NULL, NULL, 1621609471, 1720557346, "Facturacion");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewKardex", 2, "(Submódulo)Ver submódulo Kardex", NULL, NULL, 1712096676, 1720557489, "Facturacion");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewLegalizacionTerceros", 2, "(Submódulo)Ver submódulo de legalización de terceros", NULL, NULL, 1616535017, 1720553345, "Compras");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewLegalizarMateriales", 2, "(Submódulo)Ver submódulo Home de Compras", NULL, NULL, 1616608932, 1720562867, "Compras");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewLegalizarTercerosCabina", 2, "(Granular)Ver Legalización de terceros desde la cabina", NULL, NULL, 1713231237, 1720540893, "Cabina");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewListaPrecios", 2, "(Submódulo)Ver submódulo pestaña de lista de precios", NULL, NULL, 1621974299, 1720553588, "Compras");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewLogistica", 2, "(Módulo)Ver módulo de Logística", NULL, NULL, 1616192568, 1720454143, "Logistica");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewMacroProyecto", 2, "(Submódulo)ver submódulo de Macro Proyectos", NULL, NULL, 1608068047, 1720543868, "Proyectos");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewMateriales", 2, "(Submódulo)Ver submódulo Materiales", NULL, NULL, 1616608768, 1720553086, "Compras");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewMedida", 2, "(Submódulo)Ver submódulo Medida", NULL, NULL, 1616608657, 1720552886, "Compras");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewMercadeo", 2, "(Módulo)Ver módulo mercadeo", NULL, NULL, 1558629363, 1720453713, "Mercadeo");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewMoverDocumentosRotacion", 2, "(Submódulo)Ver submódulo Mover Docs Rotacion", NULL, NULL, 1718385710, 1720557527, "Facturacion");
                     INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewMovimientoxMaterial", 2, "ver pestaña movimientos por material", NULL, NULL, 1622142368, 1622142368, "Compras");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewOperador", 2, "Ver modal Operador", NULL, NULL, 1576672550, 1576672550, "Operador");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewOportunidadNegocio", 2, "Ver módulo Oportunidad Negocio", NULL, NULL, 1558629456, 1620142752, "Mercadeo");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewOrdenes", 2, "Ver módulo Ordenes", NULL, NULL, 1560358907, 1560358907, "Mercadeo");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewOperador", 2, "(Módulo)Ver módulo de operadores", NULL, NULL, 1576672550, 1720454072, "Operador");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewOrdenes", 2, "(Submódulo)Ver submódulo módulo Ordenes", NULL, NULL, 1560358907, 1720544059, "Proyectos");
                     INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewPlaneacionLogistica", 2, "Ver Planeación Logistica", NULL, NULL, 1616610233, 1616610233, "Logistica");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewPlaneacionProduccion", 2, "Ver planeación de producción", NULL, NULL, 1702961676, 1702961676, "Produccion");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewPlantilla", 2, "Ver Plantilla", NULL, NULL, 1616607307, 1616607307, "Costos");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewPorteria", 2, "Ver módulo Porteria", NULL, NULL, 1562792063, 1562792063, "Mercadeo");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewProduccion", 2, "Ver modal Produccion", NULL, NULL, 1576672343, 1576672343, "Produccion");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewProgramacionDiseno", 2, "Ver Programación de Códigos en Diseño", NULL, NULL, 1613498557, 1613498557, "Diseno");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewProgramarYGetEstandarizacionDisenoCabina", 2, "Ver Herramienta programar diseñadores y herramienta trae fichas estandarizadas al producto en la cabina", NULL, NULL, 1713230599, 1713230599, "Cabina");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewProveedor", 2, "Ver Proveedor", NULL, NULL, 1622561356, 1622561356, "GestionI");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewProyectos", 2, "Ver Modulo de Proyectos", NULL, NULL, 1620145050, 1620145050, "Proyectos");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewProyectosOp", 2, "ver modulo de proyectos op", NULL, NULL, 1608069095, 1608069095, "Mercadeo");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewProyectoSuper", 2, "Ver proyectos Super Coordinador", NULL, NULL, 1561561879, 1561561879, "Mercadeo");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewPucs", 2, "Ver Pucs", NULL, NULL, 1616605370, 1616605370, "GestionI");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewPucsoc", 2, "ver Pucs Oc", NULL, NULL, 1616605438, 1616605438, "GestionI");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewRecursosHumanos", 2, "Ver modulo de Recursos Humanos", NULL, NULL, 1616099447, 1616099447, "Recursosh");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewRegimen", 2, "ver Régimen", NULL, NULL, 1616605540, 1616605540, "GestionI");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewRemisiones", 2, "Ver Remisiones", NULL, NULL, 1616610296, 1616610296, "Logistica");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewRequisicion", 2, "Ver Requisiciones", NULL, NULL, 1616608964, 1616608964, "Compras");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewRetroalimentarFt", 2, "Ver retroalimentar Fichas Técnicas", NULL, NULL, 1715700990, 1715700990, "Diseno");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewSalidasAlmacen", 2, "Ver Salidas Almacen", NULL, NULL, 1616609207, 1616609207, "Almacen");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewSolicitudGR", 2, "Ver Solicitudes de Garantías & Reprocesos", NULL, NULL, 1611591480, 1712087391, "Proyectos");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewSubGrupo", 2, "Ver Sub Grupo", NULL, NULL, 1616608730, 1616608730, "Compras");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewSubirFtProgramadaCabina", 2, "Ver Subir fichas técnicas programadas en cabina", NULL, NULL, 1713236735, 1713236735, "Cabina");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewTiemposProduccion", 2, "ver tiempos de producción", NULL, NULL, 1628627565, 1628627565, "Costos");
-                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewTipoPago", 2, "ver Tipo Pago", NULL, NULL, 1616605715, 1616605715, "GestionI");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewPlaneacionProduccion", 2, "(Submódulo)Ver submódulo planeación de producción", NULL, NULL, 1702961676, 1720555243, "Produccion");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewPlantilla", 2, "(Submódulo)Ver submódulo Plantilla", NULL, NULL, 1616607307, 1720544651, "Costos");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewProduccion", 2, "(Módulo)Ver módulo producción", NULL, NULL, 1576672343, 1720625213, "Produccion");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewProgramacionDiseno", 2, "(Submódulo)Ver submódulo Programación de Códigos en Diseño", NULL, NULL, 1613498557, 1720552169, "Diseno");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewProgramarYGetEstandarizacionDisenoCabina", 2, "(Granular)Ver Herramienta programar diseñadores y herramienta trae fichas estandarizadas al producto en la cabina", NULL, NULL, 1713230599, 1720540961, "Cabina");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewProveedor", 2, "(Submódulo)Ver submódulo Proveedor", NULL, NULL, 1622561356, 1720543650, "GestionI");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewProyectos", 2, "(Módulo)Ver módulo de proyectos", NULL, NULL, 1620145050, 1720453747, "Proyectos");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewProyectosOp", 2, "(Submódulo)Ver submódulo de proyectos op", NULL, NULL, 1608069095, 1720543917, "Proyectos");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewPucs", 2, "(Submódulo)Ver submódulo Pucs", NULL, NULL, 1616605370, 1720543199, "GestionI");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewPucsoc", 2, "(Submódulo)Ver submódulo Pucs Oc", NULL, NULL, 1616605438, 1720543284, "GestionI");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewRecursosHumanos", 2, "(Módulo)Ver modulo de Recursos Humanos", NULL, NULL, 1616099447, 1720452354, "Recursosh");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewRegimen", 2, "(Submódulo)Ver submódulo Régimen", NULL, NULL, 1616605540, 1720543355, "GestionI");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewRemisiones", 2, "(Submódulo)Ver submódulo Remisiones", NULL, NULL, 1616610296, 1720556057, "Logistica");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewRequisicion", 2, "(Submódulo)Ver submódulo Requisiciones", NULL, NULL, 1616608964, 1720553472, "Compras");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewRetroalimentarFt", 2, "(Granular)Ver retroalimentar Fichas Técnicas", NULL, NULL, 1715700990, 1720619362, "Diseno");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewRolesyPermisos", 2, "(Módulo)Ver módulo Roles y Permisos", NULL, NULL, 1720187515, 1720542546, "Roles");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewSalidasAlmacen", 2, "(Submódulo)Ver submódulo Salidas Almacen", NULL, NULL, 1616609207, 1720554390, "Almacen");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewSalidasPendientes", 2, "(Submódulo)Ver submódulo salidas pendientes x area", NULL, NULL, 1719241293, 1720555091, "Almacen");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewSolicitudGR", 2, "(Submódulo)Ver submódulo solicitud de Garantías y Reprocesos", NULL, NULL, 1611593973, 1720544383, "Proyectos");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewSubGrupo", 2, "(Submódulo)Ver submódulo Sub Grupo", NULL, NULL, 1616608730, 1720553038, "Compras");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewSubirFtProgramadaCabina", 2, "(Granular)Ver Subir fichas técnicas programadas en cabina", NULL, NULL, 1713236735, 1720541033, "Cabina");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewTablaProduccionDespiece", 2, "(Granular)Ver tabla de producción desde el despiece", NULL, NULL, 1720022420, 1720545119, "Costos");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewTiemposProduccion", 2, "(Submódulo)Ver submódulo de tiempos de producción", NULL, NULL, 1628627565, 1720552309, "Costos");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewTipoPago", 2, "(Submódulo)Ver submódulo Tipo Pago", NULL, NULL, 1616605715, 1720543489, "GestionI");
                     INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewUserEmail", 2, "Ver email usuario", "", "", 1542641175, 1542655636, "Usuarios");
                     INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewUserRoles", 2, "Ver roles", "", "", 1542641175, 1542655657, "Usuarios");
                     INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewUsers", 2, "Ver usuarios", "", "", 1542641175, 1542655460, "Usuarios");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewUsuario", 2, "(Submódulo)Ver submódulo usuarios", NULL, NULL, 1720193761, 1720542615, "Recursosh");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewValoresOPCabina", 2, "(Granular)Ver Valores OP en la cabina", NULL, NULL, 1719438467, 1720541075, "Cabina");
+                    INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewVerificaMaterialRetro", 2, "(Granular)Verificar material retroalimentado en el despiece segundario de operarios", NULL, NULL, 1718975502, 1720555859, "Operador");
                     INSERT INTO auth_item (name, `type`, description, rule_name, `data`, created_at, updated_at, group_code) VALUES("viewVisitLog", 2, "Ver Log", "", "", 1542641175, 1542655561, "Usuarios");
 
 
@@ -23430,71 +23568,70 @@
                     INSERT INTO auth_item_child (parent, child) VALUES("editUsers", "/user-management/user/update");
                     INSERT INTO auth_item_child (parent, child) VALUES("viewUsers", "/user-management/user/view");
                     INSERT INTO auth_item_child (parent, child) VALUES("Admin", "assignRolesToUsers");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "assignRolesToUsers");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "CambiarEstadoPlantilla");
                     INSERT INTO auth_item_child (parent, child) VALUES("LiderCostos", "CambiarEstadoPlantilla");
                     INSERT INTO auth_item_child (parent, child) VALUES("Admin", "changeOwnPassword");
                     INSERT INTO auth_item_child (parent, child) VALUES("assignRolesToUsers", "changeOwnPassword");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "changeOwnPassword");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "changeOwnPassword");
                     INSERT INTO auth_item_child (parent, child) VALUES("Admin", "changeUserPassword");
                     INSERT INTO auth_item_child (parent, child) VALUES("assignRolesToUsers", "changeUserPassword");
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarCompras", "changeUserPassword");
-                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "changeUserPassword");
-                    INSERT INTO auth_item_child (parent, child) VALUES("LiderCostos", "changeUserPassword");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "changeUserPassword");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorProduccion", "CheckDespiece");
                     INSERT INTO auth_item_child (parent, child) VALUES("Admin", "createUsers");
                     INSERT INTO auth_item_child (parent, child) VALUES("assignRolesToUsers", "createUsers");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "createUsers");
                     INSERT INTO auth_item_child (parent, child) VALUES("viewRecursosHumanos", "deleteArea");
                     INSERT INTO auth_item_child (parent, child) VALUES("viewRecursosHumanos", "deleteCargo");
                     INSERT INTO auth_item_child (parent, child) VALUES("AdminComercial", "deleteCliente");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorFacturacion", "deleteCliente");
                     INSERT INTO auth_item_child (parent, child) VALUES("AdminComercial", "deleteProyecto");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "deleteProyecto");
                     INSERT INTO auth_item_child (parent, child) VALUES("SuperMercadeo", "deleteProyecto");
                     INSERT INTO auth_item_child (parent, child) VALUES("Admin", "deleteUsers");
                     INSERT INTO auth_item_child (parent, child) VALUES("assignRolesToUsers", "deleteUsers");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "deleteUsers");
                     INSERT INTO auth_item_child (parent, child) VALUES("AdminComercial", "editCliente");
                     INSERT INTO auth_item_child (parent, child) VALUES("Director Administrativo", "editCliente");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorFacturacion", "editCliente");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "editCliente");
                     INSERT INTO auth_item_child (parent, child) VALUES("assignRolesToUsers", "editUserEmail");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "editUserEmail");
                     INSERT INTO auth_item_child (parent, child) VALUES("Admin", "editUsers");
                     INSERT INTO auth_item_child (parent, child) VALUES("assignRolesToUsers", "editUsers");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "editUsers");
                     INSERT INTO auth_item_child (parent, child) VALUES("assignRolesToUsers", "Gestioninterna");
                     INSERT INTO auth_item_child (parent, child) VALUES("Director Administrativo", "Gestioninterna");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "Gestioninterna");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorFacturacion", "Gestioninterna");
-                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "Gestioninterna");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorRH", "Gestioninterna");
-                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "InformeProgramacion");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "InformeProgramacion");
-                    INSERT INTO auth_item_child (parent, child) VALUES("ProgramadorOperaciones", "InformeProgramacion");
-                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "InformeRetroalimentacion");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "InformeRetroalimentacion");
                     INSERT INTO auth_item_child (parent, child) VALUES("InformeProgramacion", "InformeRetroalimentacion");
-                    INSERT INTO auth_item_child (parent, child) VALUES("LiderCostos", "InformeRetroalimentacion");
-                    INSERT INTO auth_item_child (parent, child) VALUES("ProgramadorOperaciones", "InformeRetroalimentacion");
                     INSERT INTO auth_item_child (parent, child) VALUES("viewInformeProgramacion", "InformeRetroalimentacion");
+                    INSERT INTO auth_item_child (parent, child) VALUES("LiderDesarrolloProducto", "LiderCostos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("LiderDesarrolloProducto", "LiderDiseno");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorProduccion", "ProgramadorOperaciones");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewAcabado");
                     INSERT INTO auth_item_child (parent, child) VALUES("LiderCostos", "viewAcabado");
-                    INSERT INTO auth_item_child (parent, child) VALUES("CoordinadorLogistica", "viewAccesoDespieceCabina");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewAccesoDespieceCabina");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorProduccion", "viewAccesoDespieceCabina");
-                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewAccesoDespieceCabina");
                     INSERT INTO auth_item_child (parent, child) VALUES("LiderCostos", "viewAccesoDespieceCabina");
                     INSERT INTO auth_item_child (parent, child) VALUES("ProgramadorOperaciones", "viewAccesoDespieceCabina");
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarLogistica", "viewActuaizacionLogistica");
                     INSERT INTO auth_item_child (parent, child) VALUES("CoordinadorLogistica", "viewActuaizacionLogistica");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewActuaizacionLogistica");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorLogistica", "viewActuaizacionLogistica");
-                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewActuaizacionLogistica");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewActualizacionProduccion");
-                    INSERT INTO auth_item_child (parent, child) VALUES("LiderCostos", "viewActualizacionProduccion");
                     INSERT INTO auth_item_child (parent, child) VALUES("ProgramadorOperaciones", "viewActualizacionProduccion");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewAgenda");
-                    INSERT INTO auth_item_child (parent, child) VALUES("LiderCostos", "viewAgenda");
                     INSERT INTO auth_item_child (parent, child) VALUES("ProgramadorOperaciones", "viewAgenda");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewAgendaDis");
                     INSERT INTO auth_item_child (parent, child) VALUES("Disenador", "viewAgendaDis");
                     INSERT INTO auth_item_child (parent, child) VALUES("LiderDiseno", "viewAgendaDis");
                     INSERT INTO auth_item_child (parent, child) VALUES("viewDiseno", "viewAgendaDis");
-                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewAgendaVivas");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewAgendaVivas");
                     INSERT INTO auth_item_child (parent, child) VALUES("LiderDiseno", "viewAgendaVivas");
                     INSERT INTO auth_item_child (parent, child) VALUES("viewDiseno", "viewAgendaVivas");
@@ -23506,14 +23643,16 @@
                     INSERT INTO auth_item_child (parent, child) VALUES("JefeAlmacen", "viewAlmacen");
                     INSERT INTO auth_item_child (parent, child) VALUES("JefeAlmacen2", "viewAlmacen");
                     INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewAlmacen");
+                    INSERT INTO auth_item_child (parent, child) VALUES("CoordinadorProyectos", "viewAprobacionGR");
                     INSERT INTO auth_item_child (parent, child) VALUES("assignRolesToUsers", "viewArea");
                     INSERT INTO auth_item_child (parent, child) VALUES("Director Administrativo", "viewArea");
-                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewArea");
-                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewArea");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorRH", "viewArea");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewArteComplementarioDisenoCabina");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewBigData");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewBigData");
-                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewBotonValidarServicioDespiece");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewBotonAprobacionGR");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorProyectos", "viewBotonAprobacionGR");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewBotonValidarServicioDespiece");
                     INSERT INTO auth_item_child (parent, child) VALUES("ProgramadorOperaciones", "viewBotonValidarServicioDespiece");
                     INSERT INTO auth_item_child (parent, child) VALUES("AdminComercial", "viewBuscadorDocumentos");
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarContable", "viewBuscadorDocumentos");
@@ -23526,32 +23665,30 @@
                     INSERT INTO auth_item_child (parent, child) VALUES("LiderCostos", "viewBuscadorDocumentos");
                     INSERT INTO auth_item_child (parent, child) VALUES("ProgramadorOperaciones", "viewBuscadorDocumentos");
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarContable", "viewBuscadorRotaciones");
-                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewBuscarMp");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeAlmacen", "viewBuscadorRotaciones");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeAlmacen2", "viewBuscadorRotaciones");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewBuscadorRotaciones");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewBuscarMp");
                     INSERT INTO auth_item_child (parent, child) VALUES("LiderCostos", "viewBuscarMp");
                     INSERT INTO auth_item_child (parent, child) VALUES("CoordinadorLogistica", "viewBuscarRemisiones");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewBuscarRemisiones");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorLogistica", "viewBuscarRemisiones");
-                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewBuscarRemisiones");
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarLogistica", "viewCabina");
-                    INSERT INTO auth_item_child (parent, child) VALUES("CoordinadorLogistica", "viewCabina");
                     INSERT INTO auth_item_child (parent, child) VALUES("CoordinadorProyectos", "viewCabina");
                     INSERT INTO auth_item_child (parent, child) VALUES("CordinadorProyectos", "viewCabina");
                     INSERT INTO auth_item_child (parent, child) VALUES("Director(a) Proyectos", "viewCabina");
-                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewCabina");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorFacturacion", "viewCabina");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewCabina");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorLogistica", "viewCabina");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorProyectos", "viewCabina");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorVivas", "viewCabina");
                     INSERT INTO auth_item_child (parent, child) VALUES("Disenador", "viewCabina");
-                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewCabina");
                     INSERT INTO auth_item_child (parent, child) VALUES("LiderCostos", "viewCabina");
                     INSERT INTO auth_item_child (parent, child) VALUES("LiderDiseno", "viewCabina");
                     INSERT INTO auth_item_child (parent, child) VALUES("ProgramadorOperaciones", "viewCabina");
                     INSERT INTO auth_item_child (parent, child) VALUES("SuperCoordinador", "viewCabina");
                     INSERT INTO auth_item_child (parent, child) VALUES("SuperDiseñador", "viewCabina");
                     INSERT INTO auth_item_child (parent, child) VALUES("AdminComercial", "viewCambiarClave");
-                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarContable", "viewCambiarClave");
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarFacturacion", "viewCambiarClave");
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarLogistica", "viewCambiarClave");
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarNomina", "viewCambiarClave");
@@ -23559,26 +23696,17 @@
                     INSERT INTO auth_item_child (parent, child) VALUES("CordinadorProyectos", "viewCambiarClave");
                     INSERT INTO auth_item_child (parent, child) VALUES("Director Administrativo", "viewCambiarClave");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorComercial", "viewCambiarClave");
-                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorFacturacion", "viewCambiarClave");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewCambiarClave");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorLogistica", "viewCambiarClave");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorRH", "viewCambiarClave");
-                    INSERT INTO auth_item_child (parent, child) VALUES("JefeAlmacen", "viewCambiarClave");
-                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewCambiarClave");
-                    INSERT INTO auth_item_child (parent, child) VALUES("LiderCostos", "viewCambiarClave");
-                    INSERT INTO auth_item_child (parent, child) VALUES("LiderDiseno", "viewCambiarClave");
-                    INSERT INTO auth_item_child (parent, child) VALUES("Operador", "viewCambiarClave");
-                    INSERT INTO auth_item_child (parent, child) VALUES("ProgramadorOperaciones", "viewCambiarClave");
                     INSERT INTO auth_item_child (parent, child) VALUES("SuperCoordinador", "viewCambiarClave");
                     INSERT INTO auth_item_child (parent, child) VALUES("SuperMercadeo", "viewCambiarClave");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewCargaMPresupuesto");
                     INSERT INTO auth_item_child (parent, child) VALUES("assignRolesToUsers", "viewCargo");
                     INSERT INTO auth_item_child (parent, child) VALUES("Director Administrativo", "viewCargo");
-                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewCargo");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewCargo");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorRH", "viewCargo");
                     INSERT INTO auth_item_child (parent, child) VALUES("ProgramadorOperaciones", "viewCheckCompraMODespiece");
-                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewCheckCompraServiciosDespiece");
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarContable", "viewClaseproveedor");
                     INSERT INTO auth_item_child (parent, child) VALUES("Director Administrativo", "viewClaseproveedor");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewClaseproveedor");
@@ -23587,28 +23715,30 @@
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarContable", "viewClientes");
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarFacturacion", "viewClientes");
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarNomina", "viewClientes");
+                    INSERT INTO auth_item_child (parent, child) VALUES("CoordinadorProyectos", "viewClientes");
                     INSERT INTO auth_item_child (parent, child) VALUES("CordinadorProyectos", "viewClientes");
                     INSERT INTO auth_item_child (parent, child) VALUES("Director Administrativo", "viewClientes");
-                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewClientes");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorFacturacion", "viewClientes");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewClientes");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorProyectos", "viewClientes");
                     INSERT INTO auth_item_child (parent, child) VALUES("SuperCoordinador", "viewClientes");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewCodFinal");
                     INSERT INTO auth_item_child (parent, child) VALUES("LiderCostos", "viewCodFinal");
+                    INSERT INTO auth_item_child (parent, child) VALUES("LiderDesarrolloProducto", "viewCodigosProducto");
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarCompras", "viewCompras");
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarContable", "viewCompras");
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarLogistica", "viewCompras");
-                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewCompras");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewCompras");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorLogistica", "viewCompras");
-                    INSERT INTO auth_item_child (parent, child) VALUES("JefeAlmacen", "viewCompras");
                     INSERT INTO auth_item_child (parent, child) VALUES("JefeAlmacen2", "viewCompras");
-                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewCompras");
                     INSERT INTO auth_item_child (parent, child) VALUES("ProgramadorOperaciones", "viewCompras");
                     INSERT INTO auth_item_child (parent, child) VALUES("viewLegalizacionTerceros", "viewCompras");
                     INSERT INTO auth_item_child (parent, child) VALUES("Director Administrativo", "viewConciliar");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewConciliar");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewConciliar");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewConsolidadoCostosxOPDespiece");
+                    INSERT INTO auth_item_child (parent, child) VALUES("LiderCostos", "viewConsolidadoCostosxOPDespiece");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewConsolidadoCostosxProductoDespiece");
                     INSERT INTO auth_item_child (parent, child) VALUES("LiderCostos", "viewConsolidadoCostosxProductoDespiece");
                     INSERT INTO auth_item_child (parent, child) VALUES("AdminComercial", "viewConsolidados");
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarContable", "viewConsolidados");
@@ -23617,27 +23747,28 @@
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorFacturacion", "viewConsolidados");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewConsolidados");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorProduccion", "viewConsolidados");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorProyectos", "viewConsolidados");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorVivas", "viewConsolidados");
+                    INSERT INTO auth_item_child (parent, child) VALUES("LiderCostos", "viewConsolidados");
                     INSERT INTO auth_item_child (parent, child) VALUES("ProgramadorOperaciones", "viewConsolidados");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewConsolidadoValoresVentaDespiece");
                     INSERT INTO auth_item_child (parent, child) VALUES("LiderCostos", "viewConsolidadoValoresVentaDespiece");
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarCompras", "viewCostos");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewCostos");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewCostos");
-                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewCostos");
                     INSERT INTO auth_item_child (parent, child) VALUES("LiderCostos", "viewCostos");
                     INSERT INTO auth_item_child (parent, child) VALUES("ProgramadorOperaciones", "viewCostos");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewCostosReporte");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewCostosReporte");
                     INSERT INTO auth_item_child (parent, child) VALUES("LiderCostos", "viewCostosReporte");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewCotizacion");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewCrearCostosEnOpCabina");
                     INSERT INTO auth_item_child (parent, child) VALUES("LiderCostos", "viewCrearCostosEnOpCabina");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewCrearPresupuestosModificarEstadoCostosCabina");
                     INSERT INTO auth_item_child (parent, child) VALUES("LiderCostos", "viewCrearPresupuestosModificarEstadoCostosCabina");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewCrearReferencia");
-                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewCrearReferencia");
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarCompras", "viewDespiece");
-                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewDespiece");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewDespiece");
-                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewDespiece");
                     INSERT INTO auth_item_child (parent, child) VALUES("LiderCostos", "viewDespiece");
                     INSERT INTO auth_item_child (parent, child) VALUES("ProgramadorOperaciones", "viewDespiece");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewDespieceSegundarioD");
@@ -23650,7 +23781,7 @@
                     INSERT INTO auth_item_child (parent, child) VALUES("Director(a) Proyectos", "viewDetalleValoresOPDoc");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorFacturacion", "viewDetalleValoresOPDoc");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewDetalleValoresOPDoc");
-                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewDiseno");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorProyectos", "viewDetalleValoresOPDoc");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewDiseno");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorVivas", "viewDiseno");
                     INSERT INTO auth_item_child (parent, child) VALUES("Disenador", "viewDiseno");
@@ -23658,15 +23789,11 @@
                     INSERT INTO auth_item_child (parent, child) VALUES("SuperDiseñador", "viewDiseno");
                     INSERT INTO auth_item_child (parent, child) VALUES("AdminComercial", "viewDocumentos");
                     INSERT INTO auth_item_child (parent, child) VALUES("Director Administrativo", "viewDocumentos");
-                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewDocumentos");
-                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewDocumentos");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorLogistica", "viewDocumentos");
-                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewDocumentos");
                     INSERT INTO auth_item_child (parent, child) VALUES("SuperCoordinador", "viewDocumentos");
                     INSERT INTO auth_item_child (parent, child) VALUES("viewRecursosHumanos", "viewDocumentos");
                     INSERT INTO auth_item_child (parent, child) VALUES("assignRolesToUsers", "viewEmpleado");
                     INSERT INTO auth_item_child (parent, child) VALUES("Director Administrativo", "viewEmpleado");
-                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewEmpleado");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewEmpleado");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorRH", "viewEmpleado");
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarAlmacen", "viewEntradasAlmacen");
@@ -23719,7 +23846,6 @@
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarContable", "viewFormaPago");
                     INSERT INTO auth_item_child (parent, child) VALUES("Director Administrativo", "viewFormaPago");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewFormaPago");
-                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorFacturacion", "viewFormaPago");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewFormaPago");
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarFacturacion", "viewGenerarFacturaCliente");
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarNomina", "viewGenerarFacturaCliente");
@@ -23730,42 +23856,32 @@
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarLogistica", "viewGestionCompras");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewGestionCompras");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorProduccion", "viewGestionCompras");
-                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewGestionCompras");
                     INSERT INTO auth_item_child (parent, child) VALUES("ProgramadorOperaciones", "viewGestionCompras");
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarContable", "viewGestionInterna");
                     INSERT INTO auth_item_child (parent, child) VALUES("Director Administrativo", "viewGestionInterna");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewGestionInterna");
-                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewGestionInterna");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewGraficaPedidosVsFacturas");
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarCompras", "viewGrupoInventario");
-                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarContable", "viewGrupoInventario");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewGrupoInventario");
-                    INSERT INTO auth_item_child (parent, child) VALUES("JefeAlmacen", "viewGrupoInventario");
                     INSERT INTO auth_item_child (parent, child) VALUES("JefeAlmacen2", "viewGrupoInventario");
-                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewGrupoInventario");
                     INSERT INTO auth_item_child (parent, child) VALUES("LiderCostos", "viewHerramientasCostosDespiece");
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarCompras", "viewHomeCompras");
-                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewHomeCompras");
-                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewHomeCompras");
                     INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewHomeCompras");
                     INSERT INTO auth_item_child (parent, child) VALUES("assignRolesToUsers", "viewHorario");
                     INSERT INTO auth_item_child (parent, child) VALUES("Director Administrativo", "viewHorario");
-                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewHorario");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewHorario");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorRH", "viewHorario");
-                    INSERT INTO auth_item_child (parent, child) VALUES("LiderCostos", "viewHorario");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewID");
                     INSERT INTO auth_item_child (parent, child) VALUES("SuperAdmin", "viewID");
-                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewInformeCodigos");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewInformeCodigos");
                     INSERT INTO auth_item_child (parent, child) VALUES("LiderCostos", "viewInformeCodigos");
                     INSERT INTO auth_item_child (parent, child) VALUES("AdminComercial", "viewInformeDocumentos");
-                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarContable", "viewInformeDocumentos");
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarNomina", "viewInformeDocumentos");
                     INSERT INTO auth_item_child (parent, child) VALUES("Director Administrativo", "viewInformeDocumentos");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewInformeDocumentos");
                     INSERT INTO auth_item_child (parent, child) VALUES("SuperCoordinador", "viewInformeDocumentos");
                     INSERT INTO auth_item_child (parent, child) VALUES("CoordinadorProyectos", "viewInformeGR");
                     INSERT INTO auth_item_child (parent, child) VALUES("Director Administrativo", "viewInformeGR");
-                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewInformeGR");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewInformeGR");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorProyectos", "viewInformeGR");
                     INSERT INTO auth_item_child (parent, child) VALUES("SuperCoordinador", "viewInformeGR");
@@ -23773,11 +23889,10 @@
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "ViewInformePresupuestos");
                     INSERT INTO auth_item_child (parent, child) VALUES("LiderCostos", "ViewInformePresupuestos");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewInformeProgramacion");
-                    INSERT INTO auth_item_child (parent, child) VALUES("LiderCostos", "viewInformeProgramacion");
                     INSERT INTO auth_item_child (parent, child) VALUES("ProgramadorOperaciones", "viewInformeProgramacion");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewInformeRotacionesCabina");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorProduccion", "viewInformeRotacionesCabina");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewInformesCompras");
-                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewInformesCompras");
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarContable", "viewInterfazContable");
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarFacturacion", "viewInterfazContable");
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarNomina", "viewInterfazContable");
@@ -23791,31 +23906,25 @@
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarLogistica", "viewLegalizacionTerceros");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewLegalizacionTerceros");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorLogistica", "viewLegalizacionTerceros");
-                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewLegalizacionTerceros");
                     INSERT INTO auth_item_child (parent, child) VALUES("ProgramadorOperaciones", "viewLegalizacionTerceros");
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarCompras", "viewLegalizarMateriales");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewLegalizarMateriales");
-                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewLegalizarMateriales");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewLegalizarTercerosCabina");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorProduccion", "viewLegalizarTercerosCabina");
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarCompras", "viewListaPrecios");
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarContable", "viewListaPrecios");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewListaPrecios");
-                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewListaPrecios");
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarLogistica", "viewLogistica");
                     INSERT INTO auth_item_child (parent, child) VALUES("CoordinadorLogistica", "viewLogistica");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorLogistica", "viewLogistica");
-                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewLogistica");
                     INSERT INTO auth_item_child (parent, child) VALUES("Director(a) Proyectos", "viewMacroProyecto");
-                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewMacroProyecto");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewMacroProyecto");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorProyectos", "viewMacroProyecto");
                     INSERT INTO auth_item_child (parent, child) VALUES("SuperCoordinador", "viewMacroProyecto");
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarCompras", "viewMateriales");
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarContable", "viewMateriales");
-                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewMateriales");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewMateriales");
-                    INSERT INTO auth_item_child (parent, child) VALUES("JefeAlmacen", "viewMateriales");
                     INSERT INTO auth_item_child (parent, child) VALUES("JefeAlmacen2", "viewMateriales");
-                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewMateriales");
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarAlmacen", "viewMaterialesxArea");
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarCompras", "viewMaterialesxArea");
                     INSERT INTO auth_item_child (parent, child) VALUES("Director Administrativo", "viewMaterialesxArea");
@@ -23824,17 +23933,13 @@
                     INSERT INTO auth_item_child (parent, child) VALUES("JefeAlmacen2", "viewMaterialesxArea");
                     INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewMaterialesxArea");
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarCompras", "viewMedida");
-                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarContable", "viewMedida");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewMedida");
-                    INSERT INTO auth_item_child (parent, child) VALUES("JefeAlmacen", "viewMedida");
                     INSERT INTO auth_item_child (parent, child) VALUES("JefeAlmacen2", "viewMedida");
-                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewMedida");
                     INSERT INTO auth_item_child (parent, child) VALUES("AdminComercial", "viewMercadeo");
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarContable", "viewMercadeo");
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarFacturacion", "viewMercadeo");
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarNomina", "viewMercadeo");
                     INSERT INTO auth_item_child (parent, child) VALUES("CordinadorProyectos", "viewMercadeo");
-                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewMercadeo");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorComercial", "viewMercadeo");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorFacturacion", "viewMercadeo");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewMercadeo");
@@ -23850,51 +23955,44 @@
                     INSERT INTO auth_item_child (parent, child) VALUES("CordinadorProyectos", "viewModalProyectos");
                     INSERT INTO auth_item_child (parent, child) VALUES("SuperCoordinador", "viewModalProyectos");
                     INSERT INTO auth_item_child (parent, child) VALUES("SuperMercadeo", "viewModalProyectos");
+                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarContable", "viewMoverDocumentosRotacion");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewMoverDocumentosRotacion");
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarCompras", "viewMovimientoxMaterial");
-                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarContable", "viewMovimientoxMaterial");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewMovimientoxMaterial");
-                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewMovimientoxMaterial");
                     INSERT INTO auth_item_child (parent, child) VALUES("Operador", "viewOperador");
-                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewOportunidadNegocio");
-                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewOportunidadNegocio");
                     INSERT INTO auth_item_child (parent, child) VALUES("SuperCoordinador", "viewOportunidadNegocio");
                     INSERT INTO auth_item_child (parent, child) VALUES("CoordinadorProyectos", "viewOrdenes");
                     INSERT INTO auth_item_child (parent, child) VALUES("CordinadorProyectos", "viewOrdenes");
                     INSERT INTO auth_item_child (parent, child) VALUES("Director(a) Proyectos", "viewOrdenes");
-                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewOrdenes");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorComercial", "viewOrdenes");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewOrdenes");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorProyectos", "viewOrdenes");
                     INSERT INTO auth_item_child (parent, child) VALUES("SuperCoordinador", "viewOrdenes");
                     INSERT INTO auth_item_child (parent, child) VALUES("SuperMercadeo", "viewOrdenes");
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarLogistica", "viewPlaneacionLogistica");
                     INSERT INTO auth_item_child (parent, child) VALUES("CoordinadorLogistica", "viewPlaneacionLogistica");
-                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewPlaneacionLogistica");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewPlaneacionLogistica");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorLogistica", "viewPlaneacionLogistica");
-                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewPlaneacionLogistica");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewPlaneacionProduccion");
-                    INSERT INTO auth_item_child (parent, child) VALUES("LiderCostos", "viewPlaneacionProduccion");
                     INSERT INTO auth_item_child (parent, child) VALUES("ProgramadorOperaciones", "viewPlaneacionProduccion");
-                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewPlantilla");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewPlantilla");
                     INSERT INTO auth_item_child (parent, child) VALUES("LiderCostos", "viewPlantilla");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewProduccion");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorProduccion", "viewProduccion");
-                    INSERT INTO auth_item_child (parent, child) VALUES("LiderCostos", "viewProduccion");
                     INSERT INTO auth_item_child (parent, child) VALUES("ProgramadorOperaciones", "viewProduccion");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewProgramacionDiseno");
                     INSERT INTO auth_item_child (parent, child) VALUES("Disenador", "viewProgramacionDiseno");
                     INSERT INTO auth_item_child (parent, child) VALUES("LiderDiseno", "viewProgramacionDiseno");
                     INSERT INTO auth_item_child (parent, child) VALUES("viewDiseno", "viewProgramacionDiseno");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewProgramarYGetEstandarizacionDisenoCabina");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorVivas", "viewProgramarYGetEstandarizacionDisenoCabina");
-                    INSERT INTO auth_item_child (parent, child) VALUES("LiderCostos", "viewProgramarYGetEstandarizacionDisenoCabina");
+                    INSERT INTO auth_item_child (parent, child) VALUES("LiderDesarrolloProducto", "viewProgramarYGetEstandarizacionDisenoCabina");
+                    INSERT INTO auth_item_child (parent, child) VALUES("LiderDiseno", "viewProgramarYGetEstandarizacionDisenoCabina");
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarContable", "viewProveedor");
                     INSERT INTO auth_item_child (parent, child) VALUES("Director Administrativo", "viewProveedor");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewProveedor");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewProveedor");
-                    INSERT INTO auth_item_child (parent, child) VALUES("LiderCostos", "viewProveedor");
                     INSERT INTO auth_item_child (parent, child) VALUES("AdminComercial", "viewProyectos");
-                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarContable", "viewProyectos");
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarNomina", "viewProyectos");
                     INSERT INTO auth_item_child (parent, child) VALUES("Director Administrativo", "viewProyectos");
                     INSERT INTO auth_item_child (parent, child) VALUES("Director(a) Proyectos", "viewProyectos");
@@ -23910,84 +24008,83 @@
                     INSERT INTO auth_item_child (parent, child) VALUES("CoordinadorProyectos", "viewProyectosOp");
                     INSERT INTO auth_item_child (parent, child) VALUES("CordinadorProyectos", "viewProyectosOp");
                     INSERT INTO auth_item_child (parent, child) VALUES("Director(a) Proyectos", "viewProyectosOp");
-                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewProyectosOp");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewProyectosOp");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorProyectos", "viewProyectosOp");
                     INSERT INTO auth_item_child (parent, child) VALUES("SuperCoordinador", "viewProyectosOp");
                     INSERT INTO auth_item_child (parent, child) VALUES("AdminComercial", "viewProyectoSuper");
-                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewProyectoSuper");
                     INSERT INTO auth_item_child (parent, child) VALUES("SuperCoordinador", "viewProyectoSuper");
                     INSERT INTO auth_item_child (parent, child) VALUES("SuperCordinador", "viewProyectoSuper");
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarContable", "viewPucs");
                     INSERT INTO auth_item_child (parent, child) VALUES("Director Administrativo", "viewPucs");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewPucs");
-                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorFacturacion", "viewPucs");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewPucs");
-                    INSERT INTO auth_item_child (parent, child) VALUES("LiderCostos", "viewPucs");
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarContable", "viewPucsoc");
                     INSERT INTO auth_item_child (parent, child) VALUES("Director Administrativo", "viewPucsoc");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewPucsoc");
-                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorFacturacion", "viewPucsoc");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewPucsoc");
-                    INSERT INTO auth_item_child (parent, child) VALUES("LiderCostos", "viewPucsoc");
                     INSERT INTO auth_item_child (parent, child) VALUES("AdminComercial", "viewRecursosHumanos");
                     INSERT INTO auth_item_child (parent, child) VALUES("Director Administrativo", "viewRecursosHumanos");
-                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewRecursosHumanos");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewRecursosHumanos");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorLogistica", "viewRecursosHumanos");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorRH", "viewRecursosHumanos");
-                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewRecursosHumanos");
                     INSERT INTO auth_item_child (parent, child) VALUES("SuperCoordinador", "viewRecursosHumanos");
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarContable", "viewRegimen");
                     INSERT INTO auth_item_child (parent, child) VALUES("Director Administrativo", "viewRegimen");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewRegimen");
-                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorFacturacion", "viewRegimen");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewRegimen");
-                    INSERT INTO auth_item_child (parent, child) VALUES("LiderCostos", "viewRegimen");
                     INSERT INTO auth_item_child (parent, child) VALUES("CoordinadorLogistica", "viewRemisiones");
                     INSERT INTO auth_item_child (parent, child) VALUES("Director(a) Proyectos", "viewRemisiones");
-                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewRemisiones");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorLogistica", "viewRemisiones");
-                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewRemisiones");
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarCompras", "viewRequisicion");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewRequisicion");
-                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewRequisicion");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewRetroalimentarFt");
+                    INSERT INTO auth_item_child (parent, child) VALUES("LiderDiseno", "viewRetroalimentarFt");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewRolesyPermisos");
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarAlmacen", "viewSalidasAlmacen");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewSalidasAlmacen");
                     INSERT INTO auth_item_child (parent, child) VALUES("JefeAlmacen", "viewSalidasAlmacen");
                     INSERT INTO auth_item_child (parent, child) VALUES("JefeAlmacen2", "viewSalidasAlmacen");
                     INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewSalidasAlmacen");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeAlmacen", "viewSalidasPendientes");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeAlmacen2", "viewSalidasPendientes");
+                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewSalidasPendientes");
+                    INSERT INTO auth_item_child (parent, child) VALUES("CoordinadorProyectos", "viewSolicitudGR");
                     INSERT INTO auth_item_child (parent, child) VALUES("CordinadorProyectos", "viewSolicitudGR");
                     INSERT INTO auth_item_child (parent, child) VALUES("Director Administrativo", "viewSolicitudGR");
-                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewSolicitudGR");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewSolicitudGR");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorProyectos", "viewSolicitudGR");
                     INSERT INTO auth_item_child (parent, child) VALUES("SuperCoordinador", "viewSolicitudGR");
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarCompras", "viewSubGrupo");
-                    INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarContable", "viewSubGrupo");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewSubGrupo");
-                    INSERT INTO auth_item_child (parent, child) VALUES("JefeAlmacen", "viewSubGrupo");
                     INSERT INTO auth_item_child (parent, child) VALUES("JefeAlmacen2", "viewSubGrupo");
-                    INSERT INTO auth_item_child (parent, child) VALUES("JefeCompras", "viewSubGrupo");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewSubirFtProgramadaCabina");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorVivas", "viewSubirFtProgramadaCabina");
                     INSERT INTO auth_item_child (parent, child) VALUES("Disenador", "viewSubirFtProgramadaCabina");
+                    INSERT INTO auth_item_child (parent, child) VALUES("LiderDiseno", "viewSubirFtProgramadaCabina");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewTiemposProduccion");
                     INSERT INTO auth_item_child (parent, child) VALUES("AuxiliarContable", "viewTipoPago");
                     INSERT INTO auth_item_child (parent, child) VALUES("Director Administrativo", "viewTipoPago");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorAdministrativo", "viewTipoPago");
-                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorFacturacion", "viewTipoPago");
                     INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewTipoPago");
-                    INSERT INTO auth_item_child (parent, child) VALUES("LiderCostos", "viewTipoPago");
                     INSERT INTO auth_item_child (parent, child) VALUES("assignRolesToUsers", "viewUserEmail");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewUserEmail");
                     INSERT INTO auth_item_child (parent, child) VALUES("editUserEmail", "viewUserEmail");
                     INSERT INTO auth_item_child (parent, child) VALUES("assignRolesToUsers", "viewUserRoles");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewUserRoles");
                     INSERT INTO auth_item_child (parent, child) VALUES("Admin", "viewUsers");
                     INSERT INTO auth_item_child (parent, child) VALUES("assignRolesToUsers", "viewUsers");
                     INSERT INTO auth_item_child (parent, child) VALUES("changeUserPassword", "viewUsers");
                     INSERT INTO auth_item_child (parent, child) VALUES("createUsers", "viewUsers");
                     INSERT INTO auth_item_child (parent, child) VALUES("deleteUsers", "viewUsers");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewUsers");
                     INSERT INTO auth_item_child (parent, child) VALUES("editUsers", "viewUsers");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewUsuario");
+                    INSERT INTO auth_item_child (parent, child) VALUES("DirectorGeneral", "viewValoresOPCabina");
+                    INSERT INTO auth_item_child (parent, child) VALUES("Operador", "viewVerificaMaterialRetro");
                     INSERT INTO auth_item_child (parent, child) VALUES("viewModalProyectos", "viewviewEntregables");
                     INSERT INTO auth_item_child (parent, child) VALUES("assignRolesToUsers", "viewVisitLog");
+
+
 
                     drop table auth_item_group;
 
@@ -24031,6 +24128,9 @@
 
 
 
+
+
+
                 ');
             }catch(PDOException $e){
                 echo "Hubo un error en la correccion de usuarios-operario y tablas de permisos".$id."\n<br>".$e->getMessage();exit;
@@ -24058,6 +24158,7 @@
                     create index indx_fecha_ingreso on dt_fechas_op(fecha_ingreso);
                     create index indx_id_tipo_costo on dt_costos(id_tipo_costo);
                     create index indx_n_compra on dt_compras(n_compra);
+                    create index indx_codigo_prod on dt_inventario(codigo_prod);
                     /*alter table dt_fechas_op 
                     add constraint dt_fechas_op_dt_ordenes_fk 
                     FOREIGN KEY (id_ordenes) references dt_ordenes(id_ordenes);*/
@@ -24075,65 +24176,127 @@
             }catch(PDOException $e){
                 echo "Hubo un error en la implementación de las llaves complementarias ".$e->getMessage();exit;
             }
+
+            $mensaje = "Se introdujeron indexes y llaves foraneas complementarias";
+
+            return $mensaje;
         }
 
         public static function incluyeIdMedidasFaltantes($conexion_migracion_prueba){
 
             try {
 
-                $queries = [
-                    "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 3798",
-                    "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 3820",
-                    "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 3821",
-                    "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 3835",
-                    "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 3837",
-                    "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 3933",
-                    "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 3934",
-                    "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 4080",
-                    "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 4081",
-                    "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 4147",
-                    "UPDATE dt_inventario SET id_medida = 4 WHERE id_inventario = 4487",
-                    "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 4603",
-                    "UPDATE dt_inventario SET id_medida = 4 WHERE id_inventario = 4696",
-                    "UPDATE dt_inventario SET id_medida = 4 WHERE id_inventario = 5468",
-                    "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 5622",
-                    "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 6667",
-                    "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 7435",
-                    "UPDATE dt_inventario SET id_medida = 11 WHERE id_inventario = 8729",
-                    "UPDATE dt_inventario SET id_medida = 4 WHERE id_inventario = 8814",
-                    "UPDATE dt_inventario SET id_medida = 4 WHERE id_inventario = 8922",
-                    "UPDATE dt_inventario SET id_medida = 4 WHERE id_inventario = 8958",
-                    "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9070",
-                    "UPDATE dt_inventario SET id_medida = 4 WHERE id_inventario = 9081",
-                    "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9113",
-                    "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9136",
-                    "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9148",
-                    "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9149",
-                    "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9150",
-                    "UPDATE dt_inventario SET id_medida = 11 WHERE id_inventario = 9176",
-                    "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9178",
-                    "UPDATE dt_inventario SET id_medida = 11 WHERE id_inventario = 9219",
-                    "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9279",
-                    "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9280",
-                    "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9292",
-                    "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9293",
-                    "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9294",
-                    "UPDATE dt_inventario SET id_medida = 4 WHERE id_inventario = 9296",
-                    "UPDATE dt_inventario SET id_medida = 11 WHERE id_inventario = 9298",
-                    "UPDATE dt_inventario SET id_medida = 11 WHERE id_inventario = 9299",
-                    "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9309",
-                    "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9318",
-                    "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9319",
-                    "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9461",
-                    "UPDATE dt_grupoinventario SET grupo = 'COBRE' WHERE id_grupo_inventario = 10",
-                    "UPDATE dt_grupoinventario SET grupo = 'TINTAS' WHERE id_grupo_inventario = 24"
-                ];
+                // $queries = [
+                //     "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 3798",
+                //     "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 3820",
+                //     "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 3821",
+                //     "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 3835",
+                //     "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 3837",
+                //     "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 3933",
+                //     "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 3934",
+                //     "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 4080",
+                //     "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 4081",
+                //     "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 4147",
+                //     "UPDATE dt_inventario SET id_medida = 4 WHERE id_inventario = 4487",
+                //     "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 4603",
+                //     "UPDATE dt_inventario SET id_medida = 4 WHERE id_inventario = 4696",
+                //     "UPDATE dt_inventario SET id_medida = 4 WHERE id_inventario = 5468",
+                //     "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 5622",
+                //     "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 6667",
+                //     "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 7435",
+                //     "UPDATE dt_inventario SET id_medida = 11 WHERE id_inventario = 8729",
+                //     "UPDATE dt_inventario SET id_medida = 4 WHERE id_inventario = 8814",
+                //     "UPDATE dt_inventario SET id_medida = 4 WHERE id_inventario = 8922",
+                //     "UPDATE dt_inventario SET id_medida = 4 WHERE id_inventario = 8958",
+                //     "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9070",
+                //     "UPDATE dt_inventario SET id_medida = 4 WHERE id_inventario = 9081",
+                //     "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9113",
+                //     "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9136",
+                //     "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9148",
+                //     "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9149",
+                //     "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9150",
+                //     "UPDATE dt_inventario SET id_medida = 11 WHERE id_inventario = 9176",
+                //     "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9178",
+                //     "UPDATE dt_inventario SET id_medida = 11 WHERE id_inventario = 9219",
+                //     "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9279",
+                //     "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9280",
+                //     "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9292",
+                //     "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9293",
+                //     "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9294",
+                //     "UPDATE dt_inventario SET id_medida = 4 WHERE id_inventario = 9296",
+                //     "UPDATE dt_inventario SET id_medida = 11 WHERE id_inventario = 9298",
+                //     "UPDATE dt_inventario SET id_medida = 11 WHERE id_inventario = 9299",
+                //     "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9309",
+                //     "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9318",
+                //     "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9319",
+                //     "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9461",
+                //     "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9485",
+                //     "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9486",
+                //     "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9487",
+                //     "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9488",
+                //     "UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9489",
+                //     "UPDATE dt_grupoinventario SET grupo = 'COBRE' WHERE id_grupo_inventario = 10",
+                //     "UPDATE dt_grupoinventario SET grupo = 'TINTAS' WHERE id_grupo_inventario = 24"
+                // ];
         
-                // Ejecutar cada consulta por separado
-                foreach ($queries as $query) {
-                    $conexion_migracion_prueba->exec($query);
-                }
+                // // Ejecutar cada consulta por separado
+                // foreach ($queries as $query) {
+                //     $conexion_migracion_prueba->exec($query);
+                // }
 
+                $conexion_migracion_prueba->exec("UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 3798");
+                $conexion_migracion_prueba->exec("UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 3820");
+                $conexion_migracion_prueba->exec("UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 3821");
+                $conexion_migracion_prueba->exec("UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 3835");                  
+                $conexion_migracion_prueba->exec("UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 3837");                  
+                $conexion_migracion_prueba->exec("UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 3933");                  
+                $conexion_migracion_prueba->exec("UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 3934");                  
+                $conexion_migracion_prueba->exec("UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 4080");                  
+                $conexion_migracion_prueba->exec("UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 4081");                  
+                $conexion_migracion_prueba->exec("UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 4147");                  
+                $conexion_migracion_prueba->exec("UPDATE dt_inventario SET id_medida = 4 WHERE id_inventario = 4487");                  
+                $conexion_migracion_prueba->exec("UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 4603");                  
+                $conexion_migracion_prueba->exec("UPDATE dt_inventario SET id_medida = 4 WHERE id_inventario = 4696");                  
+                $conexion_migracion_prueba->exec("UPDATE dt_inventario SET id_medida = 4 WHERE id_inventario = 5468");                  
+                $conexion_migracion_prueba->exec("UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 5622");                  
+                $conexion_migracion_prueba->exec("UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 6667");                  
+                $conexion_migracion_prueba->exec("UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 7435");                  
+                $conexion_migracion_prueba->exec("UPDATE dt_inventario SET id_medida = 11 WHERE id_inventario = 8729");                  
+                $conexion_migracion_prueba->exec("UPDATE dt_inventario SET id_medida = 4 WHERE id_inventario = 8814");                  
+                $conexion_migracion_prueba->exec("UPDATE dt_inventario SET id_medida = 4 WHERE id_inventario = 8922");                  
+                $conexion_migracion_prueba->exec("UPDATE dt_inventario SET id_medida = 4 WHERE id_inventario = 8958");                  
+                $conexion_migracion_prueba->exec("UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9070");                  
+                $conexion_migracion_prueba->exec("UPDATE dt_inventario SET id_medida = 4 WHERE id_inventario = 9081");                  
+                $conexion_migracion_prueba->exec("UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9113");                  
+                $conexion_migracion_prueba->exec("UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9136");                  
+                $conexion_migracion_prueba->exec("UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9148");                  
+                $conexion_migracion_prueba->exec("UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9149");                  
+                $conexion_migracion_prueba->exec("UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9150");                  
+                $conexion_migracion_prueba->exec("UPDATE dt_inventario SET id_medida = 11 WHERE id_inventario = 9176");                  
+                $conexion_migracion_prueba->exec("UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9178");                  
+                $conexion_migracion_prueba->exec("UPDATE dt_inventario SET id_medida = 11 WHERE id_inventario = 9219");                  
+                $conexion_migracion_prueba->exec("UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9279");                  
+                $conexion_migracion_prueba->exec("UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9280");                  
+                $conexion_migracion_prueba->exec("UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9292");                  
+                $conexion_migracion_prueba->exec("UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9293");                  
+                $conexion_migracion_prueba->exec("UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9294");                  
+                $conexion_migracion_prueba->exec("UPDATE dt_inventario SET id_medida = 4 WHERE id_inventario = 9296");                  
+                $conexion_migracion_prueba->exec("UPDATE dt_inventario SET id_medida = 11 WHERE id_inventario = 9298");                  
+                $conexion_migracion_prueba->exec("UPDATE dt_inventario SET id_medida = 11 WHERE id_inventario = 9299");                  
+                $conexion_migracion_prueba->exec("UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9309");                  
+                $conexion_migracion_prueba->exec("UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9318");                  
+                $conexion_migracion_prueba->exec("UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9319");                  
+                $conexion_migracion_prueba->exec("UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9461");                  
+                $conexion_migracion_prueba->exec("UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9485");                  
+                $conexion_migracion_prueba->exec("UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9486");                  
+                $conexion_migracion_prueba->exec("UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9487");                  
+                $conexion_migracion_prueba->exec("UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9488");                  
+                $conexion_migracion_prueba->exec("UPDATE dt_inventario SET id_medida = 15 WHERE id_inventario = 9489");                  
+                $conexion_migracion_prueba->exec("UPDATE dt_grupoinventario SET grupo = 'COBRE' WHERE id_grupo_inventario = 10");                  
+                $conexion_migracion_prueba->exec("UPDATE dt_grupoinventario SET grupo = 'TINTAS' WHERE id_grupo_inventario = 24");                  
+
+              
+    
             }catch(PDOException $e){
                 echo "Hubo un error complementando los materiales sin medida en dt_inventario ".$e->getMessage();exit;
             }
@@ -24283,10 +24446,10 @@
                     join
                     (select 
                     c.nombre_costo,c.cod_material, 
-                    round(sum(case when r.id_tipo_rotacion = 9 then r.cantidad else 0 end),1)as 'entradas_almacen',
-                    round(sum(case when r.id_tipo_rotacion = 25 and r.estado = 7 then r.cantidad else 0 end),1) as 'entrada_a_producción_sin_aprobar',
-                    round(sum(case when r.id_tipo_rotacion = 25 and r.estado = 1 then r.cantidad else 0 end),1) as 'entrada_a_producción_aprobadas',
-                    round(sum(case when r.id_tipo_rotacion = 26 and r.estado = 1 then r.cantidad else 0 end),1) as 'salidas_de_producción'
+                    round(sum(case when r.id_tipo_rotacion = 9 then r.cantidad else 0 end),2)as 'entradas_almacen',
+                    round(sum(case when r.id_tipo_rotacion = 25 and r.estado = 7 then r.cantidad else 0 end),2) as 'entrada_a_producción_sin_aprobar',
+                    round(sum(case when r.id_tipo_rotacion = 25 and r.estado = 1 then r.cantidad else 0 end),2) as 'entrada_a_producción_aprobadas',
+                    round(sum(case when r.id_tipo_rotacion = 26 and r.estado = 1 then r.cantidad else 0 end),2) as 'salidas_de_producción'
                     from dt_rotacion  r 
                     right join dt_costos c on r.id_costo = c.id_costo where c.id_tipo_costo = 1  and c.n_ordenes = n_ordeness group by c.nombre_costo 
                     order by c.nombre_costo) tablados
@@ -26458,23 +26621,21 @@
                         `r`.`id_rotacion` AS `id_rotacion`,
                         `r`.`id_tipo_rotacion` AS `id_tipo_rotacion`,
                         `r`.`n_rotacion` AS `n_rotacion`,
-                        `c`.`n_compra` AS `n_compra`,
+                        `r`.`n_compra` AS `n_compra`,
                         `r`.`factura` AS `factura`,
+                        `r`.`factura_proveedor` AS `factura_proveedor`,
                         `r`.`n_remision_prov` AS `n_remision_prov`,
-                        `c`.`n_ordenes` AS `n_ordenes`,
+                        `r`.`n_ordenes` AS `n_ordenes`,
                         `i`.`producto` AS `producto`,
-                        `r`.`estado` AS `estado`,
-                        format(sum(`r`.`cantidad`), 2) AS `cantidad`
+                        `r`.`estado` AS `estado`
                     from
-                        ((`dt_rotacion` `r`
-                    left join `dt_compras` `c` on
-                        ((`r`.`id_compra` = `c`.`id_compras`)))
-                    join `dt_inventario` `i` on
-                        ((`r`.`cod_prod` = `i`.`codigo_prod`)))
+                        (`dt_rotacion` `r`
+                    left join `dt_inventario` `i` on
+                        (`r`.`id_inventario` = `i`.`id_inventario`))
                     where
-                        (`r`.`id_tipo_rotacion` in (9, 25, 26))
+                        (`r`.`id_tipo_rotacion` in (9, 25, 26) AND year(`r`.`fecha`) BETWEEN YEAR(CURRENT_TIMESTAMP)-2 AND YEAR(CURRENT_TIMESTAMP))
                     group by
-                        `c`.`n_ordenes`,
+                        `r`.`n_ordenes`,
                         `r`.`n_rotacion`
                     order by
                         `r`.`n_rotacion` desc;
@@ -26732,8 +26893,8 @@
                     from
                         (((`dt_codprodfinal`
                     left join `dt_categoria` on
-                        ((`dt_codprodfinal`.`id_categoria` = `dt_codprodfinal`.`id_categoria`)))
-                    join `dt_clientes` on
+                        ((`dt_codprodfinal`.`id_categoria` = `dt_categoria`.`id_categoria`)))
+                    left join `dt_clientes` on
                         ((`dt_clientes`.`id_cliente` = `dt_codprodfinal`.`id_cliente`)))
                     left join `dt_sublinea` on
                         ((`dt_codprodfinal`.`id_sublinea` = `dt_sublinea`.`id_sublinea`)));
@@ -27471,6 +27632,7 @@
                         `dt_inventarioxarea`.`codigo_prod` AS `codigo_prod`,
                         `dt_inventarioxarea`.`id_inventario` AS `id_inventario`,
                         `dt_inventario`.`producto` AS `producto`,
+                        `dt_inventario`.`id_medida` AS `id_medida`,
                         `dt_area`.`id_area` AS `id_area`,
                         `dt_area`.`nombre` AS `nombre`,
                         `dt_inventarioxarea`.`stock` AS `stock`,
@@ -27481,7 +27643,7 @@
                             else '0'
                         end) AS `stock_instalacion`,
                         (case
-                            `dt_inventarioxarea`.`id_area` when '7' then (`dt_inventario`.`valor_unidad` * `dt_inventarioxarea`.`stock`)
+                            `dt_inventarioxarea`.`id_area` when '7' then (`dt_inventario`.`valor_unidad_compra` * `dt_inventarioxarea`.`stock`)
                             else '0'
                         end) AS `valor_instalacion`,
                         (case
@@ -27489,7 +27651,7 @@
                             else '0'
                         end) AS `stock_almacen`,
                         (case
-                            `dt_inventarioxarea`.`id_area` when '12' then (`dt_inventario`.`valor_unidad` * `dt_inventarioxarea`.`stock`)
+                            `dt_inventarioxarea`.`id_area` when '12' then (`dt_inventario`.`valor_unidad_compra` * `dt_inventarioxarea`.`stock`)
                             else '0'
                         end) AS `valor_almacen`,
                         (case
@@ -27497,7 +27659,7 @@
                             else '0'
                         end) AS `stock_metalmecanica`,
                         (case
-                            `dt_inventarioxarea`.`id_area` when '13' then (`dt_inventario`.`valor_unidad` * `dt_inventarioxarea`.`stock`)
+                            `dt_inventarioxarea`.`id_area` when '13' then (`dt_inventario`.`valor_unidad_compra` * `dt_inventarioxarea`.`stock`)
                             else '0'
                         end) AS `valor_metalmecanica`,
                         (case
@@ -27505,7 +27667,7 @@
                             else '0'
                         end) AS `stock_pintura`,
                         (case
-                            `dt_inventarioxarea`.`id_area` when '14' then (`dt_inventario`.`valor_unidad` * `dt_inventarioxarea`.`stock`)
+                            `dt_inventarioxarea`.`id_area` when '14' then (`dt_inventario`.`valor_unidad_compra` * `dt_inventarioxarea`.`stock`)
                             else '0'
                         end) AS `valor_pintura`,
                         (case
@@ -27513,7 +27675,7 @@
                             else '0'
                         end) AS `stock_sustratos`,
                         (case
-                            `dt_inventarioxarea`.`id_area` when '15' then (`dt_inventario`.`valor_unidad` * `dt_inventarioxarea`.`stock`)
+                            `dt_inventarioxarea`.`id_area` when '15' then (`dt_inventario`.`valor_unidad_compra` * `dt_inventarioxarea`.`stock`)
                             else '0'
                         end) AS `valor_sustratos`,
                         (case
@@ -27521,7 +27683,7 @@
                             else '0'
                         end) AS `stock_ensamble`,
                         (case
-                            `dt_inventarioxarea`.`id_area` when '16' then (`dt_inventario`.`valor_unidad` * `dt_inventarioxarea`.`stock`)
+                            `dt_inventarioxarea`.`id_area` when '16' then (`dt_inventario`.`valor_unidad_compra` * `dt_inventarioxarea`.`stock`)
                             else '0'
                         end) AS `valor_ensamble`,
                         (case
@@ -27529,7 +27691,7 @@
                             else '0'
                         end) AS `stock_impresion`,
                         (case
-                            `dt_inventarioxarea`.`id_area` when '17' then (`dt_inventario`.`valor_unidad` * `dt_inventarioxarea`.`stock`)
+                            `dt_inventarioxarea`.`id_area` when '17' then (`dt_inventario`.`valor_unidad_compra` * `dt_inventarioxarea`.`stock`)
                             else '0'
                         end) AS `valor_impresion`,
                         (case
@@ -27537,7 +27699,7 @@
                             else '0'
                         end) AS `stock_decoracion`,
                         (case
-                            `dt_inventarioxarea`.`id_area` when '18' then (`dt_inventario`.`valor_unidad` * `dt_inventarioxarea`.`stock`)
+                            `dt_inventarioxarea`.`id_area` when '18' then (`dt_inventario`.`valor_unidad_compra` * `dt_inventarioxarea`.`stock`)
                             else '0'
                         end) AS `valor_decoracion`,
                         (case
@@ -27545,7 +27707,7 @@
                             else '0'
                         end) AS `stock_despachos`,
                         (case
-                            `dt_inventarioxarea`.`id_area` when '19' then (`dt_inventario`.`valor_unidad` * `dt_inventarioxarea`.`stock`)
+                            `dt_inventarioxarea`.`id_area` when '19' then (`dt_inventario`.`valor_unidad_compra` * `dt_inventarioxarea`.`stock`)
                             else '0'
                         end) AS `valor_despachos`
                     from
@@ -27864,6 +28026,7 @@
                         `vw`.`codigo_prod` AS `codigo_prod`,
                         `vw`.`producto` AS `producto`,
                         `vw`.`id_inventario` AS `id_inventario`,
+                        `dt_medida`.`medida` AS `medida`,
                         `vw`.`id_area` AS `id_area`,
                         `vw`.`nombre` AS `nombre`,
                         truncate(sum(`vw`.`stock`), 2) AS `stock_total`,
@@ -27887,9 +28050,11 @@
                         sum(`vw`.`stock_despachos`) AS `stock_despachos`,
                         truncate(sum(`vw`.`valor_despachos`), 2) AS `valor_despachos`
                     from
-                        `vw_sub_existencia_area` `vw`
+                        (`vw_sub_existencia_area` `vw`
+                    left join `dt_medida` on
+                        ((`vw`.`id_medida` = `dt_medida`.`id_medida`)))
                     group by
-                        `vw`.`codigo_prod`;   
+                        `vw`.`codigo_prod`;
 
                     CREATE OR REPLACE
                     ALGORITHM = UNDEFINED VIEW `vw_usuarios_2` AS

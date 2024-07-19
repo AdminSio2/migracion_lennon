@@ -60,15 +60,15 @@
 
     Tablas recuperadas del trabajo de Oz (con correcciones aplicadas desde SQL)
 
-    - dt_clientes
-    - dt_inffac_cli
+    - dt_clientes       Esta ya quedo por migración directa
+    - dt_inffac_cli     Esta ya quedo por migración directa
     - dt_macro_proyecto
     - dt_proveedores
     - dt_inf_contable_prove
     - dt_contacto_cliente
-    - dt_codprodfinal Esta ya quedo por migración directa
-    - dt_inventario   Esta ya quedo por migración directa
-    - dt_kardex       Esta ya quedo por migración directa 
+    - dt_codprodfinal   Esta ya quedo por migración directa
+    - dt_inventario     Esta ya quedo por migración directa
+    - dt_kardex         Esta ya quedo por migración directa 
 
 
     Se pueden migrar desde SQL
@@ -89,6 +89,10 @@
 
     $array_info_global = [];
 
+    
+
+    
+
 
     //Traemos el array id_proveedor => descuento_ica
 
@@ -96,9 +100,9 @@
 
     
     
-    //Traemos el array id_cod => medidas_codigos
+    //Traemos el array id_cod => medidas_codigos  (YA NO SE USA POR MIGRACIÓN DIRECTA DE LA TABLA)
 
-    $array_info_global['id_cod=>medidas_codigos'] = ControladorInformacionGlobal::traeDataCorreccionCodprodfinal($conexion_sio1);
+    // $array_info_global['id_cod=>medidas_codigos'] = ControladorInformacionGlobal::traeDataCorreccionCodprodfinal($conexion_sio1);
 
     //Traemos array: empresa => id_proveedores
  
@@ -116,12 +120,25 @@
 
     $array_info_global['subgrupo=>id_subgrupo'] = ControladorInformacionGlobal::traeArrayIdSubgrupo($conexion_migracion_prueba);
 
+    
+
+    
+
+    echo ControladorMigracion::migraDtUsuariosUser($conexion_sio1,$conexion_migracion_prueba)."\n<br>";
+    echo ControladorFuncionesAuxiliares::complementaInfoUsuariosActivos($conexion_migracion_prueba)."\n<br>";
+
+    //Traemos los arrays: user codVendedor => id_usuario y vendedor => id_usuario 
+
+    $array_info_global['vendedor=>id'] = ControladorInformacionGlobal::traeArrayUser($conexion_sio1,$conexion_migracion_prueba,1);
+
+    $array_info_global['codVendedor=>id'] = ControladorInformacionGlobal::traeArrayUser($conexion_sio1,$conexion_migracion_prueba,2);
+
+    echo ControladorMigracion::migraDtClientesDtInffacCli($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
+
     //Traemos array nit => id_cliente
 
     $array_info_global['nit=>id_cliente'] = ControladorInformacionGlobal::traeArrayIdCliente($conexion_migracion_prueba);
 
-    
-    
     echo ControladorFuncionesAuxiliares::agregaRegistrosFaltantes($conexion_migracion_prueba)."\n<br>";
     echo ControladorMigracion::migraDtCodprodfinal($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";//exit;
     echo ControladorFuncionesAuxiliares::creaTablaDtSublinea($conexion_migracion_prueba)."\n<br>";
@@ -161,8 +178,7 @@
 
     $array_info_global['cod=>id_acabados'] = ControladorInformacionGlobal::traeArrayIdAcabados($conexion_sio1);
 
-    echo ControladorMigracion::migraDtUsuariosUser($conexion_sio1,$conexion_migracion_prueba)."\n<br>";
-    echo ControladorFuncionesAuxiliares::complementaInfoUsuariosActivos($conexion_migracion_prueba)."\n<br>";
+    
     //echo ControladorFuncionesAuxiliares::actualizaAuthAssignment($conexion_migracion_prueba)."\n<br>"; YA NO VA 
     echo ControladorFuncionesAuxiliares::actualizaRegistrosNuevosTablasOz($conexion_migracion_prueba)."\n<br>"; //Actualización tablas Oz
     echo ControladorFuncionesAuxiliares::corrigeDtInfContableProve($conexion_migracion_prueba,$array_info_global)."\n<br>";
@@ -171,11 +187,7 @@
     echo ControladorFuncionesAuxiliares::corrijeDtClientes($conexion_migracion_prueba)."\n<br>";
     
 
-    //Traemos los arrays: user codVendedor => id_usuario y vendedor => id_usuario 
-
-    $array_info_global['vendedor=>id'] = ControladorInformacionGlobal::traeArrayUser($conexion_sio1,$conexion_migracion_prueba,1);
-
-    $array_info_global['codVendedor=>id'] = ControladorInformacionGlobal::traeArrayUser($conexion_sio1,$conexion_migracion_prueba,2);
+    
 
     echo ControladorMigracion::migraDtProyectoOp($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
 
@@ -267,7 +279,7 @@
     $array_info_global['n_solicitud=>id_solicitud_g_r'] = ControladorInformacionGlobal::traeArrayIdSolicitudGR($conexion_migracion_prueba);
 
     echo ControladorMigracion::migraDtHistoricoGR($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
-    echo ControladorFuncionesAuxiliares::creaTablasGarantia($conexion_migracion_prueba)."\n<br>";
+    
 
 
     //Traemos array nit => id_proveedores
@@ -282,6 +294,7 @@
     $array_info_global['id_forma_pago'] = ControladorInformacionGlobal::traeArrayFormaPago();
 
     echo ControladorMigracion::migraDtFactura($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";
+    echo ControladorFuncionesAuxiliares::creaTablasGarantia($conexion_migracion_prueba)."\n<br>";
 
     //Traemos array cod_prodTerm => id_orden
 

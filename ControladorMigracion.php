@@ -6,6 +6,431 @@
 
     class ControladorMigracion{
 
+        public static function migraDtClientesDtInffacCli($conexion_sio1,$conexion_migracion_prueba,$array_info_global){
+
+            //Inicia timer
+
+            $tiempo_inicio = microtime(true);
+
+            //Consultamos dt_clientes
+
+            $consulta_dt_clientes = $conexion_sio1->query("
+                SELECT id_cliente,activo,potencial,objetivo,empresa,codvended,nit,digVeri,fecha_ingreso,fechaActualizacion,
+                actualizadoPor,direccion,tel1,email,www,contacto,actEconomica,celCont,cargoCont,gerente,celular,pais,codciudad,regimen,fPago,cta_puc,cupo,cupoCont,tipoCupo,
+                codTributario,tipoIdent,tipoPersona,declarante,AgRetenedor,benRTIVA,AgRETIVA,rtegarantia,vrReteG,rtefuente_renta,entiPublica,codEntidadPublica,razonSocial,
+                comisionCor FROM dt_clientes
+            ");
+
+            $array_dt_clientes = $consulta_dt_clientes->fetchAll(PDO::FETCH_OBJ);
+
+            $conexion_migracion_prueba->exec("
+                ALTER TABLE dt_macro_proyecto
+                DROP FOREIGN KEY dt_macro_proyecto_ibfk_1;
+
+                DROP TABLE dt_clientes;
+                DROP TABLE dt_inffac_cli;
+            ");
+
+            //Creamos nuevamente dt_clientes(Sin llave primaria) y dt_inffac_cli
+
+            $conexion_migracion_prueba->exec("
+                -- Sio2Db_Junio.dt_clientes definition
+
+                CREATE TABLE `dt_clientes` (
+                `id_cliente` int,
+                `estado` smallint DEFAULT NULL,
+                `potencial` smallint DEFAULT NULL,
+                `objetivo` smallint DEFAULT NULL,
+                `nom_empresa` varchar(100) NOT NULL,
+                `id_usuario` int NOT NULL,
+                `nit` varchar(50) DEFAULT NULL,
+                `dig_verificacion` int DEFAULT NULL,
+                `fecha_ingreso` datetime DEFAULT NULL,
+                `fecha_actualizacion` datetime DEFAULT NULL,
+                `usuario_actualizador` int DEFAULT NULL,
+                `direccion` varchar(300) DEFAULT NULL,
+                `telefono` varchar(30) DEFAULT NULL,
+                `email_empresa` varchar(76) DEFAULT NULL,
+                `pagina_web` longtext,
+                `contacto` varchar(100) DEFAULT NULL,
+                `sector` varchar(150) DEFAULT NULL,
+                `area` varchar(50) DEFAULT NULL,
+                `telefono_contacto` varchar(30) DEFAULT NULL,
+                `cargo_contacto` varchar(100) DEFAULT NULL,
+                `email_contacto` varchar(76) DEFAULT NULL,
+                `fecha_nac_contacto` date DEFAULT NULL,
+                `direccion_contacto` varchar(100) DEFAULT NULL,
+                `gustos` longtext,
+                `representante_legal` varchar(100) DEFAULT NULL,
+                `cedula_representante_legal` bigint DEFAULT NULL,
+                `celular_representante_legal` bigint DEFAULT NULL,
+                `facturacion` varchar(50) DEFAULT NULL,
+                `id_pais` int DEFAULT NULL,
+                `importancia_1` smallint DEFAULT NULL,
+                `importancia_2` smallint DEFAULT NULL,
+                `importancia_3` smallint DEFAULT NULL,
+                `importancia_4` smallint DEFAULT NULL,
+                `intereses_compras` varchar(100) DEFAULT NULL,
+                `intereses_mercadeo` varchar(100) DEFAULT NULL,
+                `intereses_proyectos` varchar(100) DEFAULT NULL,
+                `id_ciudad` int DEFAULT NULL,
+                `id_regimen` int DEFAULT NULL,
+                `id_forma_pago` int DEFAULT NULL,
+                `id_geografia` int DEFAULT NULL,
+                KEY `id_geografia` (`id_geografia`),
+                KEY `id_cliente` (`id_cliente`),
+                CONSTRAINT `dt_clientes_ibfk_1` FOREIGN KEY (`id_geografia`) REFERENCES `dt_geografia` (`id_geografia`)
+                ) ENGINE=InnoDB AUTO_INCREMENT=2750 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+            ");
+
+            $conexion_migracion_prueba->exec("
+                -- Sio2Db_Junio.dt_inffac_cli definition
+
+                CREATE TABLE `dt_inffac_cli` (
+                `id_inffac_cli` int NOT NULL AUTO_INCREMENT,
+                `cuenta_contable` varchar(45) DEFAULT NULL,
+                `descuento_ica` varchar(45) DEFAULT NULL,
+                `cupo_credito` varchar(45) DEFAULT NULL,
+                `cupo_contrato` varchar(45) DEFAULT NULL,
+                `aprobado_por` smallint DEFAULT NULL,
+                `cod_clasitri` varchar(45) DEFAULT NULL,
+                `tipo_identificacion` smallint DEFAULT NULL,
+                `tipo_persona` smallint DEFAULT NULL,
+                `declarante` smallint DEFAULT NULL,
+                `agente_retenedor` smallint DEFAULT NULL,
+                `benefactor_rtiva` smallint DEFAULT NULL,
+                `agente_rtiva` smallint DEFAULT NULL,
+                `rete_garantia` smallint DEFAULT NULL,
+                `meses_garantia` smallint DEFAULT NULL,
+                `valor_rt_garantia` varchar(100) DEFAULT NULL,
+                `rt_fuente_renta` smallint DEFAULT NULL,
+                `entidad_publica` smallint DEFAULT NULL,
+                `cod_entidad_publica` varchar(45) DEFAULT NULL,
+                `razon_social` smallint DEFAULT NULL,
+                `comision_coorporativa` varchar(45) DEFAULT NULL,
+                `id_cliente` int NOT NULL,
+                PRIMARY KEY (`id_inffac_cli`),
+                KEY `fk_dt_inffac_cli_dt_clientes1` (`id_cliente`)
+                ) ENGINE=InnoDB AUTO_INCREMENT=1905 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+            ");
+
+            $array_potencial = [
+                'Alto' => 1,
+                'Bajo' => 3,
+                'Medio' => 2,
+                'Nulo' => 0,
+                '' => null,
+                '0' => 0
+            ];
+
+            $array_objetivo = [
+                'Atraer' => 3,
+                'Fidelizar' => 2,
+                'Recuperar' => 4,
+                'Rentabilizar' => 1,
+                '' => null
+            ];
+
+            $array_regimen = [
+                'C' => 2,
+                'G' => 4,
+                'I' => 5, //No responsable de IVA
+                'N' => NULL,
+                'S' => 3
+            ];
+
+            $array_forma_pago = [
+                'fp1' => 22,
+                'fp10' => 31,
+                'fp14' => 35,
+                'fp15' => 36,
+                'fp16' => 39,
+                'fp2' => 23,
+                'fp3' => 24,
+                'fp6' => 27,
+                'fp7' => 28,
+                'fp8' => 29
+            ];
+
+
+            $array_usuarios = $array_info_global['codVendedor=>id'];
+
+            $array_usuarios2 = $array_info_global['vendedor=>id'];
+
+            $array_tipo_identificacion = ['NIT' => 1, 'CC' => 2];
+
+            $array_tipo_persona = ['Juridica' => 1,'Natural' => 2]; 
+
+            $array_agente_retenedor = ['Si' => 1,'No' => 2];
+
+            $array_declarante = ['Si' => 1,'No' => 2];
+
+            $array_benefactor_rteiva = ['Si' => 1,'No' => 2];
+
+            $array_agente_rteiva = ['Si' => 1,'No' => 2];
+            
+            $array_retegarantia = ['Si' => 1,'No' => 2];
+
+            $array_retefuenterenta = ['Si' => 1,'No' => 2];
+
+            $array_entidad_publica = ['Si' => 1,'No' => 2];
+
+            $array_razon_social = ['Si' => 1,'No' => 2];
+            /*
+            id_ciudad = Es el pais y viene de dt_geografia
+            id_geografica = Es la ciudad y viene de dt_geografia
+            */ 
+
+            //Ciudad [pais,ciudad]
+            $array_cod_ciudad = [
+                '0' => [1,1283],
+                '1' => [1,1283],
+                'ACACIAS@META@Colombi' => [1,785],
+                'AIPE@HUILA@Colombia' => [1,703],
+                'ARAUCA@ARAUCA@Colomb' => [1,178],
+                'ARUBA' => [1284,1286],
+                'BARANOA@ATLANTICO@Co' => [1,185],
+                'BARRANCABERMEJA' => [1,963],
+                'BARRANQUILLA' => [1,185],
+                'BARRANQUILLA@ATLANTI' => [1,185],
+                'BENTON VILLE' => [1287,1289],
+                'BOGOTA' => [1,1283],
+                'BogotÃ¡' => [1,1283],
+                'BOGOTA@D.C@Colombia' => [1,1283],
+                'BUCARAMANGA' => [1,966],
+                'CAJICA@CUNDINAMARCA@' => [1,639],
+                'CALI' =>  [1,1127],
+                'CARACAS' => [2,1292],
+                'CARTAGENA' => [1,224],
+                'CARTAGENA DEL CHAIRA' => [1,413],
+                'CHIA' => [1,640],
+                'CIUDAD DE MEXICO' => [8,1262],
+                'CUCUTA' => [1,885],
+                'ENVIGADO' => [1,101],
+                'FACATATIVA' => [1,652],
+                'FLORENCIA' => [1,417],
+                'FUNZA' => [1,653],
+                'FUNZA@CUNDINAMARCA@C' => [1,653],
+                'HIA' => [1,640],
+                'IBAGUE' => [1,1092],
+                'ITAGUI' => [1,113],
+                'LA DORADA' => [1,403],
+                'LA ESTRELLA' => [1,118],
+                'LA VEGA' => [1,470],
+                'MARIQUITA' => [1,1111],
+                'MDE' => [1,124],
+                'MEDELLIN' => [1,124],
+                'MONTERIA' => [1,556],
+                'MOSQUERA' => [1,655],
+                'NEIVA' => [1,710],
+                'NEIVA@HUILA@Colombia' => [1,710],
+                'New York' =>  [1287,1291],
+                'NO CATALOGAD' => [null,null],
+                'OTRAS CIUDAD' => [null,null],
+                'PASTO' => [1,859],
+                'PEREIRA' => [1,952],
+                'POPAYAN@CAUCA@Colomb' => [1,461],
+                'PUERTO COLOMBIA' => [1,198],
+                'RESTREPO' => [1,807],
+                'SABANA DE TORRES' => [1,1024],
+                'SABANETA' => [1,140],
+                'SAN JUAN NEPUMUCENO' => [1,246],
+                'SANTA MARTA' => [1,779],
+                'SANTO DOMINGO DE GUZ' => [7,1610],
+                'SIBATE' => [1,658],
+                'SIBERIA' => [1,610],
+                'SINCELEJO' => [1,1052],
+                'SOACHA' => [1,659],
+                'SOPO' => [1,645],
+                'TABIO' => [1,646],
+                'TACOTA' => [1,905],
+                'TENJO' => [1,647],
+                'TOCANCIPA' => [1,648],
+                'TUNJA' => [1,273],
+                'UBATE' => [1,689],
+                'V/CENCIO' => [1,812],
+                'VALLEDUPAR' => [1,488],
+                'VILLAVICENCIO' => [1,812],
+                'YOPAL' => [1,445],
+                'YUM' => [1,1158]
+            ];
+
+            $registros_insertados = 0;
+
+            $conexion_migracion_prueba->beginTransaction();
+
+            foreach($array_dt_clientes as $registro_ft_clientes){
+
+                try{
+
+                    $potencial = array_key_exists($registro_ft_clientes->potencial,$array_potencial)?$array_potencial[$registro_ft_clientes->potencial]:null;
+
+                    $objetivo = array_key_exists($registro_ft_clientes->objetivo,$array_objetivo)?$array_objetivo[$registro_ft_clientes->objetivo]:null;
+
+                    $id_usuario = array_key_exists(trim($registro_ft_clientes->codvended),$array_usuarios)?$array_usuarios[trim($registro_ft_clientes->codvended)]:1;
+
+                    $actualizadoPor = array_key_exists(trim($registro_ft_clientes->actualizadoPor),$array_usuarios2)?$array_usuarios2[trim($registro_ft_clientes->actualizadoPor)]:null;
+
+                    $nom_empresa = ControladorFuncionesAuxiliares::formateaString($registro_ft_clientes->empresa);
+
+                    if(array_key_exists(trim($registro_ft_clientes->codciudad),$array_cod_ciudad)){
+                        $id_ciudad = $array_cod_ciudad[trim($registro_ft_clientes->codciudad)][0];
+                        $id_geografia = $array_cod_ciudad[trim($registro_ft_clientes->codciudad)][1];
+                    }else{
+                        $id_ciudad = null;
+                        $id_geografia = null;
+                    }
+
+                    $id_regimen = array_key_exists(trim($registro_ft_clientes->regimen),$array_regimen)?$array_regimen[trim($registro_ft_clientes->regimen)]:null;
+
+                    $id_forma_pago = array_key_exists(trim($registro_ft_clientes->fPago),$array_forma_pago)?$array_forma_pago[trim($registro_ft_clientes->fPago)]:null;
+
+                    $insert_registro = $conexion_migracion_prueba->prepare("
+                        INSERT INTO dt_clientes(id_cliente,estado,potencial,objetivo,nom_empresa,id_usuario,nit,dig_verificacion,fecha_ingreso,fecha_actualizacion,
+                        usuario_actualizador,direccion,telefono,email_empresa,pagina_web,contacto,sector,area,telefono_contacto,cargo_contacto,email_contacto,
+                        fecha_nac_contacto,direccion_contacto,gustos,representante_legal,cedula_representante_legal,celular_representante_legal,facturacion,id_pais,
+                        importancia_1,importancia_2,importancia_3,importancia_4,intereses_compras,intereses_mercadeo,intereses_proyectos,id_ciudad,id_regimen,
+                        id_forma_pago,id_geografia)VALUES(:id_cliente,:estado,:potencial,:objetivo,:nom_empresa,:id_usuario,:nit,:dig_verificacion,:fecha_ingreso,
+                        :fecha_actualizacion,:usuario_actualizador,:direccion,:telefono,:email_empresa,:pagina_web,:contacto,:sector,:area,:telefono_contacto,
+                        :cargo_contacto,:email_contacto,:fecha_nac_contacto,:direccion_contacto,:gustos,:representante_legal,:cedula_representante_legal,
+                        :celular_representante_legal,:facturacion,:id_pais,:importancia_1,:importancia_2,:importancia_3,:importancia_4,:intereses_compras,
+                        :intereses_mercadeo,:intereses_proyectos,:id_ciudad,:id_regimen,:id_forma_pago,:id_geografia)
+                    ");
+
+                    $insert_registro->execute([
+                        'id_cliente' => $registro_ft_clientes->id_cliente,
+                        'estado'  => $registro_ft_clientes->activo,
+                        'potencial'  => $potencial,
+                        'objetivo' => $objetivo,
+                        'nom_empresa' => $nom_empresa,
+                        'id_usuario' => $id_usuario,
+                        'nit' => $registro_ft_clientes->nit,
+                        'dig_verificacion' => $registro_ft_clientes->digVeri,
+                        'fecha_ingreso' => $registro_ft_clientes->fecha_ingreso,
+                        'fecha_actualizacion' => $registro_ft_clientes->fechaActualizacion,
+                        'usuario_actualizador' => $actualizadoPor,
+                        'direccion' => $registro_ft_clientes->direccion,
+                        'telefono' => $registro_ft_clientes->tel1,
+                        'email_empresa' => $registro_ft_clientes->email, 
+                        'pagina_web' => $registro_ft_clientes->www,
+                        'contacto' => $registro_ft_clientes->contacto,
+                        'sector' => $registro_ft_clientes->actEconomica,
+                        'area' => null,
+                        'telefono_contacto' => $registro_ft_clientes->celCont,
+                        'cargo_contacto' => $registro_ft_clientes->cargoCont,
+                        'email_contacto' => null,
+                        'fecha_nac_contacto' => null,
+                        'direccion_contacto' => null,
+                        'gustos' => null,
+                        'representante_legal' => $registro_ft_clientes->gerente,
+                        'cedula_representante_legal' => null,
+                        'celular_representante_legal' => $registro_ft_clientes->celular, 
+                        'facturacion' => null,
+                        'id_pais' =>  null,
+                        'importancia_1' =>  null,
+                        'importancia_2' =>  null,
+                        'importancia_3' =>  null,
+                        'importancia_4' =>  null,
+                        'intereses_compras' =>  null,
+                        'intereses_mercadeo' =>  null,
+                        'intereses_proyectos' =>  null,
+                        'id_ciudad' => $id_ciudad, 
+                        'id_regimen' => $id_regimen,
+                        'id_forma_pago' => $id_forma_pago,
+                        'id_geografia' => $id_geografia
+                    ]);
+
+                }catch(PDOException $e){
+                    $conexion_migracion_prueba->rollback();
+                    echo "Error en el id_cliente: ".$registro_ft_clientes->id_cliente."<br>".$e->getMessage();exit;
+                }
+
+                try{
+
+                    $tipo_identificacion = array_key_exists(trim($registro_ft_clientes->tipoIdent),$array_tipo_identificacion)?$array_tipo_identificacion[trim($registro_ft_clientes->tipoIdent)]:null; 
+
+                    $tipo_persona = array_key_exists(trim($registro_ft_clientes->tipoPersona),$array_tipo_persona)?$array_tipo_persona[trim($registro_ft_clientes->tipoPersona)]:null;
+
+                    $agente_retenedor = array_key_exists(trim($registro_ft_clientes->AgRetenedor),$array_agente_retenedor)?$array_agente_retenedor[$registro_ft_clientes->AgRetenedor]:0;
+
+                    $declarante = array_key_exists(trim($registro_ft_clientes->declarante),$array_declarante)?$array_declarante[trim($registro_ft_clientes->declarante)]:0;
+                    
+                    $benefactor_rtiva = array_key_exists(trim($registro_ft_clientes->benRTIVA),$array_benefactor_rteiva)?$array_benefactor_rteiva[trim($registro_ft_clientes->benRTIVA)]:0;
+                    
+                    $agente_rtiva = array_key_exists(trim($registro_ft_clientes->AgRETIVA),$array_agente_rteiva)?$array_agente_rteiva[trim($registro_ft_clientes->AgRETIVA)]:0;
+                    
+                    $rete_garantia = array_key_exists(trim($registro_ft_clientes->rtegarantia),$array_retegarantia)?$array_retegarantia[trim($registro_ft_clientes->rtegarantia)]:0;
+                    
+                    $rt_fuente_renta = array_key_exists(trim($registro_ft_clientes->rtefuente_renta),$array_retefuenterenta)?$array_retefuenterenta[trim($registro_ft_clientes->rtefuente_renta)]:0;
+  
+                    $entidad_publica = array_key_exists(trim($registro_ft_clientes->entiPublica),$array_entidad_publica)?$array_entidad_publica[trim($registro_ft_clientes->entiPublica)]:0;
+                    
+                    $razon_social = array_key_exists(trim($registro_ft_clientes->razonSocial),$array_razon_social)?$array_razon_social[trim($registro_ft_clientes->razonSocial)]:0;
+
+
+
+                    $insert_registro2 = $conexion_migracion_prueba->prepare("
+                        INSERT INTO dt_inffac_cli(cuenta_contable,descuento_ica,cupo_credito,cupo_contrato,aprobado_por,cod_clasitri,tipo_identificacion,
+                        tipo_persona,declarante,agente_retenedor,benefactor_rtiva,agente_rtiva,rete_garantia,meses_garantia,valor_rt_garantia,rt_fuente_renta,
+                        entidad_publica,cod_entidad_publica,razon_social,comision_coorporativa,id_cliente) VALUES(:cuenta_contable,:descuento_ica,
+                        :cupo_credito,:cupo_contrato,:aprobado_por,:cod_clasitri,:tipo_identificacion,:tipo_persona,:declarante,:agente_retenedor,:benefactor_rtiva,
+                        :agente_rtiva,:rete_garantia,:meses_garantia,:valor_rt_garantia,:rt_fuente_renta,:entidad_publica,:cod_entidad_publica,:razon_social,
+                        :comision_coorporativa,:id_cliente)
+                    ");
+
+                    $insert_registro2->execute([
+                        'cuenta_contable' => $registro_ft_clientes->cta_puc,
+                        'descuento_ica' => null,
+                        'cupo_credito' => $registro_ft_clientes->cupo,
+                        'cupo_contrato' => $registro_ft_clientes->cupoCont,
+                        'aprobado_por' => null,
+                        'cod_clasitri' => null,
+                        'tipo_identificacion' => $tipo_identificacion,
+                        'tipo_persona' => $tipo_persona,
+                        'declarante' => $declarante,
+                        'agente_retenedor' => $agente_retenedor,
+                        'benefactor_rtiva' => $benefactor_rtiva,
+                        'agente_rtiva' => $agente_rtiva,
+                        'rete_garantia' => $rete_garantia,
+                        'meses_garantia' => null,
+                        'valor_rt_garantia' => 0,
+                        'rt_fuente_renta' => $rt_fuente_renta,
+                        'entidad_publica' => $entidad_publica,
+                        'cod_entidad_publica' => null,
+                        'razon_social' => $razon_social,
+                        'comision_coorporativa' => null,
+                        'id_cliente' =>  $registro_ft_clientes->id_cliente
+                    ]);
+
+                }catch(PDOException $e){
+                    $conexion_migracion_prueba->rollback();
+                    echo "Error en el id_cliente: ".$registro_ft_clientes->id_cliente."<br>".$e->getMessage();exit;
+                }
+
+                $registros_insertados++;
+                
+            }
+            $conexion_migracion_prueba->commit();
+            $conexion_migracion_prueba->exec("
+                ALTER TABLE dt_clientes
+                MODIFY id_cliente INT AUTO_INCREMENT PRIMARY KEY;
+
+                ALTER TABLE dt_macro_proyecto
+                ADD CONSTRAINT dt_macro_proyecto_ibfk_1 FOREIGN KEY (id_cliente)
+                REFERENCES dt_clientes (id_cliente);
+            ");
+
+            // Finaliza timer y entregamos mensaje 
+
+            $tiempo_fin = microtime(true);
+            $tiempo_transcurrido = $tiempo_fin - $tiempo_inicio;
+
+            $mensaje = "Migración dt_clientes y dt_inffac_cli completada ".$registros_insertados." registros insertados en ambas tablas en ".$tiempo_transcurrido." segundos";
+
+            return $mensaje;
+
+        }
+
         public static function migraDtInventarioDtKardex($conexion_sio1,$conexion_migracion_prueba,$array_info_global){
 
             //Inicia timer
@@ -5252,7 +5677,7 @@
             $tiempo_fin = microtime(true);
             $tiempo_transcurrido = $tiempo_fin - $tiempo_inicio;
 
-            $mensaje = "Migración id_inventario y dt_kardex completada ".$registros_insertados." registros insertados en ambas tablas en ".$tiempo_transcurrido." segundos";
+            $mensaje = "Migración dt_inventario y dt_kardex completada ".$registros_insertados." registros insertados en ambas tablas en ".$tiempo_transcurrido." segundos";
 
             return $mensaje;
             
@@ -5329,9 +5754,17 @@
                 'C' => 3
             ];
 
-            $array_codigos_activos = [13585,13586,13587,13401,13386,13417,13418,13419,13420,13427,13432,13433,13434,13435,13436,13422,13423,13424,13425,13426,13437,13438,13439,
-            13440,13441,13428,13429,13430,13431,13421,13442,13443,13444,13445,13446,13414,13415,13416,13447,13448,13449,13450,13451,12811,12824,13589,13588,13266,13314];
-
+            // $array_codigos_activos = [13585,13586,13587,13401,13386,13417,13418,13419,13420,13427,13432,13433,13434,13435,13436,13422,13423,13424,13425,13426,13437,13438,13439,
+            // 13440,13441,13428,13429,13430,13431,13421,13442,13443,13444,13445,13446,13414,13415,13416,13447,13448,13449,13450,13451,12811,12824,13589,13588,13266,13314];
+            
+            $array_codigos_activos = [13491,13492,13528,13529,13704,13705,13706,13707,13708,13530,13525,13523,13526,13709,13710,13711,13712,13713,13524,13531,13493,13494,13495,
+            13564,13512,13513,13573,13593,13594,13496,13565,13566,13590,13591,13592,13567,13568,13569,13570,13571,13572,13499,13500,13507,13518,13519,13520,13521,13508,13511,13522,
+            13359,13509,13510,13548,13562,13550,13553,13551,13552,13559,13557,13558,13556,13549,13561,13560,13554,13555,13532,13533,13534,13537,13538,13539,13546,13543,13544,13545,
+            13542,13536,13535,13360,13540,13541,13585,13586,13587,13401,13386,13417,13418,13419,13420,13427,13432,13433,13434,13435,13436,13422,13423,13424,13425,13426,13437,13438,
+            13439,13440,13441,13428,13429,13430,13431,13421,13442,13443,13444,13445,13446,13414,13415,13416,13447,13448,13449,13450,13451,12811,12824,13589,13588,13266,13314,13670,
+            13671,13672,13673,13674,13675,13676,13677,13678,13679,13680,13681,13682,13683,13714,13715,13716,13717,13718,13719,13720,13721,13722,13723,13724,13725,13726,13727,13728,
+            13729,13731,13732,13733];
+            
             $registros_insertados = 0;
 
             $conexion_migracion_prueba->beginTransaction();
@@ -8584,7 +9017,7 @@
                 vTotal_rot,id_puc,estado_doc,tipo,id_costo,recibido,elaboro,enviado_a,orden,observaciones_rot,
                 Facturas,puc_prodrt,puc_ivart,puc_contra,iva_rt,puc_rtftert,rtfte_rt,puc_rtivart,
                 rtiva_rt,puc_rticart,rtica_rt,FA_provee,legalizado,fecha_FA,fecha_vence,letra,letra_cta,
-                cons_contable from dt_rotacion dr  order by id_rotacion 
+                cons_contable,fechaReal from dt_rotacion dr  order by id_rotacion 
             ");
 
             $conexion_migracion_prueba->exec("
@@ -8596,6 +9029,7 @@
                 `n_rotacion` int DEFAULT NULL,
                 `item_rotacion` int DEFAULT NULL,
                 `fecha` datetime DEFAULT NULL,
+                `fecha_pre_act` datetime DEFAULT NULL,
                 `cantidad` DECIMAL(10, 2) DEFAULT NULL,
                 `vr_unidad` DECIMAL(10, 2) DEFAULT NULL,
                 `vr_total` DECIMAL(10, 2) DEFAULT NULL,
@@ -8628,10 +9062,10 @@
                 `letra` varchar(2) DEFAULT NULL,
                 `letra_cta` varchar(10) DEFAULT NULL,
                 `cons_contable` int DEFAULT NULL,
-                `id_costos` int DEFAULT NULL,
+                /*`id_costos` int DEFAULT NULL,
                 `id_compras` int DEFAULT NULL,
                 `id_orden` int DEFAULT NULL,
-                `id_rotaciones` int DEFAULT NULL,
+                `id_rotaciones` int DEFAULT NULL,*/
                 `id_inventario` int DEFAULT NULL,
                 KEY `fk_inventario` (`id_inventario`),
                 KEY `indx_n_rotacion` (`n_rotacion`),
@@ -8730,11 +9164,11 @@
                     
 
                     $insert_registro = $conexion_migracion_prueba->prepare("
-                        INSERT INTO dt_rotacion(id_rotacion,cantidad,cod_prod,cons_contable,estado,factura,factura_proveedor,fecha,fecha_factura,fecha_legalizacion,
+                        INSERT INTO dt_rotacion(id_rotacion,cantidad,cod_prod,cons_contable,estado,factura,factura_proveedor,fecha,fecha_pre_act,fecha_factura,fecha_legalizacion,
                         fecha_vencimiento,id_area,id_compra,id_costo,id_encargado,id_ordenes,id_puc,id_tipo_rotacion,id_usuario,item_rotacion,letra,letra_cta,n_compra,
                         n_ordenes,n_remision_prov,n_rotacion,observaciones,puc_contra,puc_ivart,puc_prodrt,puc_rticart,puc_rtftert,puc_rtivart,rtfte_rt,rtica_rt,rtiva_rt,
                         vr_total,vr_unidad,id_inventario)
-                        VALUES(:id_rotacion,:cantidad,:cod_prod,:cons_contable,:estado,:factura,:factura_proveedor,:fecha,:fecha_factura,:fecha_legalizacion,
+                        VALUES(:id_rotacion,:cantidad,:cod_prod,:cons_contable,:estado,:factura,:factura_proveedor,:fecha,:fecha_pre_act,:fecha_factura,:fecha_legalizacion,
                         :fecha_vencimiento,:id_area,:id_compra,:id_costo,:id_encargado,:id_ordenes,:id_puc,:id_tipo_rotacion,:id_usuario,:item_rotacion,:letra,:letra_cta,
                         :n_compra,:n_ordenes,:n_remision_prov,:n_rotacion,:observaciones,:puc_contra,:puc_ivart,:puc_prodrt,:puc_rticart,:puc_rtftert,:puc_rtivart,:rtfte_rt,
                         :rtica_rt,:rtiva_rt,:vr_total,:vr_unidad,:id_inventario)
@@ -8749,6 +9183,7 @@
                         'factura' => $registro_rotaciones->Facturas,
                         'factura_proveedor' => $registro_rotaciones->FA_provee,
                         'fecha' => $registro_rotaciones->fecha,
+                        'fecha_pre_act' => $registro_rotaciones->fechaReal,
                         'fecha_factura' => $registro_rotaciones->fecha_FA,
                         'fecha_legalizacion' => $registro_rotaciones->legalizado,
                         'fecha_vencimiento' => $registro_rotaciones->fecha_vence,
