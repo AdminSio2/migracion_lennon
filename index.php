@@ -104,9 +104,7 @@
 
     // $array_info_global['id_cod=>medidas_codigos'] = ControladorInformacionGlobal::traeDataCorreccionCodprodfinal($conexion_sio1);
 
-    //Traemos array: empresa => id_proveedores
- 
-    $array_info_global['empresa=>id_proveedores'] = ControladorInformacionGlobal::traeArrayIdProveedores($conexion_migracion_prueba);
+    
 
     //Traemos array medidas => id_medida
 
@@ -123,9 +121,12 @@
     
 
     
+    
+
 
     echo ControladorMigracion::migraDtUsuariosUser($conexion_sio1,$conexion_migracion_prueba)."\n<br>";
     echo ControladorFuncionesAuxiliares::complementaInfoUsuariosActivos($conexion_migracion_prueba)."\n<br>";
+    
 
     //Traemos los arrays: user codVendedor => id_usuario y vendedor => id_usuario 
 
@@ -138,6 +139,12 @@
     //Traemos array nit => id_cliente
 
     $array_info_global['nit=>id_cliente'] = ControladorInformacionGlobal::traeArrayIdCliente($conexion_migracion_prueba);
+
+    echo ControladorFuncionesAuxiliares::actualizaRegistrosNuevosTablasOz($conexion_migracion_prueba)."\n<br>"; //Actualización tablas Oz
+
+    //Traemos array: empresa => id_proveedores
+ 
+    $array_info_global['empresa=>id_proveedores'] = ControladorInformacionGlobal::traeArrayIdProveedores($conexion_migracion_prueba);
 
     echo ControladorFuncionesAuxiliares::agregaRegistrosFaltantes($conexion_migracion_prueba)."\n<br>";
     echo ControladorMigracion::migraDtCodprodfinal($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";//exit;
@@ -180,7 +187,7 @@
 
     
     //echo ControladorFuncionesAuxiliares::actualizaAuthAssignment($conexion_migracion_prueba)."\n<br>"; YA NO VA 
-    echo ControladorFuncionesAuxiliares::actualizaRegistrosNuevosTablasOz($conexion_migracion_prueba)."\n<br>"; //Actualización tablas Oz
+    
     echo ControladorFuncionesAuxiliares::corrigeDtInfContableProve($conexion_migracion_prueba,$array_info_global)."\n<br>";
     //echo ControladorFuncionesAuxiliares::corrijeDtCodprodfinal($conexion_migracion_prueba,$array_info_global)."\n<br>"; Esta ya se fue por migración directa
     echo ControladorMigracion::migraDtInventarioxarea($conexion_sio1,$conexion_migracion_prueba,$array_info_global)."\n<br>";

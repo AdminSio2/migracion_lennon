@@ -1,0 +1,67 @@
+*****************Arranca ejecución 2024-08-04 17:56:03*****************
+<br>Migración dt_usuarios y user completada 1173 registros insertados en las 2 tablas, en 4.3626928329468 segundos
+<br>Actualización de credenciales de ingreso en user y id_cargo en id_usuarios completa, 23 usuarios actualizados en sus credenciales de ingreso y id_cargo, actualización de tablas de permisos todo en 5.9080798625946 segundos
+<br>Migración dt_clientes y dt_inffac_cli completada 1900 registros insertados en ambas tablas en 4.2774171829224 segundos
+<br>Inclusión de los registros faltantes en dt_clientes,dt_inffac_cli,dt_macroproyecto,dt_proveedores,dt_inf_contable_prove,dt_codprodfinal,dt_inventario y dt_kardex. Insersión completa en 0.77908301353455 segundos
+<br>Se han agregado los registros faltantes de las tablas dt_medidas
+<br>Migración dt_codprodfinal completada 8829 registros insertados en 8.6220109462738 segundos
+<br>Se creó las tabla dt_sublinea complemetaria a dt_categoria para los productos
+<br>Migración dt_inventario y dt_kardex completada 5051 registros insertados en ambas tablas en 9.5983231067657 segundos
+<br>Se incluyeron las medidas faltantes de 43 registros en dt_inventario y se reemplazaron 2 registros en dt_grupoinventario
+<br>Migración dt_acabados completada 914 registros insertados en 1.1295938491821 segundos
+<br>1539 no incluidos por tener . en el código (nunca se usan en el sio 1 están excluidos en los filtros)
+<br>Corrección dt_inventario completada 4969 registros corregidos en subgrupo y 4969 registros corregidos en medida . Correcciones completadas en 9.4348940849304 segundos
+<br>Corrección dt_inf_contable_prove completada 2124 registros corregidos en 2.027734041214 segundos
+<br>Migración dt_inventarioxarea completada 40520 registros insertados en 35.717238903046 segundos
+<br>4 no incluidos por no tener codigo_prod
+<br>43246 no incluidos por no pertenecer a las áreas de producción
+<br>Corrección ciudades en dt_clientes completada en 0.0087239742279053 segundos.
+<br>Migración dt_proyectos_op completada 1669 registros insertados  en 1.9602851867676 segundos
+<br>Migración dt_ordenes y dt_fechas_op completada 83582 registros insertados en las 2 tablas, en 176.88081097603 segundos
+<br>Migración dt_plantilla completada 165767 registros insertados en 161.5462679863 segundos
+<br>22771 registros no incluidos por no tener id_codprodfinal relacionado
+<br>Migración dt_tareas completada 1529 registros insertados en 1.441987991333 segundos
+<br>Migración dt_cotizacion completada 137957 registros insertados en 139.30488991737 segundos
+<br>Migración dt_presupuesto_inicial completada 40199 registros insertados en 39.074193000793 segundos
+<br>1439 registros no incluidos por no tener id_ordenes relacionado
+<br>Migración dt_costos completada 1175658 registros insertados en 1218.9098279476 segundos
+<br>50194 registros no incluidos por no tener id_ordenes relacionado
+<br>Migración dt_diseno completada 1573388 registros insertados en 1805.3131308556 segundos
+<br>1526 registros no incluidos por no tener id_ordenes relacionado
+<br>adicionalmente no se incluyeron 4 por estar completamente vacios
+<br>Migración dt_programacion_diseno completada, 167 registros insertados en 1.0177829265594 segundos
+<br>Se creó las tabla dt_programacion_diseno_dt_ordenes complemetaria a dt_programacion_diseno_dt_ordenes
+<br>Migración dt_estructura_p_diseno completada, 729 registros insertados en 1.1962659358978 segundos
+<br>Migración dt_historico_diseno completada, 360 registros insertados en 0.58397197723389 segundos
+<br>Migración dt_historico_ft completada, 906 registros insertados en 1.38063788414 segundos
+<br>240 registros no incluidos por no tener foto ni archivo, que son los registros que le dan sentido a la tabla
+<br>Migración dt_tareas_costo completada, 182978 registros insertados en 180.77580618858 segundos
+<br>3936 registros no incluidos por ser programaciones a usuarios que fueron borrados o con códigos de usuario erroneos
+<br>Migración dt_compras completada 569419 registros insertados en 680.84208488464 segundos
+<br>212 registros no incluidos por no tener usuario que elabora la oc o ser un usuario borrado de la bd
+<br>Migración dt_rotacion completada 542917 registros insertados en 615.75636291504 segundos
+<br>157676 registros no incluidos por ser tipo 7 (Duplicados de los traslados tipo 25)
+<br>Migración dt_solicitud_g_r completada, 525 registros insertados en 1.2137758731842 segundos
+<br>3 registros no incluidos por estar ligadas a id_ordenes que ya no existen o fueron borrados
+<br>Migración dt_historico_g_r completada, 431 registros insertados en 0.53467082977295 segundos
+<br>1 no incluidos por pertenecer a solicitudes que no se migraron, probablemente porque la op a la que se ligó fue borrada
+<br>Migración dt_factura_proveedor completada, 55500 registros insertados en 54.346712112427 segundos
+<br>67 registros no incluidos por pertenecer a proveedores borrados de la bd, no puede haber registro sin id_proveedor creado
+<br>Migración dt_factura completada, 22856 registros insertados en 31.888164043427 segundos
+<br>3438 registros no incluidos por no tener usuario que elabora o un cliente borrado de la bd(registros anteriores al 2013)
+<br>Se crearon las tablas dt_actividades, dt_actividades_f, dt_aprobado_g_r,dt_comite_g_r_f y dt_comite_g_r complemetarias a dt_solicitud_g_r
+<br>Migración dt_remision completada 35843 registros insertados en 37.330789089203 segundos
+<br>8419 registros no incluidos por ser elaborados por usuarios borrados de la bd o no tener una conexión clara con el item de la op a la que pertenece
+<br>Migración dt_entregables completada 218372 registros insertados en 214.62386798859 segundos
+<br>
+<br>Creación de la tabla dt_historial_costos completada
+<br>Creación de la tabla dt_historico_cierres completada
+<br>Creación de la tabla dt_traza_op completada
+<br>Creación de la tabla dt_historico_tareas_costo completada
+<br>Se ha completado la creación de procedimientos almacenados
+<br>Se ha completado la creación de vistas bd
+<br>Se introdujeron indexes y llaves foraneas complementarias
+<br>
+<br>
+<br>*****************Ejecución completa! Alcanzada en 7585.9115729332 segundos*****************
+C:\xampp\htdocs\migracion_lennon>

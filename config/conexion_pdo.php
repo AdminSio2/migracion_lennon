@@ -8,7 +8,7 @@ class Database{
 
             $usuario = "masterUS";
             $password = 'z2p5usaQl_UpR$Sp&v6K';
-            $dsn = 'mysql:host=savivpdndb.chcfkkmlwrdq.us-east-1.rds.amazonaws.com;dbname=Sio1Backup8Julio2024'; //SioBackup12Abril2024 (backup 2024 abril) Sio1BackupFeb2024(backup 2024 febr) Sio1BackupSept(backup 2023 sept) 
+            $dsn = 'mysql:host=savivpdndb.chcfkkmlwrdq.us-east-1.rds.amazonaws.com;dbname=Sio1Backup8Agosto2024'; //SioBackup12Abril2024 (backup 2024 abril) Sio1BackupFeb2024(backup 2024 febr) Sio1BackupSept(backup 2023 sept) 
             $conexion = new PDO($dsn,$usuario,$password);
 
             return $conexion;
@@ -42,7 +42,7 @@ class Database{
 
             $usuario = "masterUS";
             $password = 'z2p5usaQl_UpR$Sp&v6K';
-            $dsn = 'mysql:host=savivpdndb.chcfkkmlwrdq.us-east-1.rds.amazonaws.com;dbname=Sio2Db_8Julio';
+            $dsn = 'mysql:host=savivpdndb.chcfkkmlwrdq.us-east-1.rds.amazonaws.com;dbname=Sio2Db';
             $conexion = new PDO($dsn,$usuario,$password);
 
             return $conexion;

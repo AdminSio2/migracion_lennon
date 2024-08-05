@@ -1,0 +1,79 @@
+UPDATE  dt_tareas_costo dtc SET fecha_retro = '2024-07-19 05:45:21'
+WHERE fecha_pro < '2024-07-08 06:00:00' and fecha_retro is NULL;
+
+WHERE fecha_retro is NULL AND id_area = 13
+AND  fecha_pro > '2024-07-08 06:00:00';
+
+UPDATE  dt_tareas_costo dtc SET id_vendedor = 1105
+WHERE fecha_retro is NULL AND id_area = 15
+AND  fecha_pro > '2024-07-08 06:00:00';
+
+UPDATE  dt_tareas_costo dtc SET id_vendedor = 865
+WHERE fecha_retro is NULL AND id_area = 16
+AND  fecha_pro > '2024-07-08 06:00:00' ;
+
+UPDATE dt_rotacion SET estado = 2  WHERE id_tipo_rotacion = 25
+AND estado  = 7 AND fecha < '2024-06-01';
+
+CREATE  event conciliacion_automatica 
+on SCHEDULE EVERY 1 DAY 
+DO
+UPDATE dt_ordenes do inner join dt_fechas_op dfo 
+on do.id_ordenes = dfo.id_ordenes 
+set do.conciliado = 1,dfo.id_usuario = 1,dfo.fecha_conciliacion = NOW()  
+WHERE do.conciliado != 1 AND 
+dfo.fecha_registro < DATE_SUB(CURDATE(),INTERVAL 60 DAY);
+
+
+
+INSERT INTO dt_acabados (id_acabados, cod, acabado, id_tipo_costo, id_clase_costo, id_area, id_medida, unidad_minima, vr_hora_hombre, x_min, x_max, y_min, y_max) VALUES(2621, 'LOI050', 'DESMONTE', 8, 2, 7, 20, 1.0, 10000.0, 1.0, 1.0, 1.0, 1.0);
+INSERT INTO dt_acabados (id_acabados, cod, acabado, id_tipo_costo, id_clase_costo, id_area, id_medida, unidad_minima, vr_hora_hombre, x_min, x_max, y_min, y_max) VALUES(2622, 'VIA002', 'VIATICOS TERCEROS', 8, 2, 7, 15, 1.0, 9100.0, 1.0, 1.0, 1.0, 1.0);
+UPDATE dt_acabados  SET cod = 'TRANS003'
+WHERE id_acabados = 1176;
+
+UPDATE dt_acabados  SET cod = 'TRANS004'
+WHERE id_acabados = 1316;
+
+UPDATE dt_acabados  SET cod = 'TRANS005'
+WHERE id_acabados = 2499;
+
+UPDATE dt_acabados  SET cod = 'TRANS006'
+WHERE id_acabados = 2501;
+
+
+UPDATE dt_acabados  SET acabado = '14ZD INSTALACION GENERAL(TER)'
+WHERE id_acabados = 1668;
+
+UPDATE dt_acabados SET acabado = '14ZD INSTALACION GENERAL(MOD)'
+WHERE id_acabados = 261;
+
+
+UPDATE dt_plantilla SET id_acabados = 2621
+WHERE id_plantilla in (249627,249628,249665,249679,266796);
+
+UPDATE dt_plantilla SET id_acabados = 1668
+WHERE id_plantilla in (249668,249669,249670,249671,249672,249673,
+249674,249676,249679,249680,249681,249682,249683,249686,249688,
+249692,249696,249755,249756,249757,249758,249759,249760,250120,
+250121,250167,256383,266317,267128,267132,256943,266492,266677,267130
+);
+
+UPDATE dt_plantilla SET id_acabados = 2506
+WHERE id_plantilla in (302146,303360,303380,303401,326714,328203,
+328217,328225,328226,266795);
+
+UPDATE dt_plantilla SET id_acabados = 2622
+WHERE id_plantilla in (249763,256942,266493,266676,
+266794,267129,325089);
+
+UPDATE dt_plantilla SET id_acabados = 1343
+WHERE id_plantilla in (267070,288515);
+
+UPDATE dt_plantilla SET id_acabados = 2623
+WHERE id_plantilla in (249762,268010);
+
+update dt_pucs_oc dpo set vrtiva = 0.15,vrtica = 0 WHERE  id_tipo_cuenta in (2,3);
+
+UPDATE dt_compras set id_proveedores = 
+(select id_proveedores from dt_proveedores where nit = dt_compras.nit)
+where id_proveedores is null;
