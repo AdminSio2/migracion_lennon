@@ -1,0 +1,8 @@
+CREATE  event conciliacion_automatica 
+on SCHEDULE EVERY 1 DAY 
+DO
+UPDATE dt_ordenes do inner join dt_fechas_op dfo 
+on do.id_ordenes = dfo.id_ordenes 
+set do.conciliado = 1,dfo.id_usuario = 1,dfo.fecha_conciliacion = NOW()  
+WHERE do.conciliado != 1 AND 
+dfo.fecha_registro < DATE_SUB(CURDATE(),INTERVAL 60 DAY) 
